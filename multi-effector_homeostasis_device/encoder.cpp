@@ -1,6 +1,11 @@
 #include "multi-effector_homeostasis_device.h"
 #include "encoder.h"
 //set up the pins ands store the current values for the encoder
+
+//check https://playground.arduino.cc/Main/RotaryEncoders/#OnInterrupts
+//TO DO: Change to pin change interrupts and do software debouncing. 
+
+
 void _encoder::initialize(void){
   pinMode(ENCODERPINA, input);
   pinMOde(ENCODERPINB, input);
