@@ -3,9 +3,10 @@
 
 #include "ledstrip.h"
 #include "handgrip.h"
+#include "encoder.h"
 
-volatile int tmr0counter = 0; //used to track timer overflows for refreshing the strip
-volatile unsigned long striprefreshcounter = 0; //used to count the number of times the strip has been refreshed
+volatile int stripDelayCounter = 0; //used to track timer overflows for refreshing the strip
+volatile int encoderDelayCounter = 0; //used to track timer overlfows for polling the encoder position
 
 enum SYSTEMMODE {
   NONE, //this is the default mode, but "default" is reserved by the compiler. 
@@ -18,11 +19,12 @@ enum SYSTEMMODE {
 
 _indicatorstrip Indicatorstrip; //object for the indicatorstrip
 _handgrip Handgrip; //object for the handgrip
+_encoder Encoder; //object for the encoder
 
 //this is the interrupt handler for Timer0 output conpare match. 
 SIGNAL(TIMER0_COMPA_vect) { //this executes every 1 millisecond
-  tmr0counter++;
-  if(tmr0counter == STRIPREFRESHDELAY) {  
+  stripDelayCounter++;
+  if(stripDelayCounter == STRIPREFRESHDELAY) {  
 
     //Set Rates based on affector positions (one for each affector)
     Indicatorstrip.setRates(Handgrip.calculateProductionRate(
@@ -56,7 +58,7 @@ void setup() {
 
   systemMode = NONE;
   Indicatorstrip.initialize();
-
+  Encoder.initialize();
   Serial.begin(9600); //init serial for debugging  
 }
 

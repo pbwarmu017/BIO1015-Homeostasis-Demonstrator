@@ -10,16 +10,15 @@ enum GAMESTATUS {
   lost
 }gameStatus;
 
-
-void _indicatorstrip::initialize(void){
-  strip.begin();
-  //strip.fill(strip.Color(0,0,128),0,LED_COUNT);
-  strip.show();
-  //setBoundingbox(BOXPOSITION, BOXSIZE);
-}
-
-void _indicatorstrip::update(void){
-  strip.show();
+float _indicatorstrip::calculatePosition(int devnum){
+  if(devnum == HANDGRIPDEVNUM){
+    float squeezeDeltaPercentage = (squeezeProductionRate-consumptionRate)/consumptionRate;
+    return(squeezeIndicatorPosition+(LEDMAXINCREMENT * squeezeDeltaPercentage));  
+  }
+  if(devnum == CRANKDEVNUM){
+    float crankDeltaPercentage = (crankProductionRate-consumptionRate)/consumptionRate;
+    return(crankIndicatorPosition+(LEDMAXINCREMENT * crankDeltaPercentage));
+  }
 }
 
 bool _indicatorstrip::indicatorsWithinBounds(void){
@@ -56,6 +55,13 @@ bool _indicatorstrip::indicatorsWithinBounds(void){
   }
 }
 
+void _indicatorstrip::initialize(void){
+  strip.begin();
+  //strip.fill(strip.Color(0,0,128),0,LED_COUNT);
+  strip.show();
+  //setBoundingbox(BOXPOSITION, BOXSIZE);
+}
+
 int _indicatorstrip::setBoundingBox(int boxstart, int boxsize){
   boxLowerBound = boxstart;
   boxUpperBound = boxstart+boxsize+1;
@@ -89,16 +95,9 @@ int _indicatorstrip::setBoundingBox(int boxstart, int boxsize){
   strip.show();
   return 0;
 }
-
-float _indicatorstrip::calculatePosition(int devnum){
-  if(devnum == HANDGRIPDEVNUM){
-    float squeezeDeltaPercentage = (squeezeProductionRate-consumptionRate)/consumptionRate;
-    return(squeezeIndicatorPosition+(LEDMAXINCREMENT * squeezeDeltaPercentage));  
-  }
-  if(devnum == CRANKDEVNUM){
-    float crankDeltaPercentage = (crankProductionRate-consumptionRate)/consumptionRate;
-    return(crankIndicatorPosition+(LEDMAXINCREMENT * crankDeltaPercentage));
-  }
+//used to set the consumption rate
+void _indicatorstrip::setConsumptionRate(float consrate){
+  consumptionRate = 1+consrate/100.;
 }
 
 void _indicatorstrip::setIndicatorPosition(float position, int devnum){
@@ -124,6 +123,12 @@ void _indicatorstrip::setIndicatorPosition(float position, int devnum){
   return 0;
 }
 
+//used to set the production rate
+void _indicatorstrip::setProductionRate(float prodrate, int device) {
+  if(device == HANDGRIPDEVNUM){
+    squeezeProductionRate = 1+prodrate/100.;
+  }
+}
 //used to set the consumption rate and the production rate
 void _indicatorstrip::setRates(float prodrate, float consrate, int devnum){
   if(devnum == HANDGRIPDEVNUM){
@@ -135,16 +140,9 @@ void _indicatorstrip::setRates(float prodrate, float consrate, int devnum){
 
   consumptionRate = 1+consrate/100.;
 }
-//used to set the production rate
-void _indicatorstrip::setProductionRate(float prodrate, int device) {
-  if(device == HANDGRIPDEVNUM){
-    squeezeProductionRate = 1+prodrate/100.;
-  }
-}
 
-//used to set the consumption rate
-void _indicatorstrip::setConsumptionRate(float consrate){
-  consumptionRate = 1+consrate/100.;
+void _indicatorstrip::update(void){
+  strip.show();
 }
 
 

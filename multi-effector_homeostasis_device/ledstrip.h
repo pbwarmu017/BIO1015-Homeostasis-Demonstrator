@@ -16,15 +16,16 @@
 #define COLORPURPLE strip.Color(51,0,102)
 #define COLORCYAN strip.Color(0,255,255)
 
-
+//AFFECTOR INDICATOR COLOR SELECTIONS
 #define SQUEEZEINDICATORCOLOR COLORBLUE
 #define CRANKINDICATORCOLOR COLORORANGE
-
+ //DEFAULT RATES
 #define DEFAULTINDICATORPOSITION 0//BOXSTART+round((float)BOXSIZE/2)
 #define DEFAULTPRODUCTIONRATE 20
 #define DEFAULTCONSUMPTIONRATE 20
+//REFRESH SPEEDS
 #define STRIPREFRESHDELAY 50 //in milliseconds
-#define LEDMAXINCREMENT 10
+#define LEDMAXINCREMENT 10 //in milliseconds
 
 
 class _indicatorstrip {
@@ -36,34 +37,30 @@ class _indicatorstrip {
     int boxLowerBound;
     int boxUpperBound;
     // int indicatorPosition;
-    float squeezeIndicatorPosition = DEFAULTINDICATORPOSITION; 
     float crankIndicatorPosition = DEFAULTINDICATORPOSITION;
     double prevSqueezeIndPos = -1;
     double prevCrankIndPos = -1;
+    float squeezeIndicatorPosition = DEFAULTINDICATORPOSITION; 
     /*FUNCTIONS*/
+    float calculatePosition(int);
+    bool indicatorsWithinBounds(void);
     void initialize(void);
+    int setBoundingBox(int boxstart, int boxsize);
+    void setConsumptionRate(float consumptionRate);
+    void setIndicatorPosition(float position, int devnum);
+    void setProductionRate(float productionRate, int devnum);
+    //this is used to set the rates of production and consumption for homeostasis. 
+    void setRates(float productionrate, float consumptionrate, int devnum); 
     void update(void);
 
-    float calculatePosition(int);
-
-    void setIndicatorPosition(float position, int devnum);
-    void clearIndicator(void); //clears the indicator from the strip
-    int setBoundingBox(int boxstart, int boxsize);
-
-    void setRates(float productionrate, float consumptionrate, int devnum); //this is used to set the rates of production and consumption for homeostasis. 
-    void setProductionRate(float productionRate, int devnum);
-    void setConsumptionRate(float consumptionRate);
-
-    bool indicatorsWithinBounds(void);
     
   private:
     /* VARIABLES */
     float consumptionRate = DEFAULTCONSUMPTIONRATE; //stays the same for all players
-    float squeezeProductionRate = DEFAULTPRODUCTIONRATE;
     float crankProductionRate = DEFAULTPRODUCTIONRATE;
     unsigned long losingColor;
+    float squeezeProductionRate = DEFAULTPRODUCTIONRATE;
 
-    bool GAMEON = false;
 };
 
 #endif
