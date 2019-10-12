@@ -123,10 +123,13 @@ void _indicatorstrip::setIndicatorPosition(float position, int devnum){
   return 0;
 }
 
-//used to set the production rate
-void _indicatorstrip::setProductionRate(float prodrate, int device) {
-  if(device == HANDGRIPDEVNUM){
+//used to set the production rate. Production rate is a number between 0 and 100. 
+void _indicatorstrip::setProductionRate(float prodrate, int devnum) {
+  if(devnum == HANDGRIPDEVNUM){
     squeezeProductionRate = 1+prodrate/100.;
+  }
+  if(devnum == CRANKDEVNUM){
+    crankProductionRate = 1+prodrate/100.;
   }
 }
 //used to set the consumption rate and the production rate
