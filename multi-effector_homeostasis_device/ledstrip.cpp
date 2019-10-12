@@ -12,47 +12,52 @@ enum GAMESTATUS {
 
 float _indicatorstrip::calculatePosition(int devnum){
   if(devnum == HANDGRIPDEVNUM){
-    float squeezeDeltaPercentage = (squeezeProductionRate-consumptionRate)/consumptionRate;
-    return(squeezeIndicatorPosition+(LEDMAXINCREMENT * squeezeDeltaPercentage));  
+    float delta = squeezeProductionRate-consumptionRate;
+    return(squeezeIndicatorPosition+(LEDMAXINCREMENT * delta));  
   }
   if(devnum == CRANKDEVNUM){
-    float crankDeltaPercentage = (crankProductionRate-consumptionRate)/consumptionRate;
-    return(crankIndicatorPosition+(LEDMAXINCREMENT * crankDeltaPercentage));
+    float delta = crankProductionRate-consumptionRate;
+    return(crankIndicatorPosition+(LEDMAXINCREMENT * delta));
   }
 }
 
 bool _indicatorstrip::indicatorsWithinBounds(void){
   //checking for the squeeze indicator
-  // if(squeezeIndicatorPosition <= boxLowerBound){
-  //   losingColor = SQUEEZEINDICATORCOLOR;
-  //   return false;
-  // }
+  if(HANDGRIPACTIVE == 1){
+    if(squeezeIndicatorPosition <= boxLowerBound){
+      losingColor = SQUEEZEINDICATORCOLOR;
+      return false;
+    }
 
-  // if(squeezeIndicatorPosition > boxLowerBound 
-  //     && squeezeIndicatorPosition < boxUpperBound) {
-  //   return true;
-  // }
+    if(squeezeIndicatorPosition > boxLowerBound 
+        && squeezeIndicatorPosition < boxUpperBound) {
+      return true;
+    }
 
-  // if(squeezeIndicatorPosition >= boxUpperBound) {
-  //   losingColor = SQUEEZEINDICATORCOLOR;
-  //   return false;
-  // }
+    if(squeezeIndicatorPosition >= boxUpperBound) {
+      losingColor = SQUEEZEINDICATORCOLOR;
+      return false;
+    }
+  }
 
   //checking for the hand crank indicator
-  if(crankIndicatorPosition <= boxLowerBound){
-    losingColor = CRANKINDICATORCOLOR;
-    return false;
-  }
+  if(CRANKACTIVE == 1){
+    if(crankIndicatorPosition <= boxLowerBound){
+      losingColor = CRANKINDICATORCOLOR;
+      return false;
+    }
 
-  if(crankIndicatorPosition > boxLowerBound 
-      && crankIndicatorPosition < boxUpperBound) {
-    return true;
-  }
+    if(crankIndicatorPosition > boxLowerBound 
+        && crankIndicatorPosition < boxUpperBound) {
+      return true;
+    }
 
-  if(crankIndicatorPosition >= boxUpperBound) {
-    losingColor = CRANKINDICATORCOLOR;
-    return false;
+    if(crankIndicatorPosition >= boxUpperBound) {
+      losingColor = CRANKINDICATORCOLOR;
+      return false;
+    }
   }
+  return(false);
 }
 
 void _indicatorstrip::initialize(void){
@@ -60,9 +65,10 @@ void _indicatorstrip::initialize(void){
   //strip.fill(strip.Color(0,0,128),0,LED_COUNT);
   strip.show();
   //setBoundingbox(BOXPOSITION, BOXSIZE);
+  return;
 }
 
-int _indicatorstrip::setBoundingBox(int boxstart, int boxsize){
+void _indicatorstrip::setBoundingBox(int boxstart, int boxsize){
   boxLowerBound = boxstart;
   boxUpperBound = boxstart+boxsize+1;
 
@@ -93,18 +99,17 @@ int _indicatorstrip::setBoundingBox(int boxstart, int boxsize){
   }
 
   strip.show();
-  return 0;
+  return;
 }
 //used to set the consumption rate
 void _indicatorstrip::setConsumptionRate(float consrate){
   consumptionRate = 1+consrate/100.;
+  return;
 }
 
 void _indicatorstrip::setIndicatorPosition(float position, int devnum){
-  // if(prevSqueezeIndPos != -1){
   if(devnum == HANDGRIPDEVNUM){
     strip.setPixelColor(prevSqueezeIndPos, 0,0,0);
-    // strip.setPixelColor(prevSqueezeIndPos + 1, 0,0,0);
     if(position < LED_COUNT && position >= 0){
       squeezeIndicatorPosition = position;
       strip.setPixelColor(position, SQUEEZEINDICATORCOLOR);
@@ -113,39 +118,41 @@ void _indicatorstrip::setIndicatorPosition(float position, int devnum){
   }
   if(devnum == CRANKDEVNUM){
     strip.setPixelColor(prevCrankIndPos, 0,0,0);
-  // strip.setPixelColor(prevSqueezeIndPos + 1, 0,0,0);
     if(position < LED_COUNT && position >= 0){
       crankIndicatorPosition = position;
       strip.setPixelColor(position, CRANKINDICATORCOLOR);
       prevCrankIndPos = (int)position;
     }
   }
-  return 0;
+  return;
 }
 
-//used to set the production rate. Production rate is a number between 0 and 100. 
+//used to set the production rate. 
+//prodrate: a number between 0 and 100.
+//the final set rate will be a number between 0 and 1. 
 void _indicatorstrip::setProductionRate(float prodrate, int devnum) {
   if(devnum == HANDGRIPDEVNUM){
-    squeezeProductionRate = 1+prodrate/100.;
+    squeezeProductionRate = prodrate/100.;
   }
   if(devnum == CRANKDEVNUM){
-    crankProductionRate = 1+prodrate/100.;
+    crankProductionRate = prodrate/100.;
   }
-}
-//used to set the consumption rate and the production rate
-void _indicatorstrip::setRates(float prodrate, float consrate, int devnum){
-  if(devnum == HANDGRIPDEVNUM){
-    squeezeProductionRate = 1+prodrate/100.;
-  }
-  if(devnum == CRANKDEVNUM){
-    crankProductionRate = 1+prodrate/100.;
-  }
-
-  consumptionRate = 1+consrate/100.;
+  return;
 }
 
 void _indicatorstrip::update(void){
   strip.show();
+  if(STRIPTESTMODE){
+    if(HANDGRIPACTIVE == 1){
+      Serial.print(" GRIP LED POSITION: ");
+      Serial.println(squeezeIndicatorPosition);
+    }
+    if(CRANKACTIVE == 1){
+      Serial.print("CRANK LED POSITION: ");
+      Serial.println(crankIndicatorPosition);
+    }
+  }
+  return;
 }
 
 

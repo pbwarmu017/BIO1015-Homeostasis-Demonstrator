@@ -5,12 +5,10 @@
 #include "handgrip.h"
 #include "encoder.h"
 
-volatile int stripDelayCounter = 0; //used to track timer overflows for refreshing the strip
-// volatile int encoderDelayCounter = 0; //used to track timer overlfows for polling the encoder position
-// volatile unsigned long lastTriggerTime = micros(); //holds the time of the last trigger from micros()
+volatile unsigned int stripDelayCounter = 0; //used to track timer overflows for refreshing the strip
 volatile int prevOut = 0;
-volatile float crankRateCalcDelayCounter = 0;
-volatile float crankSum = 0;
+volatile int crankRateCalcDelayCounter = 50;
+volatile int crankSum = 0;
 
 enum SYSTEMMODE {
   NONE, //this is the default mode, but "default" is reserved by the compiler. 
@@ -29,44 +27,46 @@ _encoder Handcrank; //object for the encoder
 SIGNAL(TIMER0_COMPA_vect) { //this executes every 1 millisecond
   stripDelayCounter++;
   crankRateCalcDelayCounter++;
-  if(stripDelayCounter == STRIPREFRESHDELAY) {  
-
+  if(stripDelayCounter >= STRIPREFRESHDELAY) {  
+  stripDelayCounter = 0; //reset the timer counter for the next run.
     //Set Rates based on affector positions (one for each affector)
-    if(HANDGRIPACTIVE){
+    if(HANDGRIPACTIVE == 1){
       Indicatorstrip.setProductionRate(Handgrip.calculateProductionRate(
         analogRead(HANDGRIPPIN)), HANDGRIPDEVNUM);
-      //set the indicator positions based on the rates 
-      //calculated above (one for each indicator)
+      //set the indicator positions based on the production rate 
       Indicatorstrip.setIndicatorPosition(
         Indicatorstrip.calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
     }
-    if(CRANKACTIVE){
-      if(crankRateCalcDelayCounter == CRANKRATECALCDELAY){
-        Indicatorstrip.setProductionRate(Handcrank.calculateProductionRate(
-          crankSum, crankRateCalcDelayCounter), CRANKDEVNUM);
-      }
+    //set the bounding box. 
+    if(CRANKACTIVE == 1){
       Indicatorstrip.setIndicatorPosition(
         Indicatorstrip.calculatePosition(CRANKDEVNUM), CRANKDEVNUM);
     }
-
-    //set the bounding box. 
     Indicatorstrip.setBoundingBox(BOXSTART, BOXSIZE);
     Indicatorstrip.update();
-
-    stripDelayCounter = 0; //reset the timer counter for the next run. 
   }
-
-
+  if(crankRateCalcDelayCounter >= CRANKRATECALCDELAY){
+    crankRateCalcDelayCounter = 0; 
+    if(CRANKACTIVE == 1){
+      Indicatorstrip.setProductionRate(Handcrank.calculateProductionRate(
+        crankSum), CRANKDEVNUM);
+      //reset the sum because it has just been incorporated into a moving avg
+      crankSum = 0; 
+      //reset the delay counter for the next run
+    }
+    
+  }
 }
 
 
 ISR (PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
-  if(CRANKACTIVE){
+  if(CRANKACTIVE == 1){
     int currentOut = Handcrank.returnDelta();
-      if(currentOut){ //make sure it's not an invalid state change
-        if(currentOut == prevOut){
-          crankSum++;
-          // Serial.println(currentOut);
+      //make sure it's not an invalid state change
+      if(currentOut){ 
+        //two or more matching values. Helps with logical debounce
+        if(currentOut == prevOut){ 
+          crankSum += currentOut;
         }
         prevOut = currentOut; //update the previous value
     }
@@ -92,7 +92,15 @@ void setup() {
   systemMode = NONE;
   Indicatorstrip.initialize();
   Handcrank.initialize();
-  Serial.begin(9600); //init serial for debugging  
+  Serial.begin(2000000); //init serial for debugging  
+
+//make unused pins float high to interrupting on stray voltages
+  pinMode(0, INPUT_PULLUP);
+  pinMode(1, INPUT_PULLUP);
+  pinMode(4, INPUT_PULLUP);
+  pinMode(5, INPUT_PULLUP);
+  pinMode(6, INPUT_PULLUP);
+  pinMode(7, INPUT_PULLUP);
 }
 
 void loop() {

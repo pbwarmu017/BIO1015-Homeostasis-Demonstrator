@@ -16,23 +16,28 @@ void _encoder::initialize(void){
 
 //polls the encoder pins and evaluates if the encoder has moved forward, backward, or stayed the same. 
 //returns 0 if no change, 1 if a CW movement was detected, -1 if a CCW movement was detected. 
-//this also removes the need for filtering/debouncing as only valid state changes map to a return value besides 0. 
+//using this in conjuction with a low pass filter helps clean up switch bounce
 //http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html to see how it works
 char _encoder::returnDelta(void){
-pinAVal = digitalRead(ENCODERPINA);
-pinBVal = digitalRead(ENCODERPINB);
-unsigned char lookupval = 0;
-char lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
-prevAVal = pinAVal;
-prevBVal = prevBVal;
-return quadratureLookupTable[lookupVal];
+  pinAVal = digitalRead(ENCODERPINA);
+  pinBVal = digitalRead(ENCODERPINB);
+  unsigned char lookupval = 0;
+  char lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
+  prevAVal = pinAVal;
+  prevBVal = prevBVal;
+  return quadratureLookupTable[lookupVal];
 }
 
 //we want to limit the crank to 1 RPM, as the encoder is only rated to that. It will
-//also make the device last longer as students wont be wild with it. 
-int calculateProductionRate(float count, float time){
-	if(count > CRANKRATEMAX) {
-		return(CRANKRATESCALER); //this is the max rate allowed
-	}
-	return(count/CRANKRATEMAX * CRANKRATESCALER);
+//also make the device last longer as students wont be wild with it.
+//return a number between 0 and CRANKRATESCALER
+int _encoder::calculateProductionRate(int crankSum){
+	// calculates current moving average efficiently
+  movingAverage += -movingAverage/movingAveragePeriod + crankSum;
+	//make it pointless to spin the crank faster than the max spec RPM of 60
+	//per the data sheet. It is a 24 position encoder
+  if(movingAverage > 24) movingAverage = 24;
+  //prevent excessively small carryover
+  if(movingAverage < 0.01) movingAverage = 0;
+  return(movingAverage/24 * CRANKRATESCALER);
 }
