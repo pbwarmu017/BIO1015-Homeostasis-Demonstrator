@@ -4,15 +4,14 @@
 #define GRIPPIN A0
 
 #define HANDGRIPRATESCALER 45 
-#define HANDGRIPMAXVOLTAGE 2.66
-#define HANDGRIPMINVOLTAGE  2.45
+#define HANDGRIPMAXVOLTAGE 2.38
+#define HANDGRIPMINVOLTAGE  2.17
 
 
 class _handgrip {
   public:
    float voltageValue(void); //used to return a reading from the handgrip strain gauge on demand
    int calculateProductionRate(float pinVoltage);
-   // int calculateConsumptionRate(int currentConsumptionRate);
   private:
   
 };
