@@ -14,7 +14,7 @@ private:
   volatile bool pinAVal;
   volatile bool pinBVal;
   // char quadratureLookupTable[16] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
-  char quadratureLookupTable[16] = {0,0,0,0,0,0,0,-1,0,0,0,0,0,1,0,0};
+  char quadratureLookupTable[16] = {0,0,0,0,0,0,0,1,0,0,0,0,0,-1,0,0};
   // http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html
 
 };
