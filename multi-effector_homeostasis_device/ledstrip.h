@@ -21,11 +21,11 @@
 #define CRANKINDICATORCOLOR COLORORANGE
  //DEFAULT RATES
 #define DEFAULTINDICATORPOSITION 0//BOXSTART+round((float)BOXSIZE/2)
-#define DEFAULTPRODUCTIONRATE 20
+#define DEFAULTPRODUCTIONRATE 20 
 #define DEFAULTCONSUMPTIONRATE 20
 //REFRESH SPEEDS
 #define STRIPREFRESHDELAY 50 //in milliseconds
-#define LEDMAXINCREMENT 10 //in milliseconds
+#define LEDMAXINCREMENT 2 //Max # of LEDs to jump per cycle
 
 
 class _indicatorstrip {
@@ -36,7 +36,6 @@ class _indicatorstrip {
     int boxStart = BOXSTART; //the position of the bounding box as an LED number the box is centered around. 
     int boxLowerBound;
     int boxUpperBound;
-    // int indicatorPosition;
     float crankIndicatorPosition = DEFAULTINDICATORPOSITION;
     double prevSqueezeIndPos = -1;
     double prevCrankIndPos = -1;
@@ -45,7 +44,7 @@ class _indicatorstrip {
     float calculatePosition(int);
     bool indicatorsWithinBounds(void);
     void initialize(void);
-    int setBoundingBox(int boxstart, int boxsize);
+    void setBoundingBox(int boxstart, int boxsize);
     void setConsumptionRate(float consumptionRate);
     void setIndicatorPosition(float position, int devnum);
     void setProductionRate(float productionRate, int devnum);
@@ -56,10 +55,10 @@ class _indicatorstrip {
     
   private:
     /* VARIABLES */
-    float consumptionRate = DEFAULTCONSUMPTIONRATE; //stays the same for all players
-    float crankProductionRate = DEFAULTPRODUCTIONRATE;
+    float consumptionRate = DEFAULTCONSUMPTIONRATE/100.; //stays the same for all players
+    float crankProductionRate = DEFAULTPRODUCTIONRATE/100.;
     unsigned long losingColor;
-    float squeezeProductionRate = DEFAULTPRODUCTIONRATE;
+    float squeezeProductionRate = DEFAULTPRODUCTIONRATE/100.;
 
 };
 

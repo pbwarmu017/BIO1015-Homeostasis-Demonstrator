@@ -7,17 +7,11 @@ float _handgrip::voltageValue(void){
 }
 
 //calculates the productionrate to feed into _indicatorstrip.setRate()
+//returns a value between 0 and HANDGRIPPRESCALER
 int _handgrip::calculateProductionRate(float pinADCval) {
   
-  // Serial.println(5*pinADCval/1023.);
     float voltagedelta = abs(HANDGRIPMINVOLTAGE-(5*pinADCval)/1023.);
     float delta = (voltagedelta /(HANDGRIPMAXVOLTAGE-HANDGRIPMINVOLTAGE)) * 
         HANDGRIPRATESCALER;
     return delta;
 }
-
-  //right now this function doesnt do much. It's a placeholder for future functionality
-  //which will modify the consumption rate on the fly. 
-// int _handgrip::calculateConsumptionRate(int currentConsumptionRate){
-  // return currentConsumptionRate;
-// }
