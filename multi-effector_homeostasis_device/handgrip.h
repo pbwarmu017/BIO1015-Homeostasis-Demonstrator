@@ -11,7 +11,7 @@
 class _handgrip {
   public:
    float voltageValue(void); //used to return a reading from the handgrip strain gauge on demand
-   int calculateProductionRate(float pinVoltage, int devnum);
+   int calculateProductionRate(float pinVoltage);
    // int calculateConsumptionRate(int currentConsumptionRate);
   private:
   
