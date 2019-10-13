@@ -1,0 +1,41 @@
+3D Printing Filament https://www.amazon.com/HATCHBOX-3D-Filament-Dimensional-Accuracy/dp/B00J0ECR5I
+DC Jack Terminal (convenience for prototyping, may end up needing for the final): https://www.adafruit.com/product/368
+Power supply: https://www.adafruit.com/product/276
+
+____SPINWHEEL____
+Rotary Encoder (for spinwheel) https://www.adafruit.com/product/377
+10 nF ceramic capacitors (forms an RC low pass filter with the ~22Kohm pullup resistance of the arduino (INPUT_PULLUP))
+
+______Squeeze Grip_____
+Rubber Handlebar Grips (for spinwheel) https://www.amazon.com/OUTERDO-Handlebar-Bicycle-Mountain-Rubber/dp/B0129GOQKC/ref=sr_1_3?crid=15F7EUU0RN14V&keywords=foam+bike+grips&qid=1567141735&s=gateway&sprefix=foam+bike%2Caps%2C180&sr=8-3
+Strain Gauge (for investigation into hand grip strength) https://www.adafruit.com/product/182
+22 Kohm resistors 1/4 watt
+
+___DISPLAY____
+LCD Display https://www.adafruit.com/product/716
+
+_____MICROPHONE______
+Microphone (for audio input)- https://www.adafruit.com/product/1063
+
+___Anemometer______
+Optical Sensor (will investigate using to measure RPM of spinning wheel for anamometer https://www.adafruit.com/product/2349
+
+____SHEILD PROTOTYPING______
+Breadboard DC jack (for prototyping of shield): https://www.adafruit.com/product/373
+
+___LED STRIP____
+Capacitor Pack: https://www.adafruit.com/product/2192
+LED strip https://www.adafruit.com/product/1461?length=1 Get a 1 meter reel. 
+
+_____For Cables/Connections_____
+JST SM 2 Pins Plug Male and Female Wire Connector - https://www.amazon.com/gp/product/B013L9N7KQ/ref=ppx_od_dt_b_asin_title_s00?ie=UTF8&psc=1
+CONN SOCKET 24-30AWG CRIMP TIN https://www.digikey.com/product-detail/en/molex/0502128000/WM4561CT-ND/2524899
+CONN HEADER VERT 4POS 2MM https://www.digikey.com/product-detail/en/molex/0353620450/WM18922-ND/773855
+CONN RECEPTACLE HOUSING 4POS 2MM https://www.digikey.com/product-detail/en/molex/0355070400/WM5983-ND/403470
+___LOOKING FOR BETTER ALTERNATIVE____ CABLE 4COND 24AWG GRAY 50' https://www.digikey.com/product-detail/en/general-cable-carol-brand/C2463A.41.10/C2463A-50-ND/5461324
+___EVALUATING, MAY BE THE ALTERNATIVE___ CABLE 4X0.25 PUR BK UNSH 1M https://www.digikey.com/product-detail/en/molex/1552300013/WM21784-1-ND/9094120
+
+
+
+
+
