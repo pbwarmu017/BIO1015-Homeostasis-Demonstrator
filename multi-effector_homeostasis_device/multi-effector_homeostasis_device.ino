@@ -9,6 +9,8 @@ volatile unsigned int stripDelayCounter = 0; //used to track timer overflows for
 volatile int prevOut = 0;
 volatile int crankRateCalcDelayCounter = 50;
 volatile int crankSum = 0;
+volatile bool STRIPREFRESHDELAYFLAG = false;
+volatile bool CRANKRATECALCDELAYFLAG = false;
 
 enum SYSTEMMODE {
   NONE, //this is the default mode, but "default" is reserved by the compiler. 
@@ -29,31 +31,12 @@ SIGNAL(TIMER0_COMPA_vect) { //this executes every 1 millisecond
   crankRateCalcDelayCounter++;
   if(stripDelayCounter >= STRIPREFRESHDELAY) {  
   stripDelayCounter = 0; //reset the timer counter for the next run.
+  STRIPREFRESHDELAYFLAG = true;
     //Set Rates based on affector positions (one for each affector)
-    if(HANDGRIPACTIVE == 1){
-      Indicatorstrip.setProductionRate(Handgrip.calculateProductionRate(
-        analogRead(HANDGRIPPIN)), HANDGRIPDEVNUM);
-      //set the indicator positions based on the production rate 
-      Indicatorstrip.setIndicatorPosition(
-        Indicatorstrip.calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
-    }
-    //set the bounding box. 
-    if(CRANKACTIVE == 1){
-      Indicatorstrip.setIndicatorPosition(
-        Indicatorstrip.calculatePosition(CRANKDEVNUM), CRANKDEVNUM);
-    }
-    Indicatorstrip.setBoundingBox(BOXSTART, BOXSIZE);
-    Indicatorstrip.update();
   }
   if(crankRateCalcDelayCounter >= CRANKRATECALCDELAY){
     crankRateCalcDelayCounter = 0; 
-    if(CRANKACTIVE == 1){
-      Indicatorstrip.setProductionRate(Handcrank.calculateProductionRate(
-        crankSum), CRANKDEVNUM);
-      //reset the sum because it has just been incorporated into a moving avg
-      crankSum = 0; 
-      //reset the delay counter for the next run
-    }
+    CRANKRATECALCDELAYFLAG = true;
     
   }
 }
@@ -104,5 +87,31 @@ void setup() {
 }
 
 void loop() {
-//its all handled by interrrupts. 
+  if(STRIPREFRESHDELAYFLAG){
+    if(HANDGRIPACTIVE == 1){
+      Indicatorstrip.setProductionRate(Handgrip.calculateProductionRate(
+        analogRead(HANDGRIPPIN)), HANDGRIPDEVNUM);
+      //set the indicator positions based on the production rate 
+      Indicatorstrip.setIndicatorPosition(
+        Indicatorstrip.calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
+    }
+    //set the bounding box. 
+    if(CRANKACTIVE == 1){
+      Indicatorstrip.setIndicatorPosition(
+        Indicatorstrip.calculatePosition(CRANKDEVNUM), CRANKDEVNUM);
+    }
+    Indicatorstrip.setBoundingBox(BOXSTART, BOXSIZE);
+    Indicatorstrip.update();
+    STRIPREFRESHDELAYFLAG = false;
+  }
+  if(CRANKRATECALCDELAYFLAG){
+    if(CRANKACTIVE == 1){
+      Indicatorstrip.setProductionRate(Handcrank.calculateProductionRate(
+        crankSum), CRANKDEVNUM);
+      //reset the sum because it has just been incorporated into a moving avg
+      crankSum = 0; 
+      //reset the delay counter for the next run
+      CRANKRATECALCDELAYFLAG = false;
+    }
+  }
 }
