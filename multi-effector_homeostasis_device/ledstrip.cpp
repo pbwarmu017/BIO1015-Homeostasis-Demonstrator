@@ -4,12 +4,6 @@
 
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
-enum GAMESTATUS {
-  notstarted,
-  started,
-  lost
-}gameStatus;
-
 float _indicatorstrip::calculatePosition(int devnum){
   if(devnum == HANDGRIPDEVNUM){
     float delta = squeezeProductionRate-consumptionRate;

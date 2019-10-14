@@ -12,14 +12,8 @@ volatile int crankSum = 0;
 volatile bool STRIPREFRESHDELAYFLAG = false;
 volatile bool CRANKRATECALCDELAYFLAG = false;
 
-enum SYSTEMMODE {
-  NONE, //this is the default mode, but "default" is reserved by the compiler. 
-  HANDGRIP,
-  HANDCRANK,
-  AuDIOVOLUME,
-  AUDIOPITCH,
-  ANOMETER
-}systemMode;
+enum GAMESTATUS gameStatus = notstarted;
+enum SYSTEMMODE systemMode = NONE;
 
 _indicatorstrip Indicatorstrip; //object for the indicatorstrip
 _handgrip Handgrip; //object for the handgrip
