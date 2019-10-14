@@ -19,7 +19,7 @@ float _indicatorstrip::calculatePosition(int devnum){
 bool _indicatorstrip::indicatorsWithinBounds(void){
   //checking for the squeeze indicator
   bool statusVariable = true;
-  
+
   if(HANDGRIPACTIVE == 1){
     if(squeezeIndicatorPosition <= boxLowerBound){
       losingColor = SQUEEZEINDICATORCOLOR;
