@@ -21,8 +21,7 @@ void _encoder::initialize(void){
 char _encoder::returnDelta(void){
   pinAVal = digitalRead(ENCODERPINA);
   pinBVal = digitalRead(ENCODERPINB);
-  unsigned char lookupval = 0;
-  char lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
+  unsigned char lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
   prevAVal = pinAVal;
   prevBVal = prevBVal;
   return quadratureLookupTable[lookupVal];
