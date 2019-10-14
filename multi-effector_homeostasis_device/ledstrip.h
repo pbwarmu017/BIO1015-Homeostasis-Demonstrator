@@ -4,8 +4,8 @@
 
 #define LED_PIN 6 
 #define LED_COUNT 60 //the number of LEDs on the strip
-#define BOXSTART 22
-#define BOXSIZE 10
+#define BOXSTART 22 //bounding box default starting position
+#define BOXSIZE 10 //bounding box default size
 
 //LED COLOR CODE DEFINITIONS. 
 #define COLORRED strip.Color(255,0,0) //USED FOR PRE GAME INDICATION
@@ -26,7 +26,6 @@
 //REFRESH SPEEDS
 #define STRIPREFRESHDELAY 50 //in milliseconds
 #define LEDMAXINCREMENT 2 //Max # of LEDs to jump per cycle
-
 
 class _indicatorstrip {
   public:
