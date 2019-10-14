@@ -19,6 +19,7 @@ float _indicatorstrip::calculatePosition(int devnum){
     float delta = crankProductionRate-consumptionRate;
     return(crankIndicatorPosition+(LEDMAXINCREMENT * delta));
   }
+  return 0;
 }
 
 bool _indicatorstrip::indicatorsWithinBounds(void){
