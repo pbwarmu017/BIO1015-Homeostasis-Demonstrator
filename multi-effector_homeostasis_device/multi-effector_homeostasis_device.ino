@@ -8,9 +8,11 @@
 volatile unsigned int stripDelayCounter = 0; //used to track timer overflows for refreshing the strip
 volatile int prevOut = 0;
 volatile int crankRateCalcDelayCounter = 50;
+volatile int gameResetCounter = 0;
 volatile int crankSum = 0;
 volatile bool STRIPREFRESHDELAYFLAG = false;
 volatile bool CRANKRATECALCDELAYFLAG = false;
+volatile bool RESETFLAG = false;
 
 enum GAMESTATUS gameStatus = notstarted;
 enum SYSTEMMODE systemMode = NONE;
@@ -32,6 +34,15 @@ SIGNAL(TIMER0_COMPA_vect) { //this executes every 1 millisecond
     crankRateCalcDelayCounter = 0; 
     CRANKRATECALCDELAYFLAG = true;
     
+  }
+  if(gameStatus == lost){
+    gameResetCounter++;
+    if(gameResetCounter >= GAMERESETDELAY){
+      gameResetCounter = 0;
+      gameStatus = notstarted;
+      RESETFLAG = true;
+
+    }
   }
 }
 
@@ -107,5 +118,9 @@ void loop() {
       //reset the delay counter for the next run
       CRANKRATECALCDELAYFLAG = false;
     }
+  }
+  if(RESETFLAG){
+    Indicatorstrip.setBoundingBox(BOXSTART, BOXSIZE);
+    RESETFLAG = false;
   }
 }

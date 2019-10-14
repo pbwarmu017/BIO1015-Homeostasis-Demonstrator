@@ -31,4 +31,6 @@ extern enum SYSTEMMODE systemMode;
 
 #define STRIPTESTMODE 1 //used for internal testing
 
+#define GAMERESETDELAY 5000 //in milliseconds
+
 #endif
