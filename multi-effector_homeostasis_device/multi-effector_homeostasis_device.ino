@@ -82,7 +82,7 @@ void setup() {
   pinMode(1, INPUT_PULLUP);
   pinMode(4, INPUT_PULLUP);
   pinMode(5, INPUT_PULLUP);
-  pinMode(6, INPUT_PULLUP);
+  // pinMode(6, INPUT_PULLUP); //this pin is used for the LED strip
   pinMode(7, INPUT_PULLUP);
 }
 
