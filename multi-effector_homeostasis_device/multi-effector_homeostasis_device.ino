@@ -94,11 +94,16 @@ void setup() {
 void loop() {
   if(STRIPREFRESHDELAYFLAG){
     if(HANDGRIPACTIVE == 1){
-      Indicatorstrip.setProductionRate(Handgrip.calculateProductionRate(
-        analogRead(HANDGRIPPIN)), HANDGRIPDEVNUM);
-      //set the indicator positions based on the production rate 
-      Indicatorstrip.setIndicatorPosition(
-        Indicatorstrip.calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
+      if(Handgrip.calibrationState == true){
+        Indicatorstrip.setProductionRate(Handgrip.calculateProductionRate(
+          analogRead(HANDGRIPPIN)), HANDGRIPDEVNUM);
+        //set the indicator positions based on the production rate 
+        Indicatorstrip.setIndicatorPosition(
+          Indicatorstrip.calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
+      } else {
+        Handgrip.handgripMaxVoltage = Handgrip.voltageValue();
+        Handgrip.calibrationState = true;
+      }
     }
     //set the bounding box. 
     if(CRANKACTIVE == 1){
