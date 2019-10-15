@@ -4,12 +4,6 @@
 
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
-enum GAMESTATUS {
-  notstarted,
-  started,
-  lost
-}gameStatus;
-
 float _indicatorstrip::calculatePosition(int devnum){
   if(devnum == HANDGRIPDEVNUM){
     float delta = squeezeProductionRate-consumptionRate;
@@ -19,24 +13,27 @@ float _indicatorstrip::calculatePosition(int devnum){
     float delta = crankProductionRate-consumptionRate;
     return(crankIndicatorPosition+(LEDMAXINCREMENT * delta));
   }
+  return 0;
 }
 
 bool _indicatorstrip::indicatorsWithinBounds(void){
   //checking for the squeeze indicator
+  bool statusVariable = true;
+
   if(HANDGRIPACTIVE == 1){
     if(squeezeIndicatorPosition <= boxLowerBound){
       losingColor = SQUEEZEINDICATORCOLOR;
-      return false;
+      statusVariable = false;
     }
 
-    if(squeezeIndicatorPosition > boxLowerBound 
-        && squeezeIndicatorPosition < boxUpperBound) {
-      return true;
-    }
+    // if(squeezeIndicatorPosition > boxLowerBound 
+    //     && squeezeIndicatorPosition < boxUpperBound) {
+    //   statusVariable = true;
+    // }
 
     if(squeezeIndicatorPosition >= boxUpperBound) {
       losingColor = SQUEEZEINDICATORCOLOR;
-      return false;
+      statusVariable = false;
     }
   }
 
@@ -44,20 +41,20 @@ bool _indicatorstrip::indicatorsWithinBounds(void){
   if(CRANKACTIVE == 1){
     if(crankIndicatorPosition <= boxLowerBound){
       losingColor = CRANKINDICATORCOLOR;
-      return false;
+      statusVariable =  false;
     }
 
-    if(crankIndicatorPosition > boxLowerBound 
-        && crankIndicatorPosition < boxUpperBound) {
-      return true;
-    }
+    // if(crankIndicatorPosition > boxLowerBound 
+    //     && crankIndicatorPosition < boxUpperBound) {
+    //   return true;
+    // }
 
     if(crankIndicatorPosition >= boxUpperBound) {
       losingColor = CRANKINDICATORCOLOR;
-      return false;
+      statusVariable =  false;
     }
   }
-  return(false);
+  return(statusVariable);
 }
 
 void _indicatorstrip::initialize(void){

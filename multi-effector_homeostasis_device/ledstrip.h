@@ -4,17 +4,17 @@
 
 #define LED_PIN 6 
 #define LED_COUNT 60 //the number of LEDs on the strip
-#define BOXSTART 22
-#define BOXSIZE 10
+#define BOXSTART 22 //bounding box default starting position
+#define BOXSIZE 10 //bounding box default size
 
 //LED COLOR CODE DEFINITIONS. 
-#define COLORRED strip.Color(255,0,0) //USED FOR PRE GAME INDICATION
-#define COLORORANGE strip.Color(255,128,0) //USED FOR SECONDINDICATORCOLOR
-#define COLORYELLOW strip.Color(255,255,0)
-#define COLORGREEN strip.Color(0,255,0) //USED FOR "GAME ON" INDICATION
-#define COLORBLUE strip.Color(0,0,255) //USED FOR SQUEEZEINDICATORCOLOR
-#define COLORPURPLE strip.Color(51,0,102)
-#define COLORCYAN strip.Color(0,255,255)
+#define COLORRED strip.Color(128,0,0) //USED FOR PRE GAME INDICATION
+#define COLORORANGE strip.Color(128,64,0) //USED FOR SECONDINDICATORCOLOR
+#define COLORYELLOW strip.Color(128,128,0)
+#define COLORGREEN strip.Color(0,128,0) //USED FOR "GAME ON" INDICATION
+#define COLORBLUE strip.Color(0,0,128) //USED FOR SQUEEZEINDICATORCOLOR
+#define COLORPURPLE strip.Color(25,0,51)
+#define COLORCYAN strip.Color(0,128,128)
 
 //AFFECTOR INDICATOR COLOR SELECTIONS
 #define SQUEEZEINDICATORCOLOR COLORBLUE
@@ -25,8 +25,7 @@
 #define DEFAULTCONSUMPTIONRATE 20
 //REFRESH SPEEDS
 #define STRIPREFRESHDELAY 50 //in milliseconds
-#define LEDMAXINCREMENT 2 //Max # of LEDs to jump per cycle
-
+#define LEDMAXINCREMENT 5 //Max # of LEDs to jump per cycle
 
 class _indicatorstrip {
   public:

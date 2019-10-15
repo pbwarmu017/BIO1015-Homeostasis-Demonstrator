@@ -1,7 +1,23 @@
 #ifndef _MULTIHOMEO
 #define _MULTIHOMEO
-#define HIGH 1
-#define LOW 0
+
+enum GAMESTATUS {
+  notstarted,
+  started,
+  lost
+};
+
+enum SYSTEMMODE {
+  NONE, //this is the default mode, but "default" is reserved by the compiler. 
+  HANDGRIP,
+  HANDCRANK,
+  AuDIOVOLUME,
+  AUDIOPITCH,
+  ANOMETER
+};
+
+extern enum GAMESTATUS gameStatus;
+extern enum SYSTEMMODE systemMode;
 
 #define HANDGRIPPIN A0
 #define ENCODERPINA 2
@@ -13,6 +29,8 @@
 #define HANDGRIPACTIVE 1
 #define CRANKACTIVE 1
 
-#define STRIPTESTMODE 1 //used for internal testing
+#define STRIPTESTMODE 0 //used for internal testing
+
+#define GAMERESETDELAY 5000 //in milliseconds
 
 #endif
