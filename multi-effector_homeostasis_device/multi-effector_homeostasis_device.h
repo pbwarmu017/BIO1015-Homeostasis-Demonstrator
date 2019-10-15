@@ -29,7 +29,7 @@ extern enum SYSTEMMODE systemMode;
 #define HANDGRIPACTIVE 1
 #define CRANKACTIVE 1
 
-#define STRIPTESTMODE 1 //used for internal testing
+#define STRIPTESTMODE 0 //used for internal testing
 
 #define GAMERESETDELAY 5000 //in milliseconds
 
