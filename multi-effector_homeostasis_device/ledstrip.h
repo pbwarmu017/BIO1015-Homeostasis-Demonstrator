@@ -25,7 +25,7 @@
 #define DEFAULTCONSUMPTIONRATE 20
 //REFRESH SPEEDS
 #define STRIPREFRESHDELAY 50 //in milliseconds
-#define LEDMAXINCREMENT 2 //Max # of LEDs to jump per cycle
+#define LEDMAXINCREMENT 5 //Max # of LEDs to jump per cycle
 
 class _indicatorstrip {
   public:

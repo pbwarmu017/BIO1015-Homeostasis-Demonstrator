@@ -2,7 +2,7 @@
 #define _ENCODER
 #define CRANKRATECALCDELAY 250 //value is in milliseconds
 #define CRANKRATEMAX 24
-#define CRANKRATESCALER 60
+#define CRANKRATESCALER 30
 class _encoder {
 public:
   char returnDelta(void);
