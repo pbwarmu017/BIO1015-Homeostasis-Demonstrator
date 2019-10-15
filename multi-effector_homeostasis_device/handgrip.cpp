@@ -14,5 +14,3 @@ int _handgrip::calculateProductionRate(float pinADCval) {
       HANDGRIPRATESCALER;
   return delta;
 }
-
-//test comment
