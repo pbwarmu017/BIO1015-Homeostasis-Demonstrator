@@ -1,0 +1,81 @@
+JP, 
+
+I think we are the point that we can order components for this, and I can start putting these kits together with the two affectors that I have designed. In the future we can add additional affectors to this.  I am using the 3D printing filament and what parts that you've already purchased. This order will get me to the point that I can manufacture 6 kits with two affectors each. 
+
+Here is the list, with quantity:
+
+Arduino Uno QTY 6 (these are the ones with the plastic protector on the bottom like I have, direct from Arduino)
+  https://store.arduino.cc/usa/arduino-uno-rev3
+
+Stacking Headers QTY 6
+  https://www.adafruit.com/product/85
+
+DC Jack Terminal QTY 6
+  https://www.adafruit.com/product/368
+
+Power supply QTY 5
+   https://www.adafruit.com/product/276
+
+Rubber Handlebar Grips QTY 4
+  (The foam ones you got for prototyping)
+
+Rotary Encoder QTY 5
+  https://www.adafruit.com/product/377
+
+10 nF ceramic capacitors QTY 20
+  https://www.digikey.com/product-detail/en/vishay-bc-components/K103K15X7RF53L2/BC5134-ND/2820436
+
+220 OHM resistor QTY 20
+  https://www.digikey.com/product-detail/en/panasonic-electronic-components/ERJ-8GEYJ221V/P220ECT-ND/203295
+
+330 OHM resistor QTY 10
+  https://www.digikey.com/product-detail/en/panasonic-electronic-components/ERJ-8GEYJ331V/P330ECT-ND/203316
+
+4.7 KOHM resistor QTY 20
+  https://www.digikey.com/product-detail/en/panasonic-electronic-components/ERJ-8GEYJ472V/P4.7KECT-ND/203338
+
+22kOHM resistor QTY 10
+  https://www.digikey.com/product-detail/en/panasonic-electronic-components/ERJ-8GEYJ223V/P22KECT-ND/203297
+
+Squeeze Grip QTY 6
+  https://www.amazon.com/Edisalute-smartinlife-Strengthener-Gripper-Grippers/dp/B01MXHXSNP/ref=sr_1_8?crid=MSW3RAIFKR7D&dchild=1&keywords=handgrip+exerciser&psc=1&qid=1572187535&sprefix=handgrip%2Caps%2C164&sr=8-8
+
+Strain Gauge  QTY 6
+  https://www.adafruit.com/product/182
+
+LCD Display QTY 5
+  https://www.adafruit.com/product/398
+
+Tactile Button pack of 20, QTY 2
+  https://www.adafruit.com/product/367
+
+MCP23017 - I2C 16 INPUT/OUTPUT PORT EXPANDER QTY 6
+  https://www.adafruit.com/product/732
+
+LED strip QTY 5
+  https://www.adafruit.com/product/1461?length=1
+
+Meter Stick QTY 1 (this is a set of 6)
+  https://www.amazon.com/ETA-hand2mind-Meterstick-Yardstick-Protective/dp/B01J6HEVY8/ref=sr_1_18?keywords=meter+stick&qid=1572189175&sr=8-18
+
+JST SM 2 Pins Plug Male and Female Wire Connector QTY 1 PACK
+  https://www.amazon.com/gp/product/B013L9N7KQ/ref=ppx_od_dt_b_asin_title_s00?ie=UTF8&psc=1
+
+CONN SOCKET 24-30AWG CRIMP TIN QTY 200
+  https://www.digikey.com/product-detail/en/molex/0502128000/WM4561CT-ND/2524899
+
+CONN HEADER VERT 4POS 2MM QTY 50
+  https://www.digikey.com/product-detail/en/molex/0353620450/WM18922-ND/773855
+
+CONN RECEPTACLE HOUSING 4POS 2MM QTY 50
+  https://www.digikey.com/product-detail/en/molex/0355070400/WM5983-ND/403470
+
+CABLE 4X0.25 PUR BK UNSH 1M QTY 12
+  https://www.digikey.com/product-detail/en/molex/1552300013/WM21784-1-ND/9094120
+
+We also will need to place an order for the circuit boards with OshPark on Monday, if you are ready to do so. I will show you how to go about it during my office hours, I have the files ready. The boards are going to run around $90 in total. 
+
+I'm curious how much this comes to in total. I imagine we are looking at over $300 before shipping. 
+
+-Paul Warmuth
+
