@@ -34,7 +34,9 @@ int _encoder::calculateProductionRate(int crankSum){
 	// calculates current moving average efficiently
   movingAverage += -movingAverage/movingAveragePeriod + crankSum;
 	//make it pointless to spin the crank faster than the max spec RPM of 60
-	//per the data sheet. It is a 24 position encoder
+	//per the data sheet. It is a 24 position encoder and the moving average
+  	//is calculated over a period of 1 second. So we are trimming any pulses over 
+  	//24 in this function
   if(movingAverage > 24) movingAverage = 24;
   //prevent excessively small carryover
   if(movingAverage < 0.01) movingAverage = 0;

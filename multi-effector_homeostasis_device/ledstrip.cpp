@@ -26,11 +26,6 @@ bool _indicatorstrip::indicatorsWithinBounds(void){
       statusVariable = false;
     }
 
-    // if(squeezeIndicatorPosition > boxLowerBound 
-    //     && squeezeIndicatorPosition < boxUpperBound) {
-    //   statusVariable = true;
-    // }
-
     if(squeezeIndicatorPosition >= boxUpperBound) {
       losingColor = SQUEEZEINDICATORCOLOR;
       statusVariable = false;
@@ -44,11 +39,6 @@ bool _indicatorstrip::indicatorsWithinBounds(void){
       statusVariable =  false;
     }
 
-    // if(crankIndicatorPosition > boxLowerBound 
-    //     && crankIndicatorPosition < boxUpperBound) {
-    //   return true;
-    // }
-
     if(crankIndicatorPosition >= boxUpperBound) {
       losingColor = CRANKINDICATORCOLOR;
       statusVariable =  false;
@@ -59,9 +49,7 @@ bool _indicatorstrip::indicatorsWithinBounds(void){
 
 void _indicatorstrip::initialize(void){
   strip.begin();
-  //strip.fill(strip.Color(0,0,128),0,LED_COUNT);
   strip.show();
-  //setBoundingbox(BOXPOSITION, BOXSIZE);
   return;
 }
 
@@ -142,7 +130,7 @@ void _indicatorstrip::update(void){
   if(STRIPTESTMODE){
     if(HANDGRIPACTIVE == 1){
       Serial.print(" GRIP LED POSITION: ");
-      Serial.println(squeezeIndicatorPosition);
+      
     }
     if(CRANKACTIVE == 1){
       Serial.print("CRANK LED POSITION: ");

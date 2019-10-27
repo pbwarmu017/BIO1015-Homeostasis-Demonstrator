@@ -5,7 +5,8 @@
 #include "handgrip.h"
 #include "encoder.h"
 
-volatile unsigned int stripDelayCounter = 0; //used to track timer overflows for refreshing the strip
+//used to track timer overflows for refreshing the strip
+volatile unsigned int stripDelayCounter = 0; 
 volatile int prevOut = 0;
 volatile int crankRateCalcDelayCounter = 50;
 volatile int gameResetCounter = 0;
@@ -46,7 +47,6 @@ SIGNAL(TIMER0_COMPA_vect) { //this executes every 1 millisecond
   }
 }
 
-
 ISR (PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
   if(CRANKACTIVE == 1){
     int currentOut = Handcrank.returnDelta();
@@ -62,7 +62,6 @@ ISR (PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
 }
 
 void setup() {
-
   //setup timer0 to call interrupt OCR0A every REFRESHTIMEVAL
   OCR0A = 0xFA; //set to trigger TIMER0_COMPA_vect every millisecond
   TIMSK0 |= _BV(OCIE0A); //enable the output compare interrupt on timer0
@@ -73,14 +72,16 @@ void setup() {
   *digitalPinToPCMSK(ENCODERPINA) |= bit (digitalPinToPCMSKbit(ENCODERPINA)); 
   // enable ping change interrupt for encoder pin B
   *digitalPinToPCMSK(ENCODERPINB) |= bit (digitalPinToPCMSKbit(ENCODERPINB)); 
-
-  PCIFR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); // clear any outstanding interrupt flag
-  PCICR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); // enable interrupt for the GROUP 
+// clear any outstanding interrupt flag
+  PCIFR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
+  // enable interrupt for the GROUP 
+  PCICR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
 
   systemMode = NONE;
   Indicatorstrip.initialize();
   Handcrank.initialize();
-  Serial.begin(2000000); //init serial for debugging  
+  //init serial for debugging  
+  Serial.begin(2000000); 
 
 //make unused pins float high to interrupting on stray voltages
   pinMode(0, INPUT_PULLUP);
