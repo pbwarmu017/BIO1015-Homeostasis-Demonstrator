@@ -42,7 +42,7 @@ extern enum SYSTEMMODE systemMode;
 #define VIOLET 0x5
 #define WHITE 0x7
 
-#define LCDREFRESHDELAY 500 //in ms
+#define LCDREFRESHDELAY 50 //in ms
 
 void navigateMenu(uint8_t button);
 

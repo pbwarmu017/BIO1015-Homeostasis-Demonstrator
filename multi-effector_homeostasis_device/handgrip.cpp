@@ -10,7 +10,7 @@ float _handgrip::voltageValue(void){
 //returns a value between 0 and HANDGRIPPRESCALER
 int _handgrip::calculateProductionRate(float pinADCval) {
   float voltagedelta = voltageValue()-HANDGRIPMINVOLTAGE;
-  productionRate = (voltagedelta /(HANDGRIPMAXVOLTAGE-HANDGRIPMINVOLTAGE)) * 
+  float delta = (voltagedelta /(HANDGRIPMAXVOLTAGE-HANDGRIPMINVOLTAGE)) * 
       HANDGRIPRATESCALER;
-  return productionRate;
+  return delta;
 }

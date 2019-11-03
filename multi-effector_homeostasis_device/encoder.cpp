@@ -40,6 +40,6 @@ int _encoder::calculateProductionRate(int crankSum){
   if(movingAverage > 24) movingAverage = 24;
   //prevent excessively small carryover
   if(movingAverage < 0.01) movingAverage = 0;
-  productionRate = movingAverage/24 * CRANKRATESCALER;
-  return(productionRate);
+  // productionRate = movingAverage/24 * CRANKRATESCALER;
+  return(movingAverage/24 * CRANKRATESCALER);
 }

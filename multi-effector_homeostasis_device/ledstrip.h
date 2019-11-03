@@ -46,7 +46,7 @@ class _indicatorstrip {
     void setBoundingBox(int boxstart, int boxsize);
     void setConsumptionRate(float consumptionRate);
     void setIndicatorPosition(float position, int devnum);
-    void setProductionRate(float productionRate, int devnum);
+    float setProductionRate(float productionRate, int devnum);
     //this is used to set the rates of production and consumption for homeostasis. 
     void setRates(float productionrate, float consumptionrate, int devnum); 
     void update(void);

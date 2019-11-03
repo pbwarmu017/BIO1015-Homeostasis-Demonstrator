@@ -154,7 +154,7 @@ void loop() {
           analogRead(HANDGRIPPIN)), HANDGRIPDEVNUM);
         //set the indicator positions based on the production rate 
         Indicatorstrip.setIndicatorPosition(
-          Indicatorstrip.calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
+          Handgrip.productionRate = Indicatorstrip.calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
       } else {
         Handgrip.handgripMaxVoltage = Handgrip.voltageValue();
         Handgrip.calibrationState = true;
@@ -163,7 +163,7 @@ void loop() {
     //set the bounding box. 
     if(CRANKACTIVE == 1){
       Indicatorstrip.setIndicatorPosition(
-        Indicatorstrip.calculatePosition(CRANKDEVNUM), CRANKDEVNUM);
+        Handcrank.productionRate = Indicatorstrip.calculatePosition(CRANKDEVNUM), CRANKDEVNUM);
     }
     Indicatorstrip.setBoundingBox(BOXSTART, BOXSIZE);
     Indicatorstrip.update();
