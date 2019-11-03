@@ -8,6 +8,7 @@ public:
   char returnDelta(void);
   void initialize(void);
   int calculateProductionRate(int crankSum);
+  float productionRate = 0;
 private:
   volatile bool prevAVal;
   volatile bool prevBVal;

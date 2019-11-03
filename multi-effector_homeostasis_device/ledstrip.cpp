@@ -1,5 +1,5 @@
-#include "ledstrip.h"
 #include <Adafruit_NeoPixel.h>
+#include "ledstrip.h"
 #include "multi-effector_homeostasis_device.h"
 
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
@@ -115,7 +115,7 @@ void _indicatorstrip::setIndicatorPosition(float position, int devnum){
 //used to set the production rate. 
 //prodrate: a number between 0 and 100.
 //the final set rate will be a number between 0 and 1. 
-void _indicatorstrip::setProductionRate(float prodrate, int devnum) {
+float _indicatorstrip::setProductionRate(float prodrate, int devnum) {
   if(devnum == HANDGRIPDEVNUM){
     squeezeProductionRate = prodrate/100.;
   }
