@@ -1,4 +1,4 @@
-#include <Adafruit_NeoPixel.h>
+#include <Arduino.h>
 #include "multi-effector_homeostasis_device.h"
 #include "encoder.h"
 //set up the pins ands store the current values for the encoder
@@ -40,5 +40,6 @@ int _encoder::calculateProductionRate(int crankSum){
   if(movingAverage > 24) movingAverage = 24;
   //prevent excessively small carryover
   if(movingAverage < 0.01) movingAverage = 0;
-  return(movingAverage/24 * CRANKRATESCALER);
+  productionRate = movingAverage/24 * CRANKRATESCALER;
+  return(productionRate);
 }

@@ -1,6 +1,19 @@
-#include <Adafruit_NeoPixel.h>
-#include "multi-effector_homeostasis_device.h"
+/*
+REQUIRED LIBRARIES: Must be installed in the arduino IDE to compile this
+Adafruit_Neopixel
+Adafruit RGB LCD Sheild Library
+*/
 
+//main pin defines
+#include <Arduino.h>
+//neopixels
+#include <Adafruit_NeoPixel.h>
+//RGB LCD Display
+#include <Wire.h>
+#include <Adafruit_RGBLCDShield.h>
+#include <utility/Adafruit_MCP23017.h>
+//custom libaries
+#include "multi-effector_homeostasis_device.h"
 #include "ledstrip.h"
 #include "handgrip.h"
 #include "encoder.h"
@@ -10,9 +23,11 @@ volatile unsigned int stripDelayCounter = 0;
 volatile int prevOut = 0;
 volatile int crankRateCalcDelayCounter = 50;
 volatile int gameResetCounter = 0;
+volatile int lcdRefreshCounter = 0;
 volatile int crankSum = 0;
 volatile bool STRIPREFRESHDELAYFLAG = false;
 volatile bool CRANKRATECALCDELAYFLAG = false;
+volatile bool LCDREFRESHFLAG = false;
 volatile bool RESETFLAG = false;
 
 enum GAMESTATUS gameStatus = notstarted;
@@ -21,14 +36,16 @@ enum SYSTEMMODE systemMode = NONE;
 _indicatorstrip Indicatorstrip; //object for the indicatorstrip
 _handgrip Handgrip; //object for the handgrip
 _encoder Handcrank; //object for the encoder
+Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield(); //opbject for the LCD
 
 //this is the interrupt handler for Timer0 output conpare match. 
-SIGNAL(TIMER0_COMPA_vect) { //this executes every 1 millisecond
+ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
   stripDelayCounter++;
   crankRateCalcDelayCounter++;
+  lcdRefreshCounter++;
   if(stripDelayCounter >= STRIPREFRESHDELAY) {  
-  stripDelayCounter = 0; //reset the timer counter for the next run.
-  STRIPREFRESHDELAYFLAG = true;
+    stripDelayCounter = 0; //reset the timer counter for the next run.
+    STRIPREFRESHDELAYFLAG = true;
     //Set Rates based on affector positions (one for each affector)
   }
   if(crankRateCalcDelayCounter >= CRANKRATECALCDELAY){
@@ -45,9 +62,14 @@ SIGNAL(TIMER0_COMPA_vect) { //this executes every 1 millisecond
 
     }
   }
+
+  if(lcdRefreshCounter >= LCDREFRESHDELAY){
+    LCDREFRESHFLAG = true;  
+    lcdRefreshCounter = 0;  
+  }
 }
 
-ISR (PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
+ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
   if(CRANKACTIVE == 1){
     int currentOut = Handcrank.returnDelta();
       //make sure it's not an invalid state change
@@ -57,6 +79,34 @@ ISR (PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
           crankSum += currentOut;
         }
         prevOut = currentOut; //update the previous value
+    }
+  }
+}
+
+void navigateMenu(uint8_t button){
+  if (button) {
+    lcd.clear();
+    lcd.setCursor(0,1);
+    // lcd.print(button);
+    if (button & BUTTON_UP) {
+      lcd.print("UP ");
+      lcd.setBacklight(RED);
+    }
+    if (button & BUTTON_DOWN) {
+      lcd.print("DOWN ");
+      lcd.setBacklight(YELLOW);
+    }
+    if (button & BUTTON_LEFT) {
+      lcd.print("LEFT ");
+      lcd.setBacklight(GREEN);
+    }
+    if (button & BUTTON_RIGHT) {
+      lcd.print("RIGHT ");
+      lcd.setBacklight(TEAL);
+    }
+    if (button & BUTTON_SELECT) {
+      lcd.print("SELECT ");
+      lcd.setBacklight(VIOLET);
     }
   }
 }
@@ -72,18 +122,22 @@ void setup() {
   *digitalPinToPCMSK(ENCODERPINA) |= bit (digitalPinToPCMSKbit(ENCODERPINA)); 
   // enable ping change interrupt for encoder pin B
   *digitalPinToPCMSK(ENCODERPINB) |= bit (digitalPinToPCMSKbit(ENCODERPINB)); 
-// clear any outstanding interrupt flag
+  // clear any outstanding interrupt flag
+
   PCIFR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
   // enable interrupt for the GROUP 
   PCICR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
-
   systemMode = NONE;
   Indicatorstrip.initialize();
   Handcrank.initialize();
+
   //init serial for debugging  
   Serial.begin(2000000); 
 
-//make unused pins float high to interrupting on stray voltages
+  //init LCD
+  lcd.begin(16, 2);
+
+  //make unused pins float high to interrupting on stray voltages
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLUP);
   pinMode(4, INPUT_PULLUP);
@@ -128,5 +182,18 @@ void loop() {
   if(RESETFLAG){
     Indicatorstrip.setBoundingBox(BOXSTART, BOXSIZE);
     RESETFLAG = false;
+  }
+  if(LCDREFRESHFLAG){
+    // (note: line 1 is the second row, since counting begins with 0)
+    // uint8_t button = lcd.readButtons();
+    // navigateMenu(button);
+    // lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Crank Rate: ");
+    lcd.print(Handcrank.productionRate);
+    lcd.setCursor(0,1);
+    lcd.print("Sqze. Rate: ");
+    lcd.print(Handgrip.productionRate);
+    LCDREFRESHFLAG = false;
   }
 }

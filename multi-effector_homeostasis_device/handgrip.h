@@ -14,6 +14,7 @@ class _handgrip {
   	bool calibrationState = false;
   	float handgripMinVoltage = 1.88;
   	float handgripMaxVoltage = 0;
+    float productionRate = 0;
   private:
 };
 #endif

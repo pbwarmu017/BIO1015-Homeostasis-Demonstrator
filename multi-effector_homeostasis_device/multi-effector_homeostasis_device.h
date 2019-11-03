@@ -33,4 +33,17 @@ extern enum SYSTEMMODE systemMode;
 
 #define GAMERESETDELAY 5000 //in milliseconds
 
+// These #defines make it easy to set the backlight color for the RGB LCD Display
+#define RED 0x1
+#define YELLOW 0x3
+#define GREEN 0x2
+#define TEAL 0x6
+#define BLUE 0x4
+#define VIOLET 0x5
+#define WHITE 0x7
+
+#define LCDREFRESHDELAY 500 //in ms
+
+void navigateMenu(uint8_t button);
+
 #endif

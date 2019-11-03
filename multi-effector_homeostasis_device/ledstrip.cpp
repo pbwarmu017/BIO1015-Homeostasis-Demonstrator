@@ -1,5 +1,5 @@
-#include "ledstrip.h"
 #include <Adafruit_NeoPixel.h>
+#include "ledstrip.h"
 #include "multi-effector_homeostasis_device.h"
 
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
