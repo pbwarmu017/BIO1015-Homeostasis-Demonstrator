@@ -3,11 +3,12 @@ DC Jack Terminal (convenience for prototyping, may end up needing for the final)
 Power supply: https://www.adafruit.com/product/276
 
 ____SPINWHEEL____
+Rubber Handlebar Grips (for spinwheel) https://www.amazon.com/OUTERDO-Handlebar-Bicycle-Mountain-Rubber/dp/B0129GOQKC/ref=sr_1_3?crid=15F7EUU0RN14V&keywords=foam+bike+grips&qid=1567141735&s=gateway&sprefix=foam+bike%2Caps%2C180&sr=8-3
 Rotary Encoder (for spinwheel) https://www.adafruit.com/product/377
 10 nF ceramic capacitors (forms an RC low pass filter with the ~22Kohm pullup resistance of the arduino (INPUT_PULLUP))
 
 ______Squeeze Grip_____
-Rubber Handlebar Grips (for spinwheel) https://www.amazon.com/OUTERDO-Handlebar-Bicycle-Mountain-Rubber/dp/B0129GOQKC/ref=sr_1_3?crid=15F7EUU0RN14V&keywords=foam+bike+grips&qid=1567141735&s=gateway&sprefix=foam+bike%2Caps%2C180&sr=8-3
+Squeeze Grip https://www.amazon.com/Edisalute-smartinlife-Strengthener-Gripper-Grippers/dp/B01MXHXSNP/ref=sr_1_8?crid=MSW3RAIFKR7D&dchild=1&keywords=handgrip+exerciser&psc=1&qid=1572187535&sprefix=handgrip%2Caps%2C164&sr=8-8
 Strain Gauge (for investigation into hand grip strength) https://www.adafruit.com/product/182
 22 Kohm resistors 1/4 watt
 
