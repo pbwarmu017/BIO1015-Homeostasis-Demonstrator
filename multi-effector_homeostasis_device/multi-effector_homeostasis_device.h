@@ -7,7 +7,13 @@ enum GAMESTATUS {
   lost
 };
 
+enum SYSTEMMODE {
+	running,
+	config
+};
+
 extern enum GAMESTATUS gameStatus;
+extern enum SYSTEMMODE systemMode;
 
 #define HANDGRIPPIN A0
 #define ENCODERPINA 2
@@ -23,4 +29,15 @@ extern enum GAMESTATUS gameStatus;
 
 #define GAMERESETDELAY 5000 //in milliseconds
 
+#define LCDREFRESHDELAY 205 //in milliseconds
+
+#define SELECTTIMERROLLOVER 5
+
+#define RED 0x1
+#define YELLOW 0x3
+#define GREEN 0x2
+#define TEAL 0x6
+#define BLUE 0x4
+#define VIOLET 0x5
+#define WHITE 0x7
 #endif

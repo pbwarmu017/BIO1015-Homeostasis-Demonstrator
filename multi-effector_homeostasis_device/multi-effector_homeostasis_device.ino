@@ -17,8 +17,10 @@ volatile bool STRIPREFRESHDELAYFLAG = false;
 volatile bool CRANKRATECALCDELAYFLAG = false;
 volatile bool LCDREFRESHFLAG = false;
 volatile bool RESETFLAG = false;
+int selectTimer = 0;
 
 enum GAMESTATUS gameStatus = notstarted;
+enum SYSTEMMODE systemMode = running;
 
 
 //object and object pointer creation
@@ -73,32 +75,92 @@ ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
   }
 }
 
+//LCD MENU SETUP
+const int numOfScreens = 2;
+int currentScreen = 0;
+String screens[numOfScreens][2] = {{"TEST","TEST1"},{"TEST","TEST2"}};
+int parameters[numOfScreens];
+
+
 void navigateMenu(uint8_t button){
-  if (button) {
-    lcd.clear();
-    lcd.setCursor(0,1);
-    // lcd.print(button);
-    if (button & BUTTON_UP) {
-      lcd.print("UP ");
-      lcd.setBacklight(RED);
+  // lcd.clear();
+  // lcd.setCursor(0,1);
+  // lcd.print(button);
+  if(button & BUTTON_DOWN) {
+    if (currentScreen == 0) {
+      currentScreen = numOfScreens-1;
+      printScreen();
     }
-    if (button & BUTTON_DOWN) {
-      lcd.print("DOWN ");
-      lcd.setBacklight(YELLOW);
-    }
-    if (button & BUTTON_LEFT) {
-      lcd.print("LEFT ");
-      lcd.setBacklight(GREEN);
-    }
-    if (button & BUTTON_RIGHT) {
-      lcd.print("RIGHT ");
-      lcd.setBacklight(TEAL);
-    }
-    if (button & BUTTON_SELECT) {
-      lcd.print("SELECT ");
-      lcd.setBacklight(VIOLET);
+    else{
+      currentScreen--;
+      printScreen();
     }
   }
+  if(button & BUTTON_UP){
+    if (currentScreen == numOfScreens-1) {
+      currentScreen = 0;
+      printScreen();
+    }
+    else{
+      currentScreen++;
+      printScreen();
+    }
+  }
+  if(button & BUTTON_LEFT && currentScreen != 0) {
+    // parameterChange(0);
+    printScreen();
+  }
+  if(button & BUTTON_RIGHT && currentScreen != 0) {
+    // parameterChange(1);
+    printScreen();
+  }
+  // if (button & BUTTON_UP) {
+  //   lcd.clear();
+  //   lcd.setCursor(0,1);
+  //   lcd.print("UP ");
+  //   lcd.setBacklight(RED);
+  // }
+  // if (button & BUTTON_DOWN) {
+  //   lcd.clear();
+  //   lcd.setCursor(0,1);
+  //   lcd.print("DOWN ");
+  //   lcd.setBacklight(YELLOW);
+  // if (button & BUTTON_LEFT) {
+  //   lcd.clear();
+  //   lcd.setCursor(0,1);
+  //   lcd.print("LEFT ");
+  //   lcd.setBacklight(GREEN);
+  // }
+  // if (button & BUTTON_RIGHT) {
+  //   lcd.clear();
+  //   lcd.setCursor(0,1);
+  //   lcd.print("RIGHT ");
+  //   lcd.setBacklight(TEAL);
+  // }
+  // if (button & BUTTON_SELECT) {
+  //   lcd.clear();
+  //   lcd.setCursor(0,1);
+  //   lcd.print("SELECT ");
+  //   lcd.setBacklight(VIOLET);
+  // }
+}
+
+// void parameterChange(int key) {
+//   if(key == 0) {
+//     parameters[currentScreen]++;
+//   }
+//   else if(key == 1) {
+//     parameters[currentScreen]--;
+//   }
+// }
+
+void printScreen() {
+  lcd.clear();
+  lcd.print(screens[currentScreen][0]);
+  lcd.setCursor(0,1);
+  // lcd.print(parameters[currentScreen]);
+  // lcd.print(" ");
+  lcd.print(screens[currentScreen][1]);
 }
 
 void setup() {
@@ -175,17 +237,39 @@ void loop() {
   }
   if(LCDREFRESHFLAG){
     // (note: line 1 is the second row, since counting begins with 0)
-    // uint8_t button = lcd.readButtons();
+    uint8_t button = lcd.readButtons();
+    if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == running){
+      selectTimer++;
+    }
+    if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == running){
+      systemMode = config;
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("     CONFIG");
+      lcd.setCursor(0,1);
+      lcd.print("      MENU     ");
+      selectTimer = 0;
+    }
+    if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == config){
+      selectTimer++;
+    }
+    if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == config){
+      systemMode = running;
+      lcd.setBacklight(WHITE);
+      selectTimer = 0;
+    }
+    if(systemMode == running){
+      lcd.setCursor(0,0);
+      lcd.print("DCON1:");
+      lcd.print(Handcrank.productionRate*21);
+      lcd.setCursor(0,1);
+      lcd.print("ACON1:");
+      lcd.print(Handgrip.productionRate);
+    }
+    if(systemMode == config){
+      navigateMenu(button);
+    }
     // navigateMenu(button);
-    // lcd.clear();
-    lcd.setCursor(0,0);
-    // lcd.print("Cons Rate: ");
-    // lcd.print(Indicatorstrip.returnConsumptionRate());
-    lcd.print("DCON1:");
-    lcd.print(Handcrank.productionRate*21);
-    lcd.setCursor(0,1);
-    lcd.print("ACON1:");
-    lcd.print(Handgrip.productionRate);
-    LCDREFRESHFLAG = false;
+  LCDREFRESHFLAG = false;
   }
 }
