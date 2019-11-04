@@ -4,19 +4,7 @@ Adafruit_Neopixel
 Adafruit RGB LCD Sheild Library
 */
 
-//main pin defines
-#include <Arduino.h>
-//neopixels
-#include <Adafruit_NeoPixel.h>
-//RGB LCD Display
-#include <Wire.h>
-#include <Adafruit_RGBLCDShield.h>
-#include <utility/Adafruit_MCP23017.h>
-//custom libaries
-#include "multi-effector_homeostasis_device.h"
-#include "ledstrip.h"
-#include "handgrip.h"
-#include "encoder.h"
+#include "headers.h"
 
 //used to track timer overflows for refreshing the strip
 volatile unsigned int stripDelayCounter = 0; 
@@ -31,7 +19,9 @@ volatile bool LCDREFRESHFLAG = false;
 volatile bool RESETFLAG = false;
 
 enum GAMESTATUS gameStatus = notstarted;
-enum SYSTEMMODE systemMode = NONE;
+
+
+//object and object pointer creation
 
 _indicatorstrip Indicatorstrip; //object for the indicatorstrip
 _handgrip Handgrip; //object for the handgrip
@@ -127,7 +117,6 @@ void setup() {
   PCIFR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
   // enable interrupt for the GROUP 
   PCICR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
-  systemMode = NONE;
   Indicatorstrip.initialize();
   Handcrank.initialize();
 
@@ -138,6 +127,7 @@ void setup() {
   lcd.begin(16, 2);
 
   //make unused pins float high to interrupting on stray voltages
+  // for(int i = 0; i<)
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLUP);
   pinMode(4, INPUT_PULLUP);
@@ -189,10 +179,12 @@ void loop() {
     // navigateMenu(button);
     // lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("Crank Rate: ");
-    lcd.print(Handcrank.productionRate);
+    // lcd.print("Cons Rate: ");
+    // lcd.print(Indicatorstrip.returnConsumptionRate());
+    lcd.print("DCON1:");
+    lcd.print(Handcrank.productionRate*21);
     lcd.setCursor(0,1);
-    lcd.print("Sqze. Rate: ");
+    lcd.print("ACON1:");
     lcd.print(Handgrip.productionRate);
     LCDREFRESHFLAG = false;
   }

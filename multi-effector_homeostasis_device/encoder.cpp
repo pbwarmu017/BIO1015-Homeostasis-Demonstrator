@@ -1,6 +1,7 @@
-#include <Arduino.h>
-#include "multi-effector_homeostasis_device.h"
-#include "encoder.h"
+// #include <Arduino.h>
+// #include "encoder.h"
+// #include "multi-effector_homeostasis_device.h"
+#include "headers.h"
 //set up the pins ands store the current values for the encoder
 
 //check https://playground.arduino.cc/Main/RotaryEncoders/#OnInterrupts

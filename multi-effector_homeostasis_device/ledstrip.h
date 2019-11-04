@@ -1,4 +1,4 @@
-#include <math.h>
+// #include <math.h>
 #ifndef _LEDSTRIP
 #define _LEDSTRIP
 
@@ -47,6 +47,7 @@ class _indicatorstrip {
     void setConsumptionRate(float consumptionRate);
     void setIndicatorPosition(float position, int devnum);
     float setProductionRate(float productionRate, int devnum);
+    float returnConsumptionRate();
     //this is used to set the rates of production and consumption for homeostasis. 
     void setRates(float productionrate, float consumptionrate, int devnum); 
     void update(void);

@@ -1,6 +1,7 @@
-#include <Adafruit_NeoPixel.h>
-#include "ledstrip.h"
-#include "multi-effector_homeostasis_device.h"
+// #include <Adafruit_NeoPixel.h>
+// #include "ledstrip.h"
+// #include "multi-effector_homeostasis_device.h"
+#include "headers.h"
 
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -51,6 +52,10 @@ void _indicatorstrip::initialize(void){
   strip.begin();
   strip.show();
   return;
+}
+
+float _indicatorstrip::returnConsumptionRate(){
+  return consumptionRate;
 }
 
 void _indicatorstrip::setBoundingBox(int boxstart, int boxsize){
