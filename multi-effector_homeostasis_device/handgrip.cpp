@@ -1,7 +1,7 @@
 #include "headers.h"
 
 float _handgrip::voltageValue(void){
-  return 5*analogRead(A0)/1023.; //simply returns the voltage read off the handgrip
+  return 5*analogRead(HANDGRIPPIN)/1023.; //simply returns the voltage read off the handgrip
 }
 
 //calculates the productionrate to feed into _indicatorstrip.setRate()
@@ -11,4 +11,7 @@ int _handgrip::calculateProductionRate(float pinADCval) {
   float delta = (voltagedelta /(HANDGRIPMAXVOLTAGE-HANDGRIPMINVOLTAGE)) * 
       HANDGRIPRATESCALER;
   return delta;
+}
+
+_handgrip::_handgrip(){
 }

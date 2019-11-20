@@ -16,8 +16,8 @@ extern enum GAMESTATUS gameStatus;
 extern enum SYSTEMMODE systemMode;
 
 #define HANDGRIPPIN A0
-#define ENCODERPINA 2
-#define ENCODERPINB 3
+#define ENCODERPINA 3
+#define ENCODERPINB 5
 
 #define HANDGRIPDEVNUM 0 //device number for handgrip
 #define CRANKDEVNUM 1

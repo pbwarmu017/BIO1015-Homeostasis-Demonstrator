@@ -28,7 +28,7 @@ enum SYSTEMMODE systemMode = running;
 _indicatorstrip Indicatorstrip; //object for the indicatorstrip
 _handgrip Handgrip; //object for the handgrip
 _encoder Handcrank; //object for the encoder
-Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield(); //opbject for the LCD
+Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield(); //object for the LCD
 
 //this is the interrupt handler for Timer0 output conpare match. 
 ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
@@ -76,9 +76,10 @@ ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
 }
 
 //LCD MENU SETUP
-const int numOfScreens = 2;
-int currentScreen = 0;
-String screens[numOfScreens][2] = {{"TEST","TEST1"},{"TEST","TEST2"}};
+const int numOfScreens = 4;
+int currentScreen = -1;
+String screens[numOfScreens][2] = {{"OPTION 1","SELECTION 1"},
+  {"OPTION 2","SELECTION 2"},{"OPTION 3","SELECTION 3"},{"OPTION 4","SELECTION 4"}};
 int parameters[numOfScreens];
 
 
@@ -87,7 +88,10 @@ void navigateMenu(uint8_t button){
   // lcd.setCursor(0,1);
   // lcd.print(button);
   if(button & BUTTON_DOWN) {
-    if (currentScreen == 0) {
+    if(currentScreen == -1){
+      currentScreen = 0;
+    }
+    else if (currentScreen == 0) {
       currentScreen = numOfScreens-1;
       printScreen();
     }
@@ -97,7 +101,10 @@ void navigateMenu(uint8_t button){
     }
   }
   if(button & BUTTON_UP){
-    if (currentScreen == numOfScreens-1) {
+    if(currentScreen == -1){
+      currentScreen = 0;
+    }
+    else if (currentScreen == numOfScreens-1) {
       currentScreen = 0;
       printScreen();
     }
@@ -114,45 +121,7 @@ void navigateMenu(uint8_t button){
     // parameterChange(1);
     printScreen();
   }
-  // if (button & BUTTON_UP) {
-  //   lcd.clear();
-  //   lcd.setCursor(0,1);
-  //   lcd.print("UP ");
-  //   lcd.setBacklight(RED);
-  // }
-  // if (button & BUTTON_DOWN) {
-  //   lcd.clear();
-  //   lcd.setCursor(0,1);
-  //   lcd.print("DOWN ");
-  //   lcd.setBacklight(YELLOW);
-  // if (button & BUTTON_LEFT) {
-  //   lcd.clear();
-  //   lcd.setCursor(0,1);
-  //   lcd.print("LEFT ");
-  //   lcd.setBacklight(GREEN);
-  // }
-  // if (button & BUTTON_RIGHT) {
-  //   lcd.clear();
-  //   lcd.setCursor(0,1);
-  //   lcd.print("RIGHT ");
-  //   lcd.setBacklight(TEAL);
-  // }
-  // if (button & BUTTON_SELECT) {
-  //   lcd.clear();
-  //   lcd.setCursor(0,1);
-  //   lcd.print("SELECT ");
-  //   lcd.setBacklight(VIOLET);
-  // }
 }
-
-// void parameterChange(int key) {
-//   if(key == 0) {
-//     parameters[currentScreen]++;
-//   }
-//   else if(key == 1) {
-//     parameters[currentScreen]--;
-//   }
-// }
 
 void printScreen() {
   lcd.clear();
@@ -192,10 +161,13 @@ void setup() {
   // for(int i = 0; i<)
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLUP);
+  pinMode(2, INPUT_PULLUP);
+  // pinMode(3, INPUT_PULLUP);
   pinMode(4, INPUT_PULLUP);
-  pinMode(5, INPUT_PULLUP);
+  // pinMode(5, INPUT_PULLUP);
   // pinMode(6, INPUT_PULLUP); //this pin is used for the LED strip
   pinMode(7, INPUT_PULLUP);
+  pinMode(A0, INPUT);
 }
 
 void loop() {
@@ -248,6 +220,7 @@ void loop() {
       lcd.print("     CONFIG");
       lcd.setCursor(0,1);
       lcd.print("      MENU     ");
+      lcd.setBacklight(RED);
       selectTimer = 0;
     }
     if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == config){
@@ -256,6 +229,7 @@ void loop() {
     if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == config){
       systemMode = running;
       lcd.setBacklight(WHITE);
+      // currentScreen = -1;
       selectTimer = 0;
     }
     if(systemMode == running){
