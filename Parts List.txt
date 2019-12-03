@@ -1,6 +1,5 @@
 3D Printing Filament https://www.amazon.com/HATCHBOX-3D-Filament-Dimensional-Accuracy/dp/B00J0ECR5I
-DC Jack Terminal (convenience for prototyping, may end up needing for the final): https://www.adafruit.com/product/368
-Power supply: https://www.adafruit.com/product/276
+Power supply: https://www.adafruit.com/product/63
 
 ____SPINWHEEL____
 Rubber Handlebar Grips (for spinwheel) https://www.amazon.com/OUTERDO-Handlebar-Bicycle-Mountain-Rubber/dp/B0129GOQKC/ref=sr_1_3?crid=15F7EUU0RN14V&keywords=foam+bike+grips&qid=1567141735&s=gateway&sprefix=foam+bike%2Caps%2C180&sr=8-3
