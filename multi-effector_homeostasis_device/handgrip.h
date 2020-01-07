@@ -2,17 +2,17 @@
 #define _HANDGRIP
 
 #define HANDGRIPRATESCALER 75
-#define HANDGRIPMINVOLTAGE 2.62 
-#define HANDGRIPMAXVOLTAGE 2.79 
+// #define HANDGRIPMINVOLTAGE 2.62 
+// #define HANDGRIPMAXVOLTAGE 2.79 
 
 class _handgrip {
   public:
   	_handgrip();
    float voltageValue(void); //used to return a reading from the handgrip strain gauge on demand
    int calculateProductionRate(float pinVoltage);
-  	bool calibrationState = false;
-  	float handgripMinVoltage = 1.88;
-  	float handgripMaxVoltage = 0;
+  	int calibrationState = 0; //standby state
+  	float handgripMinVoltage;
+  	float handgripMaxVoltage;
     float productionRate = 0;
   private:
 };
