@@ -20,6 +20,7 @@ class _indicatorstrip;
 class _encoder;
 
 //custom library headers
+#include "parents.h"
 #include "menu.h"
 #include "multi-effector_homeostasis_device.h"
 #include "ledstrip.h"

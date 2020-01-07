@@ -21,24 +21,26 @@ volatile bool RESETFLAG = false;
 //this is a global placeholders for pointers. 
 
 unsigned int *temp_ptr = 0;
-// unsigned int DCON1_ptr = 0;
-// unsigned int ACON1_ptr = 0;
-// unsigned int DACON1_ptr = 0;
-// unsigned int DCON2_ptr = 0;
-// unsigned int ACON2_ptr = 0;
-// unsigned int DACON2_ptr = 0;
-// unsigned int *lcd_ptr = 0;
+
 
 int selectTimer = 0;
 
 enum GAMESTATUS gameStatus = notstarted;
 enum SYSTEMMODE systemMode = running;
 
+//generic pointer declarations
+_device *DCON1_ptr;
+_device *ACON1_ptr;
+_device *DACON1_ptr;
+_device *DCON2_ptr;
+_device *ACON2_ptr;
+_device *DACON2_ptr;
 
-_indicatorstrip *Indicatorstrip_ptr = new _indicatorstrip; //object for the indicatorstrip
-_handgrip *Handgrip_ptr = new _handgrip; //object for the handgrip
-_encoder *Handcrank_ptr = new _encoder; //object for the encoder
-_menu *menu_ptr = new _menu; //object for the menu system
+_device *Indicatorstrip_ptr = new _indicatorstrip; //object for the indicatorstrip
+_device *Handgrip_ptr = new _handgrip; //object for the handgrip
+_device *Handcrank_ptr = new _encoder; //object for the encoder
+_device *menu_ptr = new _menu; //object for the menu system
+_device *lcd_ptr = new _lcd;
 
 //this is the interrupt handler for Timer0 output conpare match. 
 ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
@@ -85,11 +87,8 @@ ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
   }
 }
 
-unsigned int createObject(byte objtype, byte portnum) {
-  if(objtype == lcd_type) {
-    unsigned int ptr = new Adafruit_RGBLCDShield();
-    return(ptr);
-  }
+_device* createObject(byte objtype, byte portnum) {
+
   return(0);
 }
 
@@ -132,9 +131,8 @@ void setup() {
 
 void loop() {
   if(INITIALSETUPFLAG){
-    Adafruit_RGBLCDShield *lcd_ptr = createObject(lcd_type, HARDCODED_PORTNUM);
   //init LCD
-    (*lcd_ptr).begin(16, 2);
+    (*(_lcd*)(lcd_ptr)).begin(16, 2);
   }
   // if(STRIPREFRESHFLAG){
   //   if(HANDGRIPACTIVE == 1){

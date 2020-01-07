@@ -27,7 +27,7 @@
 #define STRIPREFRESHDELAY 50 //in milliseconds
 #define LEDMAXINCREMENT 5 //Max # of LEDs to jump per cycle
 
-class _indicatorstrip {
+class _indicatorstrip public: _device {
   public:
    /*VARIABLES*/
 

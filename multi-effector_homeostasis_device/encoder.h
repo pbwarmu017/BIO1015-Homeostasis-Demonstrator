@@ -3,7 +3,7 @@
 #define CRANKRATECALCDELAY 250 //value is in milliseconds
 #define CRANKRATEMAX 24
 #define CRANKRATESCALER 67
-class _encoder {
+class _encoder public: _affector {
 public:
   char returnDelta(void);
   void initialize(void);
