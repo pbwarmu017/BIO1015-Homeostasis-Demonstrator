@@ -37,6 +37,7 @@ _indicatorstrip *Indicatorstrip = new _indicatorstrip; //object for the indicato
 _handgrip *Handgrip = new _handgrip; //object for the handgrip
 _encoder *Handcrank = new _encoder; //object for the encoder
 Adafruit_RGBLCDShield *lcd = new Adafruit_RGBLCDShield(); //object for the LCD
+_menu *menu = new _menu;
 
 //this is the interrupt handler for Timer0 output conpare match. 
 ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
@@ -167,12 +168,9 @@ void loop() {
     if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == running){
       systemMode = config;
       lcd->clear();
-      currentScreen = 0;
-      printMenu(lcd);
-      // lcd->setCursor(0,0);
-      // lcd->print("     CONFIG");
-      // lcd->setCursor(0,1);
-      // lcd->print("      MENU     ");
+      menu->currentScreen = 0;
+      menu->printMenu(lcd);
+
       lcd->setBacklight(RED);
       selectTimer = 0;
     }
@@ -198,7 +196,7 @@ void loop() {
       // lcd->print(Handgrip->productionRate);
     }
     if(systemMode == config){
-      navigateMenu(button, lcd);
+      menu->navigateMenu(button, lcd);
     }
     // navigateMenu(button);
   LCDREFRESHFLAG = false;
