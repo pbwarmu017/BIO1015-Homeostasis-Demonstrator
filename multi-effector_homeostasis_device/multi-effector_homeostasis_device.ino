@@ -18,14 +18,16 @@ volatile bool CRANKRATECALCFLAG = false;
 volatile bool LCDREFRESHFLAG = false;
 volatile bool RESETFLAG = false;
 
-//these are global placeholders for pointers. When they are not filled, they will hold 0
-unsigned int DCON1_ptr = 0;
-unsigned int ACON1_ptr = 0;
-unsigned int DACON1_ptr = 0;
-unsigned int DCON2_ptr = 0;
-unsigned int ACON2_ptr = 0;
-unsigned int DACON2_ptr = 0;
-unsigned int *lcd_ptr = 0;
+//this is a global placeholders for pointers. 
+
+unsigned int *temp_ptr = 0;
+// unsigned int DCON1_ptr = 0;
+// unsigned int ACON1_ptr = 0;
+// unsigned int DACON1_ptr = 0;
+// unsigned int DCON2_ptr = 0;
+// unsigned int ACON2_ptr = 0;
+// unsigned int DACON2_ptr = 0;
+// unsigned int *lcd_ptr = 0;
 
 int selectTimer = 0;
 
@@ -71,7 +73,7 @@ ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
 
 ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
   if(CRANKACTIVE == 1){
-    int currentOut = Handcrank_ptr->returnDelta();
+    int currentOut = (*Handcrank_ptr).returnDelta();
       //make sure it's not an invalid state change
       if(currentOut){ 
         //two or more matching values. Helps with logical debounce
@@ -92,6 +94,7 @@ unsigned int createObject(byte objtype, byte portnum) {
 }
 
 void setup() {
+
   //init serial for debugging  
   Serial.begin(2000000); 
 
@@ -110,12 +113,8 @@ void setup() {
   PCIFR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
   // enable interrupt for the GROUP 
   PCICR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
-  Indicatorstrip_ptr->initialize();
-  Handcrank_ptr->initialize();
-
-  lcd_ptr = createObject(lcd_type, HARDCODED_PORTNUM);
-  //init LCD
-  lcd_ptr->begin(16, 2);
+  (*Indicatorstrip_ptr).initialize();
+  (*Handcrank_ptr).initialize();
 
   //make all digital pins float high to prevent interrupting on stray voltages
  
@@ -128,58 +127,64 @@ void setup() {
   pinMode(6, INPUT_PULLUP);
   pinMode(7, INPUT_PULLUP);
   // pinMode(A0, INPUT);
+  bool INITIALSETUPFLAG = true;
 }
 
 void loop() {
-  if(STRIPREFRESHFLAG){
-    if(HANDGRIPACTIVE == 1){
-      if(Handgrip_ptr->calibrationState == true){
-        Indicatorstrip_ptr->setProductionRate(Handgrip_ptr->calculateProductionRate(
-          analogRead(HANDGRIPPIN), Handgrip_ptr), HANDGRIPDEVNUM);
-        //set the indicator positions based on the production rate 
-        Indicatorstrip_ptr->setIndicatorPosition(
-          Handgrip_ptr->productionRate = Indicatorstrip_ptr->calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
-      } else {
-        Handgrip_ptr->handgripMaxVoltage = Handgrip_ptr->voltageValue();
-        Handgrip_ptr->calibrationState = true;
-      }
-    }
-    //set the bounding box. 
-    if(CRANKACTIVE == 1){
-      Indicatorstrip_ptr->setIndicatorPosition(
-        Handcrank_ptr->productionRate = Indicatorstrip_ptr->calculatePosition(CRANKDEVNUM), CRANKDEVNUM);
-    }
-    Indicatorstrip_ptr->setBoundingBox(BOXSTART, BOXSIZE);
-    Indicatorstrip_ptr->update();
-    STRIPREFRESHFLAG = false;
+  if(INITIALSETUPFLAG){
+    Adafruit_RGBLCDShield *lcd_ptr = createObject(lcd_type, HARDCODED_PORTNUM);
+  //init LCD
+    (*lcd_ptr).begin(16, 2);
   }
-  if(CRANKRATECALCFLAG){
-    if(CRANKACTIVE == 1){
-      Indicatorstrip_ptr->setProductionRate(Handcrank_ptr->calculateProductionRate(
-        crankSum), CRANKDEVNUM);
-      //reset the sum because it has just been incorporated into a moving avg
-      crankSum = 0; 
-      //reset the delay counter for the next run
-      CRANKRATECALCFLAG = false;
-    }
-  }
-  if(RESETFLAG){
-    Indicatorstrip_ptr->setBoundingBox(BOXSTART, BOXSIZE);
-    RESETFLAG = false;
-  }
+  // if(STRIPREFRESHFLAG){
+  //   if(HANDGRIPACTIVE == 1){
+  //     if((*Handgrip_ptr)calibrationState == true){
+  //       (*Indicatorstrip_ptr)setProductionRate((*Handgrip_ptr)calculateProductionRate(
+  //         analogRead(HANDGRIPPIN), Handgrip_ptr), HANDGRIPDEVNUM);
+  //       //set the indicator positions based on the production rate 
+  //       (*Indicatorstrip_ptr)setIndicatorPosition(
+  //         (*Handgrip_ptr)productionRate = (*Indicatorstrip_ptr)calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
+  //     } else {
+  //       (*Handgrip_ptr)handgripMaxVoltage = (*Handgrip_ptr)voltageValue();
+  //       (*Handgrip_ptr)calibrationState = true;
+  //     }
+  //   }
+  //   //set the bounding box. 
+  //   if(CRANKACTIVE == 1){
+  //     (*Indicatorstrip_ptr)setIndicatorPosition(
+  //       (*Handcrank_ptr)productionRate = (*Indicatorstrip_ptr)calculatePosition(CRANKDEVNUM), CRANKDEVNUM);
+  //   }
+  //   (*Indicatorstrip_ptr)setBoundingBox(BOXSTART, BOXSIZE);
+  //   (*Indicatorstrip_ptr)update();
+  //   STRIPREFRESHFLAG = false;
+  // }
+  // if(CRANKRATECALCFLAG){
+  //   if(CRANKACTIVE == 1){
+  //     (*Indicatorstrip_ptr)setProductionRate((*Handcrank_ptr)calculateProductionRate(
+  //       crankSum), CRANKDEVNUM);
+  //     //reset the sum because it has just been incorporated into a moving avg
+  //     crankSum = 0; 
+  //     //reset the delay counter for the next run
+  //     CRANKRATECALCFLAG = false;
+  //   }
+  // }
+  // if(RESETFLAG){
+  //   (*Indicatorstrip_ptr)setBoundingBox(BOXSTART, BOXSIZE);
+  //   RESETFLAG = false;
+  // }
   if(LCDREFRESHFLAG){
     // (note: line 1 is the second row, since counting begins with 0)
-    uint8_t button = lcd_ptr->readButtons();
+    uint8_t button = (*lcd_ptr).readButtons();
     if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == running){
       selectTimer++;
     }
     if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == running){
       systemMode = config;
-      lcd_ptr->clear();
-      menu_ptr->currentScreen = 0;
-      menu_ptr->printMenu(lcd_ptr);
+      (*lcd_ptr).clear();
+      (*menu_ptr).currentScreen = 0;
+      (*menu_ptr).printMenu(lcd_ptr);
 
-      lcd_ptr->setBacklight(RED);
+      (*lcd_ptr).setBacklight(RED);
       selectTimer = 0;
     }
     if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == config){
@@ -187,18 +192,18 @@ void loop() {
     }
     if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == config){
       systemMode = running;
-      lcd_ptr->setBacklight(WHITE);
+      (*lcd_ptr).setBacklight(WHITE);
       selectTimer = 0;
     }
     if(systemMode == running){
-      lcd_ptr->clear();
+      (*lcd_ptr).clear();
       // lcd_ptr->setCursor(0,0);
       // lcd_ptr->print("System");
       // lcd_ptr->setCursor(0,1);
       // lcd_ptr->print("Operational");
     }
     if(systemMode == config){
-      menu_ptr->navigateMenu(button, lcd_ptr);
+      (*menu_ptr).navigateMenu(button, lcd_ptr);
     }
     // navigateMenu(button);
   LCDREFRESHFLAG = false;

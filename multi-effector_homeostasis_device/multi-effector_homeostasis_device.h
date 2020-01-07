@@ -57,5 +57,7 @@ extern enum SYSTEMMODE systemMode;
 #define VIOLET 0x5
 #define WHITE 0x7
 
+bool INITIALSETUPFLAG;
+
 unsigned int createObject(byte objtype, byte portnum);
 #endif
