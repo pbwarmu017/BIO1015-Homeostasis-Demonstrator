@@ -5,7 +5,7 @@
 // #define HANDGRIPMINVOLTAGE 2.62 
 // #define HANDGRIPMAXVOLTAGE 2.79 
 
-class _handgrip public: _affector {
+class _handgrip: public _affector {
   public:
   	_handgrip();
    float voltageValue(void); //used to return a reading from the handgrip strain gauge on demand
