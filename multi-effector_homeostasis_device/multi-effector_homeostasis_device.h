@@ -8,9 +8,18 @@ enum GAMESTATUS {
 };
 
 enum SYSTEMMODE {
+	calibrate,
 	running,
 	config
 };
+
+// //port number defines
+// #define DCON1 0
+// #define DCON2 1
+// #define ACON1 2
+// #define ACON2 3
+// #define DACON1 4
+// #define DACON2 5
 
 extern enum GAMESTATUS gameStatus;
 extern enum SYSTEMMODE systemMode;
