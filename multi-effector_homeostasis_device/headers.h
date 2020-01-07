@@ -2,6 +2,9 @@
 
 #ifndef _HEADERSH
 #define _HEADERSH
+
+//class forward declarations
+
 //main pin defines
 #include <Arduino.h>
 //neopixels
@@ -10,10 +13,18 @@
 #include <Wire.h>
 #include <Adafruit_RGBLCDShield.h>
 #include <utility/Adafruit_MCP23017.h>
+
+class Adafruit_RGBLCDShield;
+class _handgrip;
+class _indicatorstrip;
+class _encoder;
+
 //custom library headers
+#include "menu.h"
 #include "multi-effector_homeostasis_device.h"
 #include "ledstrip.h"
 #include "handgrip.h"
 #include "encoder.h"
+
 
 #endif
