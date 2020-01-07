@@ -18,26 +18,25 @@ volatile bool CRANKRATECALCFLAG = false;
 volatile bool LCDREFRESHFLAG = false;
 volatile bool RESETFLAG = false;
 
-//these are placeholders for pointers. When they are not filled, they will hold 0
-unsigned int DCON1 = 0;
-unsigned int ACON1 = 0;
-unsigned int DACON1 = 0;
-unsigned int DCON2 = 0;
-unsigned int ACON2 = 0;
-unsigned int DACON2 = 0;
+//these are global placeholders for pointers. When they are not filled, they will hold 0
+unsigned int DCON1_ptr = 0;
+unsigned int ACON1_ptr = 0;
+unsigned int DACON1_ptr = 0;
+unsigned int DCON2_ptr = 0;
+unsigned int ACON2_ptr = 0;
+unsigned int DACON2_ptr = 0;
+unsigned int *lcd_ptr = 0;
 
 int selectTimer = 0;
 
 enum GAMESTATUS gameStatus = notstarted;
 enum SYSTEMMODE systemMode = running;
 
-//object pointer creation
 
-_indicatorstrip *Indicatorstrip = new _indicatorstrip; //object for the indicatorstrip
-_handgrip *Handgrip = new _handgrip; //object for the handgrip
-_encoder *Handcrank = new _encoder; //object for the encoder
-Adafruit_RGBLCDShield *lcd = new Adafruit_RGBLCDShield(); //object for the LCD
-_menu *menu = new _menu;
+_indicatorstrip *Indicatorstrip_ptr = new _indicatorstrip; //object for the indicatorstrip
+_handgrip *Handgrip_ptr = new _handgrip; //object for the handgrip
+_encoder *Handcrank_ptr = new _encoder; //object for the encoder
+_menu *menu_ptr = new _menu; //object for the menu system
 
 //this is the interrupt handler for Timer0 output conpare match. 
 ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
@@ -72,7 +71,7 @@ ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
 
 ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
   if(CRANKACTIVE == 1){
-    int currentOut = Handcrank->returnDelta();
+    int currentOut = Handcrank_ptr->returnDelta();
       //make sure it's not an invalid state change
       if(currentOut){ 
         //two or more matching values. Helps with logical debounce
@@ -84,7 +83,18 @@ ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
   }
 }
 
+unsigned int createObject(byte objtype, byte portnum) {
+  if(objtype == lcd_type) {
+    unsigned int ptr = new Adafruit_RGBLCDShield();
+    return(ptr);
+  }
+  return(0);
+}
+
 void setup() {
+  //init serial for debugging  
+  Serial.begin(2000000); 
+
   //setup timer0 to call interrupt OCR0A every REFRESHTIMEVAL
   OCR0A = 0xFA; //set to trigger TIMER0_COMPA_vect every millisecond
   TIMSK0 |= _BV(OCIE0A); //enable the output compare interrupt on timer0
@@ -100,54 +110,52 @@ void setup() {
   PCIFR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
   // enable interrupt for the GROUP 
   PCICR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
-  Indicatorstrip->initialize();
-  Handcrank->initialize();
+  Indicatorstrip_ptr->initialize();
+  Handcrank_ptr->initialize();
 
-  //init serial for debugging  
-  Serial.begin(2000000); 
-
+  lcd_ptr = createObject(lcd_type, HARDCODED_PORTNUM);
   //init LCD
-  lcd->begin(16, 2);
+  lcd_ptr->begin(16, 2);
 
-  //make unused pins float high to interrupting on stray voltages
-  // for(int i = 0; i<)
+  //make all digital pins float high to prevent interrupting on stray voltages
+ 
   pinMode(0, INPUT_PULLUP);
   pinMode(1, INPUT_PULLUP);
   pinMode(2, INPUT_PULLUP);
-  // pinMode(3, INPUT_PULLUP);
+  pinMode(3, INPUT_PULLUP);
   pinMode(4, INPUT_PULLUP);
-  // pinMode(5, INPUT_PULLUP);
-  // pinMode(6, INPUT_PULLUP); //this pin is used for the LED strip
+  pinMode(5, INPUT_PULLUP);
+  pinMode(6, INPUT_PULLUP);
   pinMode(7, INPUT_PULLUP);
-  pinMode(A0, INPUT);
+  // pinMode(A0, INPUT);
 }
 
 void loop() {
   if(STRIPREFRESHFLAG){
     if(HANDGRIPACTIVE == 1){
-      if(Handgrip->calibrationState == true){
-        Indicatorstrip->setProductionRate(Handgrip->calculateProductionRate(
-          analogRead(HANDGRIPPIN)), HANDGRIPDEVNUM);
+      if(Handgrip_ptr->calibrationState == true){
+        Indicatorstrip_ptr->setProductionRate(Handgrip_ptr->calculateProductionRate(
+          analogRead(HANDGRIPPIN), Handgrip_ptr), HANDGRIPDEVNUM);
         //set the indicator positions based on the production rate 
-        Indicatorstrip->setIndicatorPosition(
-          Handgrip->productionRate = Indicatorstrip->calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
+        Indicatorstrip_ptr->setIndicatorPosition(
+          Handgrip_ptr->productionRate = Indicatorstrip_ptr->calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
       } else {
-        Handgrip->handgripMaxVoltage = Handgrip->voltageValue();
-        Handgrip->calibrationState = true;
+        Handgrip_ptr->handgripMaxVoltage = Handgrip_ptr->voltageValue();
+        Handgrip_ptr->calibrationState = true;
       }
     }
     //set the bounding box. 
     if(CRANKACTIVE == 1){
-      Indicatorstrip->setIndicatorPosition(
-        Handcrank->productionRate = Indicatorstrip->calculatePosition(CRANKDEVNUM), CRANKDEVNUM);
+      Indicatorstrip_ptr->setIndicatorPosition(
+        Handcrank_ptr->productionRate = Indicatorstrip_ptr->calculatePosition(CRANKDEVNUM), CRANKDEVNUM);
     }
-    Indicatorstrip->setBoundingBox(BOXSTART, BOXSIZE);
-    Indicatorstrip->update();
+    Indicatorstrip_ptr->setBoundingBox(BOXSTART, BOXSIZE);
+    Indicatorstrip_ptr->update();
     STRIPREFRESHFLAG = false;
   }
   if(CRANKRATECALCFLAG){
     if(CRANKACTIVE == 1){
-      Indicatorstrip->setProductionRate(Handcrank->calculateProductionRate(
+      Indicatorstrip_ptr->setProductionRate(Handcrank_ptr->calculateProductionRate(
         crankSum), CRANKDEVNUM);
       //reset the sum because it has just been incorporated into a moving avg
       crankSum = 0; 
@@ -156,22 +164,22 @@ void loop() {
     }
   }
   if(RESETFLAG){
-    Indicatorstrip->setBoundingBox(BOXSTART, BOXSIZE);
+    Indicatorstrip_ptr->setBoundingBox(BOXSTART, BOXSIZE);
     RESETFLAG = false;
   }
   if(LCDREFRESHFLAG){
     // (note: line 1 is the second row, since counting begins with 0)
-    uint8_t button = lcd->readButtons();
+    uint8_t button = lcd_ptr->readButtons();
     if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == running){
       selectTimer++;
     }
     if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == running){
       systemMode = config;
-      lcd->clear();
-      menu->currentScreen = 0;
-      menu->printMenu(lcd);
+      lcd_ptr->clear();
+      menu_ptr->currentScreen = 0;
+      menu_ptr->printMenu(lcd_ptr);
 
-      lcd->setBacklight(RED);
+      lcd_ptr->setBacklight(RED);
       selectTimer = 0;
     }
     if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == config){
@@ -179,24 +187,18 @@ void loop() {
     }
     if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == config){
       systemMode = running;
-      lcd->setBacklight(WHITE);
+      lcd_ptr->setBacklight(WHITE);
       selectTimer = 0;
     }
     if(systemMode == running){
-      lcd->clear();
-      lcd->setCursor(0,0);
-      lcd->print("System");
-      lcd->setCursor(0,1);
-      lcd->print("Operational");
-      // lcd->setCursor(0,0);
-      // lcd->print("DCON1:");
-      // lcd->print(Handcrank->productionRate*21);
-      // lcd->setCursor(0,1);
-      // lcd->print("ACON1:");
-      // lcd->print(Handgrip->productionRate);
+      lcd_ptr->clear();
+      // lcd_ptr->setCursor(0,0);
+      // lcd_ptr->print("System");
+      // lcd_ptr->setCursor(0,1);
+      // lcd_ptr->print("Operational");
     }
     if(systemMode == config){
-      menu->navigateMenu(button, lcd);
+      menu_ptr->navigateMenu(button, lcd_ptr);
     }
     // navigateMenu(button);
   LCDREFRESHFLAG = false;
