@@ -3,8 +3,13 @@ REQUIRED LIBRARIES: Must be installed in the arduino IDE to compile this
 Adafruit_Neopixel
 Adafruit RGB LCD Sheild Library
 */
-
-#include "headers.h"
+#include "includes.h"
+#include "parents.cpp"
+#include "encoder.cpp"
+#include "handgrip.cpp"
+#include "lcd.cpp"
+#include "ledstrip.cpp"
+#include "menu.cpp"
 
 //used to track timer overflows for refreshing the strip
 volatile unsigned stripDelayCounter = 0; 
@@ -74,23 +79,23 @@ ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
 }
 
 ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
-  if(CRANKACTIVE == 1){
-    int currentOut = (*Handcrank_ptr).returnDelta();
-      //make sure it's not an invalid state change
-      if(currentOut){ 
-        //two or more matching values. Helps with logical debounce
-        if(currentOut == prevOut){ 
-          crankSum += currentOut;
-        }
-        prevOut = currentOut; //update the previous value
-    }
-  }
+  // if(CRANKACTIVE == 1){
+  //   int currentOut = (*Handcrank_ptr).returnDelta();
+  //     //make sure it's not an invalid state change
+  //     if(currentOut){ 
+  //       //two or more matching values. Helps with logical debounce
+  //       if(currentOut == prevOut){ 
+  //         crankSum += currentOut;
+  //       }
+  //       prevOut = currentOut; //update the previous value
+  //   }
+  // }
 }
 
-_device* createObject(byte objtype, byte portnum) {
+// _device* createObject(byte objtype, byte portnum) {
 
-  return(0);
-}
+//   return(0);
+// }
 
 void setup() {
 
@@ -112,8 +117,8 @@ void setup() {
   PCIFR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
   // enable interrupt for the GROUP 
   PCICR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
-  (*Indicatorstrip_ptr).initialize();
-  (*Handcrank_ptr).initialize();
+  // (*Indicatorstrip_ptr).initialize();
+  // (*Handcrank_ptr).initialize();
 
   //make all digital pins float high to prevent interrupting on stray voltages
  

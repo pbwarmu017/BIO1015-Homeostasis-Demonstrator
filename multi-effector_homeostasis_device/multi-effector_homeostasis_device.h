@@ -1,3 +1,4 @@
+#include "includes.h"
 #ifndef _MULTIHOMEO
 #define _MULTIHOMEO
 
@@ -59,5 +60,5 @@ extern enum SYSTEMMODE systemMode;
 
 bool INITIALSETUPFLAG;
 
-unsigned int createObject(byte objtype, byte portnum);
+// unsigned int createObject(byte objtype, byte portnum);
 #endif

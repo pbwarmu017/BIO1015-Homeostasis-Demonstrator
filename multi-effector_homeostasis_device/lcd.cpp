@@ -1,6 +1,10 @@
-#include "headers.h"
+#include "includes.h"
+#include "parents.cpp"
 
-//constructor
-_lcd::_lcd() {
-  lcd_ptr = new Adafruit_RGBLCDShield();
-}
+class _lcd: public _device {
+  public: 
+    Adafruit_RGBLCDShield *lcd_ptr;
+    _lcd(){
+      lcd_ptr = new Adafruit_RGBLCDShield();
+    }
+};

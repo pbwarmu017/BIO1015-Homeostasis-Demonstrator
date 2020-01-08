@@ -1,5 +1,16 @@
-#include "headers.h"
-//this method will be overloaded by child classes. This is just a placeholder. 
-_affector::returnPosition(float currentPosition){
-  return(currentPosition);
-}
+#ifndef PARENTS_CPP
+#define PARENTS_CPP
+
+#include "multi-effector_homeostasis_device.h"
+
+class _device {
+  public:
+};
+
+class _affector: public _device {
+  public:
+    float returnPosition(float currentPosition){
+      return(currentPosition);
+    }
+};
+#endif
