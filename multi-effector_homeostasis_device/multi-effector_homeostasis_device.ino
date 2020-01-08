@@ -68,13 +68,13 @@ enum SYSTEMMODE systemMode = running;
 #define WHITE 0x7
 
 //LED COLOR CODE DEFINITIONS. 
-#define COLORRED strip.Color(128,0,0) //USED FOR PRE GAME INDICATION
-#define COLORORANGE strip.Color(128,64,0) //USED FOR SECONDINDICATORCOLOR
-#define COLORYELLOW strip.Color(128,128,0)
-#define COLORGREEN strip.Color(0,128,0) //USED FOR "GAME ON" INDICATION
-#define COLORBLUE strip.Color(0,0,128) //USED FOR SQUEEZEINDICATORCOLOR
-#define COLORPURPLE strip.Color(25,0,51)
-#define COLORCYAN strip.Color(0,128,128)
+#define COLORRED (*strip).Color(128,0,0) //USED FOR PRE GAME INDICATION
+#define COLORORANGE (*strip).Color(128,64,0) //USED FOR SECONDINDICATORCOLOR
+#define COLORYELLOW (*strip).Color(128,128,0)
+#define COLORGREEN (*strip).Color(0,128,0) //USED FOR "GAME ON" INDICATION
+#define COLORBLUE (*strip).Color(0,0,128) //USED FOR SQUEEZEINDICATORCOLOR
+#define COLORPURPLE (*strip).Color(25,0,51)
+#define COLORCYAN (*strip).Color(0,128,128)
 
 //AFFECTOR INDICATOR COLOR SELECTIONS
 #define SQUEEZEINDICATORCOLOR COLORBLUE
@@ -318,8 +318,8 @@ class _indicatorstrip: public _device {
       return(statusVariable);
     }
     void initialize(void) {
-      strip.begin();
-      strip.show();
+      (*strip).begin();
+      (*strip).show();
       return;
     }
     void setBoundingBox(int boxstart, int boxsize) {
@@ -328,31 +328,31 @@ class _indicatorstrip: public _device {
 
 
       if(gameStatus == started && indicatorsWithinBounds()){
-        strip.setPixelColor(boxstart, COLORGREEN);
-        strip.setPixelColor(boxstart+boxsize+1, COLORGREEN);
+        (*strip).setPixelColor(boxstart, COLORGREEN);
+        (*strip).setPixelColor(boxstart+boxsize+1, COLORGREEN);
       }
       if(gameStatus == started && !indicatorsWithinBounds()){
         gameStatus = lost;
-        strip.setPixelColor(boxstart, losingColor);
-        strip.setPixelColor(boxstart+boxsize+1, losingColor);
+        (*strip).setPixelColor(boxstart, losingColor);
+        (*strip).setPixelColor(boxstart+boxsize+1, losingColor);
       }
 
       if(gameStatus == notstarted && indicatorsWithinBounds()){
         gameStatus = started;
-        strip.setPixelColor(boxstart, COLORGREEN);
-        strip.setPixelColor(boxstart+boxsize+1, COLORGREEN);
+        (*strip).setPixelColor(boxstart, COLORGREEN);
+        (*strip).setPixelColor(boxstart+boxsize+1, COLORGREEN);
       }
       if(gameStatus == notstarted && !indicatorsWithinBounds()){
-        strip.setPixelColor(boxstart, COLORRED);
-        strip.setPixelColor(boxstart+boxsize+1, COLORRED);
+        (*strip).setPixelColor(boxstart, COLORRED);
+        (*strip).setPixelColor(boxstart+boxsize+1, COLORRED);
       }
 
       if(gameStatus == lost){
-        strip.setPixelColor(boxstart, losingColor);
-        strip.setPixelColor(boxstart+boxsize+1, losingColor);
+        (*strip).setPixelColor(boxstart, losingColor);
+        (*strip).setPixelColor(boxstart+boxsize+1, losingColor);
       }
 
-      strip.show();
+      (*strip).show();
       return;
     }
     void setConsumptionRate(float consrate) {
@@ -361,18 +361,18 @@ class _indicatorstrip: public _device {
     }
     void setIndicatorPosition(float position, int devnum) {
       if(devnum == HANDGRIPDEVNUM){
-        strip.setPixelColor(prevSqueezeIndPos, 0,0,0);
+        (*strip).setPixelColor(prevSqueezeIndPos, 0,0,0);
         if(position < LED_COUNTa && position >= 0){
           squeezeIndicatorPosition = position;
-          strip.setPixelColor(position, SQUEEZEINDICATORCOLOR);
+          (*strip).setPixelColor(position, SQUEEZEINDICATORCOLOR);
           prevSqueezeIndPos = (int)position;
         }
       }
       if(devnum == CRANKDEVNUM){
-        strip.setPixelColor(prevCrankIndPos, 0,0,0);
+        (*strip).setPixelColor(prevCrankIndPos, 0,0,0);
         if(position < LED_COUNTa && position >= 0){
           crankIndicatorPosition = position;
-          strip.setPixelColor(position, CRANKINDICATORCOLOR);
+          (*strip).setPixelColor(position, CRANKINDICATORCOLOR);
           prevCrankIndPos = (int)position;
         }
       }
@@ -396,7 +396,7 @@ class _indicatorstrip: public _device {
     //this is used to set the rates of production and consumption for homeostasis. 
     // void setRates(float productionrate, float consumptionrate, int devnum); 
     void update(void) {
-      strip.show();
+      (*strip).show();
       if(STRIPTESTMODE){
         if(HANDGRIPACTIVE == 1){
           Serial.print(" GRIP LED POSITION: ");
