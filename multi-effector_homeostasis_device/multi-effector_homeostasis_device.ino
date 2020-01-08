@@ -68,13 +68,13 @@ enum SYSTEMMODE systemMode = running;
 #define WHITE 0x7
 
 //LED COLOR CODE DEFINITIONS. 
-#define COLORRED (*strip).Color(128,0,0) //USED FOR PRE GAME INDICATION
-#define COLORORANGE (*strip).Color(128,64,0) //USED FOR SECONDINDICATORCOLOR
-#define COLORYELLOW (*strip).Color(128,128,0)
-#define COLORGREEN (*strip).Color(0,128,0) //USED FOR "GAME ON" INDICATION
-#define COLORBLUE (*strip).Color(0,0,128) //USED FOR SQUEEZEINDICATORCOLOR
-#define COLORPURPLE (*strip).Color(25,0,51)
-#define COLORCYAN (*strip).Color(0,128,128)
+#define COLORRED strip->Color(128,0,0) //USED FOR PRE GAME INDICATION
+#define COLORORANGE strip->Color(128,64,0) //USED FOR SECONDINDICATORCOLOR
+#define COLORYELLOW strip->Color(128,128,0)
+#define COLORGREEN strip->Color(0,128,0) //USED FOR "GAME ON" INDICATION
+#define COLORBLUE strip->Color(0,0,128) //USED FOR SQUEEZEINDICATORCOLOR
+#define COLORPURPLE strip->Color(25,0,51)
+#define COLORCYAN strip->Color(0,128,128)
 
 //AFFECTOR INDICATOR COLOR SELECTIONS
 #define SQUEEZEINDICATORCOLOR COLORBLUE
@@ -318,8 +318,8 @@ class _indicatorstrip: public _device {
       return(statusVariable);
     }
     void initialize(void) {
-      (*strip).begin();
-      (*strip).show();
+      strip->begin();
+      strip->show();
       return;
     }
     void setBoundingBox(int boxstart, int boxsize) {
@@ -328,31 +328,31 @@ class _indicatorstrip: public _device {
 
 
       if(gameStatus == started && indicatorsWithinBounds()){
-        (*strip).setPixelColor(boxstart, COLORGREEN);
-        (*strip).setPixelColor(boxstart+boxsize+1, COLORGREEN);
+        strip->setPixelColor(boxstart, COLORGREEN);
+        strip->setPixelColor(boxstart+boxsize+1, COLORGREEN);
       }
       if(gameStatus == started && !indicatorsWithinBounds()){
         gameStatus = lost;
-        (*strip).setPixelColor(boxstart, losingColor);
-        (*strip).setPixelColor(boxstart+boxsize+1, losingColor);
+        strip->setPixelColor(boxstart, losingColor);
+        strip->setPixelColor(boxstart+boxsize+1, losingColor);
       }
 
       if(gameStatus == notstarted && indicatorsWithinBounds()){
         gameStatus = started;
-        (*strip).setPixelColor(boxstart, COLORGREEN);
-        (*strip).setPixelColor(boxstart+boxsize+1, COLORGREEN);
+        strip->setPixelColor(boxstart, COLORGREEN);
+        strip->setPixelColor(boxstart+boxsize+1, COLORGREEN);
       }
       if(gameStatus == notstarted && !indicatorsWithinBounds()){
-        (*strip).setPixelColor(boxstart, COLORRED);
-        (*strip).setPixelColor(boxstart+boxsize+1, COLORRED);
+        strip->setPixelColor(boxstart, COLORRED);
+        strip->setPixelColor(boxstart+boxsize+1, COLORRED);
       }
 
       if(gameStatus == lost){
-        (*strip).setPixelColor(boxstart, losingColor);
-        (*strip).setPixelColor(boxstart+boxsize+1, losingColor);
+        strip->setPixelColor(boxstart, losingColor);
+        strip->setPixelColor(boxstart+boxsize+1, losingColor);
       }
 
-      (*strip).show();
+      strip->show();
       return;
     }
     void setConsumptionRate(float consrate) {
@@ -361,18 +361,18 @@ class _indicatorstrip: public _device {
     }
     void setIndicatorPosition(float position, int devnum) {
       if(devnum == HANDGRIPDEVNUM){
-        (*strip).setPixelColor(prevSqueezeIndPos, 0,0,0);
+        strip->setPixelColor(prevSqueezeIndPos, 0,0,0);
         if(position < LED_COUNTa && position >= 0){
           squeezeIndicatorPosition = position;
-          (*strip).setPixelColor(position, SQUEEZEINDICATORCOLOR);
+          strip->setPixelColor(position, SQUEEZEINDICATORCOLOR);
           prevSqueezeIndPos = (int)position;
         }
       }
       if(devnum == CRANKDEVNUM){
-        (*strip).setPixelColor(prevCrankIndPos, 0,0,0);
+        strip->setPixelColor(prevCrankIndPos, 0,0,0);
         if(position < LED_COUNTa && position >= 0){
           crankIndicatorPosition = position;
-          (*strip).setPixelColor(position, CRANKINDICATORCOLOR);
+          strip->setPixelColor(position, CRANKINDICATORCOLOR);
           prevCrankIndPos = (int)position;
         }
       }
@@ -396,7 +396,7 @@ class _indicatorstrip: public _device {
     //this is used to set the rates of production and consumption for homeostasis. 
     // void setRates(float productionrate, float consumptionrate, int devnum); 
     void update(void) {
-      (*strip).show();
+      strip->show();
       if(STRIPTESTMODE){
         if(HANDGRIPACTIVE == 1){
           Serial.print(" GRIP LED POSITION: ");
@@ -410,7 +410,7 @@ class _indicatorstrip: public _device {
       return(0);
     }
     _indicatorstrip(){
-      strip = new Adafruit_Neopixel(LED_COUNTa, LED_PIN, NEO_GRB + NEO_KHZ800);
+      strip = new Adafruit_NeoPixel(LED_COUNTa, LED_PIN, NEO_GRB + NEO_KHZ800);
     }
   private:
     float consumptionRate = DEFAULTCONSUMPTIONRATE/100.; //stays the same for all players
@@ -419,142 +419,142 @@ class _indicatorstrip: public _device {
     float squeezeProductionRate = DEFAULTPRODUCTIONRATE/100.;
 };
 
-// class _lcd: public _device {
-//   public: 
-//     Adafruit_RGBLCDShield *lcd_ptr;
-//     _lcd(){
-//       lcd_ptr = new Adafruit_RGBLCDShield();
-//     }
-// };
+class _lcd: public _device {
+  public: 
+    Adafruit_RGBLCDShield *lcd_ptr;
+    _lcd(){
+      lcd_ptr = new Adafruit_RGBLCDShield();
+    }
+};
 
-// class _handgrip: public _affector {
-//   public:
-//     _handgrip();
-//     float voltageValue(void) {
-//       return 5*analogRead(HANDGRIPPIN)/1023.; //simply returns the voltage read off the handgrip
-//     }
-//     //calculates the productionrate to feed into _indicatorstrip.setRate()
-//     //returns a value between 0 and HANDGRIPPRESCALER
-//     int calculateProductionRate(float pinADCval, _handgrip *Handgrip) {
-//       float voltagedelta = voltageValue()-Handgrip->handgripMinVoltage;
-//       float delta = (voltagedelta /(Handgrip->handgripMaxVoltage-Handgrip->handgripMinVoltage)) * 
-//         Handgrip->handgripPrescaler;
-//       return delta;
-//     }
+class _handgrip: public _affector {
+  public:
+    // _handgrip();
+    float voltageValue(void) {
+      return 5*analogRead(HANDGRIPPIN)/1023.; //simply returns the voltage read off the handgrip
+    }
+    //calculates the productionrate to feed into _indicatorstrip.setRate()
+    //returns a value between 0 and HANDGRIPPRESCALER
+    int calculateProductionRate(float pinADCval, _handgrip *Handgrip) {
+      float voltagedelta = voltageValue()-Handgrip->handgripMinVoltage;
+      float delta = (voltagedelta /(Handgrip->handgripMaxVoltage-Handgrip->handgripMinVoltage)) * 
+        Handgrip->handgripPrescaler;
+      return delta;
+    }
 
-//       int calibrationState = 0; //standby state
-//       float handgripMinVoltage;
-//       float handgripMaxVoltage;
-//       float handgripPrescaler = 75;
-//       float productionRate = 0;
-//   private:
-// };
+      int calibrationState = 0; //standby state
+      float handgripMinVoltage;
+      float handgripMaxVoltage;
+      float handgripPrescaler = 75;
+      float productionRate = 0;
+  private:
+};
 
-// class _encoder: public _affector {
-//   public:
+class _encoder: public _affector {
+  public:
+    float productionRate = 0;
+    int CRANKRATECALCDELAY = 250; //value is in milliseconds
+    int CRANKRATEMAX = 24;
+    int CRANKRATESCALER = 67;
 
-//     //set up the pins ands store the current values for the encoder
+    //set up the pins ands store the current values for the encoder
 
-//     //check https://playground.arduino.cc/Main/RotaryEncoders/#OnInterrupts
-//     //TO DO: Change to pin change interrupts and do software debouncing. 
-//     void initialize(void){
-//       pinMode(ENCODERPINA, INPUT_PULLUP);
-//       pinMode(ENCODERPINB, INPUT_PULLUP);
-//       prevAVal = digitalRead(ENCODERPINA);
-//       prevBVal = digitalRead(ENCODERPINB);
-//     }
-//     //polls the encoder pins and evaluates if the encoder has moved forward, backward, or stayed the same. 
-//     //returns 0 if no change, 1 if a CW movement was detected, -1 if a CCW movement was detected. 
-//     //using this in conjuction with a low pass filter helps clean up switch bounce
-//     //http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html to see how it works
-//     char returnDelta(void){
-//       pinAVal = digitalRead(ENCODERPINA);
-//       pinBVal = digitalRead(ENCODERPINB);
-//       unsigned char lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
-//       prevAVal = pinAVal;
-//       prevBVal = prevBVal;
-//       return quadratureLookupTable[lookupVal];
-//     }
-//     //we want to limit the crank to 1 RPM, as the encoder is only rated to that. It will
-//     //also make the device last longer as students wont be wild with it.
-//     //return a number between 0 and CRANKRATESCALER
-//     int calculateProductionRate(int crankSum){
-//       // calculates current moving average efficiently
-//       movingAverage += -movingAverage/movingAveragePeriod + crankSum;
-//       //make it pointless to spin the crank faster than the max spec RPM of 60
-//       //per the data sheet. It is a 24 position encoder and the moving average
-//         //is calculated over a period of 1 second. So we are trimming any pulses over 
-//         //24 in this function
-//       if(movingAverage > 24) movingAverage = 24;
-//       //prevent excessively small carryover
-//       if(movingAverage < 0.01) movingAverage = 0;
-//       // productionRate = movingAverage/24 * CRANKRATESCALER;
-//       return(movingAverage/24 * CRANKRATESCALER);
-//     }
-//     float productionRate = 0;
-//     int CRANKRATECALCDELAY 250 //value is in milliseconds
-//     int CRANKRATEMAX 24
-//     int CRANKRATESCALER 67
-//   private:
-//     volatile bool prevAVal;
-//     volatile bool prevBVal;
-//     volatile bool pinAVal;
-//     volatile bool pinBVal;
-//     float movingAverage = 0; //holds the moving average for the production of the hand crank. 
-//     float movingAveragePeriod = 1000/CRANKRATECALCDELAY; 
-//     // char quadratureLookupTable[16] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
-//     //removed extraneous values to help prevent bouncing, and inverted the polarity
-//     char quadratureLookupTable[16] = {0,0,0,0,0,0,0,-1,0,0,0,0,0,1,0,0};
-//     // http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html
-// };
+    //check https://playground.arduino.cc/Main/RotaryEncoders/#OnInterrupts
+    //TO DO: Change to pin change interrupts and do software debouncing. 
+    void initialize(void){
+      pinMode(ENCODERPINA, INPUT_PULLUP);
+      pinMode(ENCODERPINB, INPUT_PULLUP);
+      prevAVal = digitalRead(ENCODERPINA);
+      prevBVal = digitalRead(ENCODERPINB);
+    }
+    //polls the encoder pins and evaluates if the encoder has moved forward, backward, or stayed the same. 
+    //returns 0 if no change, 1 if a CW movement was detected, -1 if a CCW movement was detected. 
+    //using this in conjuction with a low pass filter helps clean up switch bounce
+    //http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html to see how it works
+    char returnDelta(void){
+      pinAVal = digitalRead(ENCODERPINA);
+      pinBVal = digitalRead(ENCODERPINB);
+      unsigned char lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
+      prevAVal = pinAVal;
+      prevBVal = prevBVal;
+      return quadratureLookupTable[lookupVal];
+    }
+    //we want to limit the crank to 1 RPM, as the encoder is only rated to that. It will
+    //also make the device last longer as students wont be wild with it.
+    //return a number between 0 and CRANKRATESCALER
+    int calculateProductionRate(int crankSum){
+      // calculates current moving average efficiently
+      movingAverage += -movingAverage/movingAveragePeriod + crankSum;
+      //make it pointless to spin the crank faster than the max spec RPM of 60
+      //per the data sheet. It is a 24 position encoder and the moving average
+        //is calculated over a period of 1 second. So we are trimming any pulses over 
+        //24 in this function
+      if(movingAverage > 24) movingAverage = 24;
+      //prevent excessively small carryover
+      if(movingAverage < 0.01) movingAverage = 0;
+      // productionRate = movingAverage/24 * CRANKRATESCALER;
+      return(movingAverage/24 * CRANKRATESCALER);
+    }
+  private:
+    volatile bool prevAVal;
+    volatile bool prevBVal;
+    volatile bool pinAVal;
+    volatile bool pinBVal;
+    float movingAverage = 0; //holds the moving average for the production of the hand crank. 
+    float movingAveragePeriod = 1000/CRANKRATECALCDELAY; 
+    // char quadratureLookupTable[16] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
+    //removed extraneous values to help prevent bouncing, and inverted the polarity
+    char quadratureLookupTable[16] = {0,0,0,0,0,0,0,-1,0,0,0,0,0,1,0,0};
+    // http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html
+};
 
-// //generic pointer declarations
-// _device *DCON1_ptr;
-// _device *ACON1_ptr;
-// _device *DACON1_ptr;
-// _device *DCON2_ptr;
-// _device *ACON2_ptr;
-// _device *DACON2_ptr;
+//generic pointer declarations
+_device *DCON1_ptr;
+_device *ACON1_ptr;
+_device *DACON1_ptr;
+_device *DCON2_ptr;
+_device *ACON2_ptr;
+_device *DACON2_ptr;
 
-// // _device *Indicatorstrip_ptr = new _indicatorstrip; //object for the indicatorstrip
-// // _device *Handgrip_ptr = new _handgrip; //object for the handgrip
-// _device *Handcrank_ptr = new _encoder; //object for the encoder
-// // _device *menu_ptr = new _menu; //object for the menu system
-// _device *lcd_ptr = new _lcd;
+_device *Indicatorstrip_ptr = new _indicatorstrip; //object for the indicatorstrip
+_device *Handgrip_ptr = new _handgrip; //object for the handgrip
+_device *Handcrank_ptr = new _encoder; //object for the encoder
+_device *menu_ptr = new _menu; //object for the menu system
+_device *lcd_ptr = new _lcd;
 //this is the interrupt handler for Timer0 output conpare match. 
-// ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
-//   stripDelayCounter++;
-//   crankRateCalcDelayCounter++;
-//   lcdRefreshCounter++;
-//   if(stripDelayCounter >= STRIPREFRESHDELAY) {  
-//     stripDelayCounter = 0; //reset the timer counter for the next run.
-//     STRIPREFRESHFLAG = true;
-//     //Set Rates based on affector positions (one for each affector)
-//   }
-//   if(crankRateCalcDelayCounter >= (*Handcrank_ptr).CRANKRATECALCDELAY){
-//     crankRateCalcDelayCounter = 0; 
-//     CRANKRATECALCFLAG = true;
+ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
+  stripDelayCounter++;
+  crankRateCalcDelayCounter++;
+  lcdRefreshCounter++;
+  if(stripDelayCounter >= STRIPREFRESHDELAY) {  
+    stripDelayCounter = 0; //reset the timer counter for the next run.
+    STRIPREFRESHFLAG = true;
+    //Set Rates based on affector positions (one for each affector)
+  }
+  if(crankRateCalcDelayCounter >= Handcrank_ptr->CRANKRATECALCDELAY){
+    crankRateCalcDelayCounter = 0; 
+    CRANKRATECALCFLAG = true;
     
-//   }
-//   if(gameStatus == lost){
-//     gameResetCounter++;
-//     if(gameResetCounter >= GAMERESETDELAY){
-//       gameResetCounter = 0;
-//       gameStatus = notstarted;
-//       RESETFLAG = true;
+  }
+  if(gameStatus == lost){
+    gameResetCounter++;
+    if(gameResetCounter >= GAMERESETDELAY){
+      gameResetCounter = 0;
+      gameStatus = notstarted;
+      RESETFLAG = true;
 
-//     }
-//   }
+    }
+  }
 
-//   if(lcdRefreshCounter >= LCDREFRESHDELAY){
-//     LCDREFRESHFLAG = true;  
-//     lcdRefreshCounter = 0;  
-//   }
-// }
+  if(lcdRefreshCounter >= LCDREFRESHDELAY){
+    LCDREFRESHFLAG = true;  
+    lcdRefreshCounter = 0;  
+  }
+}
 
 // ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
 //   // if(CRANKACTIVE == 1){
-//   //   int currentOut = (*Handcrank_ptr).returnDelta();
+//   //   int currentOut = Handcrank_ptr->returnDelta();
 //   //     //make sure it's not an invalid state change
 //   //     if(currentOut){ 
 //   //       //two or more matching values. Helps with logical debounce
@@ -586,8 +586,8 @@ void setup() {
   // PCIFR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
   // // enable interrupt for the GROUP 
   // PCICR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
-  // // (*Indicatorstrip_ptr).initialize();
-  // // (*Handcrank_ptr).initialize();
+  // // Indicatorstrip_ptr->initialize();
+  // // Handcrank_ptr->initialize();
 
   // //make all digital pins float high to prevent interrupting on stray voltages
  
@@ -606,33 +606,33 @@ void setup() {
 void loop() {
   // if(INITIALSETUPFLAG){
   // //init LCD
-  //   (*(_lcd*)(lcd_ptr)).lcd_ptr->begin(16, 2);
+  //   ->_lcd)(lcd_ptr)).lcd_ptr->begin(16, 2);
   // }
   // if(STRIPREFRESHFLAG){
   //   if(HANDGRIPACTIVE == 1){
-  //     if((*Handgrip_ptr)calibrationState == true){
-  //       (*Indicatorstrip_ptr)setProductionRate((*Handgrip_ptr)calculateProductionRate(
+  //     if->Handgrip_ptrcalibrationState == true){
+  //      ->Indicatorstrip_ptrsetProductionRate->Handgrip_ptrcalculateProductionRate(
   //         analogRead(HANDGRIPPIN), Handgrip_ptr), HANDGRIPDEVNUM);
   //       //set the indicator positions based on the production rate 
-  //       (*Indicatorstrip_ptr)setIndicatorPosition(
-  //         (*Handgrip_ptr)productionRate = (*Indicatorstrip_ptr)calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
+  //      ->Indicatorstrip_ptrsetIndicatorPosition(
+  //        ->Handgrip_ptrproductionRate =->Indicatorstrip_ptrcalculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
   //     } else {
-  //       (*Handgrip_ptr)handgripMaxVoltage = (*Handgrip_ptr)voltageValue();
-  //       (*Handgrip_ptr)calibrationState = true;
+  //      ->Handgrip_ptrhandgripMaxVoltage =->Handgrip_ptrvoltageValue();
+  //      ->Handgrip_ptrcalibrationState = true;
   //     }
   //   }
   //   //set the bounding box. 
   //   if(CRANKACTIVE == 1){
-  //     (*Indicatorstrip_ptr)setIndicatorPosition(
-  //       (*Handcrank_ptr)productionRate = (*Indicatorstrip_ptr)calculatePosition(CRANKDEVNUM), CRANKDEVNUM);
+  //    ->Indicatorstrip_ptrsetIndicatorPosition(
+  //      ->Handcrank_ptrproductionRate =->Indicatorstrip_ptrcalculatePosition(CRANKDEVNUM), CRANKDEVNUM);
   //   }
-  //   (*Indicatorstrip_ptr)setBoundingBox(BOXSTART, BOXSIZE);
-  //   (*Indicatorstrip_ptr)update();
+  //  ->Indicatorstrip_ptrsetBoundingBox(BOXSTART, BOXSIZE);
+  //  ->Indicatorstrip_ptrupdate();
   //   STRIPREFRESHFLAG = false;
   // }
   // if(CRANKRATECALCFLAG){
   //   if(CRANKACTIVE == 1){
-  //     (*Indicatorstrip_ptr)setProductionRate((*Handcrank_ptr)calculateProductionRate(
+  //    ->Indicatorstrip_ptrsetProductionRate->Handcrank_ptrcalculateProductionRate(
   //       crankSum), CRANKDEVNUM);
   //     //reset the sum because it has just been incorporated into a moving avg
   //     crankSum = 0; 
@@ -641,22 +641,22 @@ void loop() {
   //   }
   // }
   // if(RESETFLAG){
-  //   (*Indicatorstrip_ptr)setBoundingBox(BOXSTART, BOXSIZE);
+  //  ->Indicatorstrip_ptrsetBoundingBox(BOXSTART, BOXSIZE);
   //   RESETFLAG = false;
   // }
   // if(LCDREFRESHFLAG){
   //   // (note: line 1 is the second row, since counting begins with 0)
-  //   uint8_t button = (*lcd_ptr).readButtons();
+  //   uint8_t button = lcd_ptr->readButtons();
   //   if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == running){
   //     selectTimer++;
   //   }
   //   if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == running){
   //     systemMode = config;
-  //     (*lcd_ptr).clear();
-  //     (*menu_ptr).currentScreen = 0;
-  //     (*menu_ptr).printMenu(lcd_ptr);
+  //     lcd_ptr->clear();
+  //     menu_ptr->currentScreen = 0;
+  //     menu_ptr->printMenu(lcd_ptr);
 
-  //     (*lcd_ptr).setBacklight(RED);
+  //     lcd_ptr->setBacklight(RED);
   //     selectTimer = 0;
   //   }
   //   if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == config){
@@ -664,18 +664,18 @@ void loop() {
   //   }
   //   if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == config){
   //     systemMode = running;
-  //     (*lcd_ptr).setBacklight(WHITE);
+  //     lcd_ptr->setBacklight(WHITE);
   //     selectTimer = 0;
   //   }
   //   if(systemMode == running){
-  //     (*lcd_ptr).clear();
+  //     lcd_ptr->clear();
   //     // lcd_ptr->setCursor(0,0);
   //     // lcd_ptr->print("System");
   //     // lcd_ptr->setCursor(0,1);
   //     // lcd_ptr->print("Operational");
   //   }
   //   if(systemMode == config){
-  //     (*menu_ptr).navigateMenu(button, lcd_ptr);
+  //     menu_ptr->navigateMenu(button, lcd_ptr);
   //   }
   //   // navigateMenu(button);
   // LCDREFRESHFLAG = false;
