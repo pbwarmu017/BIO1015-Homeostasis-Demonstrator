@@ -275,6 +275,7 @@ class _indicatorstrip: public _device {
     int LED_COUNTa = 60; //the number of LEDs on the strip
     int BOXSTART = 22; //bounding box default starting position
     int BOXSIZE = 10; //bounding box default size
+    Adafruit_NeoPixel *strip;
     /*FUNCTIONS*/
     float calculatePosition(int devnum) {
       if(devnum == HANDGRIPDEVNUM){
@@ -409,7 +410,7 @@ class _indicatorstrip: public _device {
       return(0);
     }
     _indicatorstrip(){
-      Adafruit_NeoPixel strip(LED_COUNTa, LED_PIN, NEO_GRB + NEO_KHZ800);
+      strip = new Adafruit_Neopixel(LED_COUNTa, LED_PIN, NEO_GRB + NEO_KHZ800);
     }
   private:
     float consumptionRate = DEFAULTCONSUMPTIONRATE/100.; //stays the same for all players
