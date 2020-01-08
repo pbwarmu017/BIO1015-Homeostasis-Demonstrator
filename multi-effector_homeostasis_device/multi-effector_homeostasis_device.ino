@@ -21,6 +21,9 @@ enum SYSTEMMODE {
   config
 };
 
+enum GAMESTATUS gameStatus = notstarted;
+enum SYSTEMMODE systemMode = running;
+
 //port number defines for readability 
 #define DCON1_PORTNUM 1
 #define ACON1_PORTNUM 2
@@ -36,8 +39,7 @@ enum SYSTEMMODE {
 #define lcd_type 4
 #define menu_type 5
 
-extern enum GAMESTATUS gameStatus;
-extern enum SYSTEMMODE systemMode;
+
 
 #define HANDGRIPPIN A0
 #define ENCODERPINA 3
@@ -64,12 +66,6 @@ extern enum SYSTEMMODE systemMode;
 #define BLUE 0x4
 #define VIOLET 0x5
 #define WHITE 0x7
-
-//LEDSTRIP
-#define LED_PIN 6
-#define LED_COUNT 60 //the number of LEDs on the strip
-#define BOXSTART 22 //bounding box default starting position
-#define BOXSIZE 10 //bounding box default size
 
 //LED COLOR CODE DEFINITIONS. 
 #define COLORRED strip.Color(128,0,0) //USED FOR PRE GAME INDICATION
@@ -117,10 +113,6 @@ unsigned int *temp_ptr = 0;
 
 
 int selectTimer = 0;
-
-enum GAMESTATUS gameStatus = notstarted;
-enum SYSTEMMODE systemMode = running;
-
 bool INITIALSETUPFLAG;
 
 
@@ -267,7 +259,6 @@ class _menu: public _device{
 };
 
 class _indicatorstrip: public _device {
-  Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
   public:
      /*VARIABLES*/
@@ -280,6 +271,10 @@ class _indicatorstrip: public _device {
     double prevSqueezeIndPos = -1;
     double prevCrankIndPos = -1;
     float squeezeIndicatorPosition = DEFAULTINDICATORPOSITION; 
+    int LED_PIN = 6;
+    int LED_COUNTa = 60; //the number of LEDs on the strip
+    int BOXSTART = 22; //bounding box default starting position
+    int BOXSIZE = 10; //bounding box default size
     /*FUNCTIONS*/
     float calculatePosition(int devnum) {
       if(devnum == HANDGRIPDEVNUM){
@@ -366,7 +361,7 @@ class _indicatorstrip: public _device {
     void setIndicatorPosition(float position, int devnum) {
       if(devnum == HANDGRIPDEVNUM){
         strip.setPixelColor(prevSqueezeIndPos, 0,0,0);
-        if(position < LED_COUNT && position >= 0){
+        if(position < LED_COUNTa && position >= 0){
           squeezeIndicatorPosition = position;
           strip.setPixelColor(position, SQUEEZEINDICATORCOLOR);
           prevSqueezeIndPos = (int)position;
@@ -374,7 +369,7 @@ class _indicatorstrip: public _device {
       }
       if(devnum == CRANKDEVNUM){
         strip.setPixelColor(prevCrankIndPos, 0,0,0);
-        if(position < LED_COUNT && position >= 0){
+        if(position < LED_COUNTa && position >= 0){
           crankIndicatorPosition = position;
           strip.setPixelColor(position, CRANKINDICATORCOLOR);
           prevCrankIndPos = (int)position;
@@ -413,6 +408,9 @@ class _indicatorstrip: public _device {
       }
       return(0);
     }
+    _indicatorstrip(){
+      Adafruit_NeoPixel strip(LED_COUNTa, LED_PIN, NEO_GRB + NEO_KHZ800);
+    }
   private:
     float consumptionRate = DEFAULTCONSUMPTIONRATE/100.; //stays the same for all players
     float crankProductionRate = DEFAULTPRODUCTIONRATE/100.;
@@ -420,195 +418,195 @@ class _indicatorstrip: public _device {
     float squeezeProductionRate = DEFAULTPRODUCTIONRATE/100.;
 };
 
-class _lcd: public _device {
-  public: 
-    Adafruit_RGBLCDShield *lcd_ptr;
-    _lcd(){
-      lcd_ptr = new Adafruit_RGBLCDShield();
-    }
-};
+// class _lcd: public _device {
+//   public: 
+//     Adafruit_RGBLCDShield *lcd_ptr;
+//     _lcd(){
+//       lcd_ptr = new Adafruit_RGBLCDShield();
+//     }
+// };
 
-class _handgrip: public _affector {
-  public:
-    _handgrip();
-    float voltageValue(void) {
-      return 5*analogRead(HANDGRIPPIN)/1023.; //simply returns the voltage read off the handgrip
-    }
-    //calculates the productionrate to feed into _indicatorstrip.setRate()
-    //returns a value between 0 and HANDGRIPPRESCALER
-    int calculateProductionRate(float pinADCval, _handgrip *Handgrip) {
-      float voltagedelta = voltageValue()-Handgrip->handgripMinVoltage;
-      float delta = (voltagedelta /(Handgrip->handgripMaxVoltage-Handgrip->handgripMinVoltage)) * 
-        Handgrip->handgripPrescaler;
-      return delta;
-    }
+// class _handgrip: public _affector {
+//   public:
+//     _handgrip();
+//     float voltageValue(void) {
+//       return 5*analogRead(HANDGRIPPIN)/1023.; //simply returns the voltage read off the handgrip
+//     }
+//     //calculates the productionrate to feed into _indicatorstrip.setRate()
+//     //returns a value between 0 and HANDGRIPPRESCALER
+//     int calculateProductionRate(float pinADCval, _handgrip *Handgrip) {
+//       float voltagedelta = voltageValue()-Handgrip->handgripMinVoltage;
+//       float delta = (voltagedelta /(Handgrip->handgripMaxVoltage-Handgrip->handgripMinVoltage)) * 
+//         Handgrip->handgripPrescaler;
+//       return delta;
+//     }
 
-      int calibrationState = 0; //standby state
-      float handgripMinVoltage;
-      float handgripMaxVoltage;
-      float handgripPrescaler = 75;
-      float productionRate = 0;
-  private:
-};
+//       int calibrationState = 0; //standby state
+//       float handgripMinVoltage;
+//       float handgripMaxVoltage;
+//       float handgripPrescaler = 75;
+//       float productionRate = 0;
+//   private:
+// };
 
-class _encoder: public _affector {
-  public:
+// class _encoder: public _affector {
+//   public:
 
-    //set up the pins ands store the current values for the encoder
+//     //set up the pins ands store the current values for the encoder
 
-    //check https://playground.arduino.cc/Main/RotaryEncoders/#OnInterrupts
-    //TO DO: Change to pin change interrupts and do software debouncing. 
-    void initialize(void){
-      pinMode(ENCODERPINA, INPUT_PULLUP);
-      pinMode(ENCODERPINB, INPUT_PULLUP);
-      prevAVal = digitalRead(ENCODERPINA);
-      prevBVal = digitalRead(ENCODERPINB);
-    }
-    //polls the encoder pins and evaluates if the encoder has moved forward, backward, or stayed the same. 
-    //returns 0 if no change, 1 if a CW movement was detected, -1 if a CCW movement was detected. 
-    //using this in conjuction with a low pass filter helps clean up switch bounce
-    //http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html to see how it works
-    char returnDelta(void){
-      pinAVal = digitalRead(ENCODERPINA);
-      pinBVal = digitalRead(ENCODERPINB);
-      unsigned char lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
-      prevAVal = pinAVal;
-      prevBVal = prevBVal;
-      return quadratureLookupTable[lookupVal];
-    }
-    //we want to limit the crank to 1 RPM, as the encoder is only rated to that. It will
-    //also make the device last longer as students wont be wild with it.
-    //return a number between 0 and CRANKRATESCALER
-    int calculateProductionRate(int crankSum){
-      // calculates current moving average efficiently
-      movingAverage += -movingAverage/movingAveragePeriod + crankSum;
-      //make it pointless to spin the crank faster than the max spec RPM of 60
-      //per the data sheet. It is a 24 position encoder and the moving average
-        //is calculated over a period of 1 second. So we are trimming any pulses over 
-        //24 in this function
-      if(movingAverage > 24) movingAverage = 24;
-      //prevent excessively small carryover
-      if(movingAverage < 0.01) movingAverage = 0;
-      // productionRate = movingAverage/24 * CRANKRATESCALER;
-      return(movingAverage/24 * CRANKRATESCALER);
-    }
-    float productionRate = 0;
-    int CRANKRATECALCDELAY 250 //value is in milliseconds
-    int CRANKRATEMAX 24
-    int CRANKRATESCALER 67
-  private:
-    volatile bool prevAVal;
-    volatile bool prevBVal;
-    volatile bool pinAVal;
-    volatile bool pinBVal;
-    float movingAverage = 0; //holds the moving average for the production of the hand crank. 
-    float movingAveragePeriod = 1000/CRANKRATECALCDELAY; 
-    // char quadratureLookupTable[16] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
-    //removed extraneous values to help prevent bouncing, and inverted the polarity
-    char quadratureLookupTable[16] = {0,0,0,0,0,0,0,-1,0,0,0,0,0,1,0,0};
-    // http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html
-};
+//     //check https://playground.arduino.cc/Main/RotaryEncoders/#OnInterrupts
+//     //TO DO: Change to pin change interrupts and do software debouncing. 
+//     void initialize(void){
+//       pinMode(ENCODERPINA, INPUT_PULLUP);
+//       pinMode(ENCODERPINB, INPUT_PULLUP);
+//       prevAVal = digitalRead(ENCODERPINA);
+//       prevBVal = digitalRead(ENCODERPINB);
+//     }
+//     //polls the encoder pins and evaluates if the encoder has moved forward, backward, or stayed the same. 
+//     //returns 0 if no change, 1 if a CW movement was detected, -1 if a CCW movement was detected. 
+//     //using this in conjuction with a low pass filter helps clean up switch bounce
+//     //http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html to see how it works
+//     char returnDelta(void){
+//       pinAVal = digitalRead(ENCODERPINA);
+//       pinBVal = digitalRead(ENCODERPINB);
+//       unsigned char lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
+//       prevAVal = pinAVal;
+//       prevBVal = prevBVal;
+//       return quadratureLookupTable[lookupVal];
+//     }
+//     //we want to limit the crank to 1 RPM, as the encoder is only rated to that. It will
+//     //also make the device last longer as students wont be wild with it.
+//     //return a number between 0 and CRANKRATESCALER
+//     int calculateProductionRate(int crankSum){
+//       // calculates current moving average efficiently
+//       movingAverage += -movingAverage/movingAveragePeriod + crankSum;
+//       //make it pointless to spin the crank faster than the max spec RPM of 60
+//       //per the data sheet. It is a 24 position encoder and the moving average
+//         //is calculated over a period of 1 second. So we are trimming any pulses over 
+//         //24 in this function
+//       if(movingAverage > 24) movingAverage = 24;
+//       //prevent excessively small carryover
+//       if(movingAverage < 0.01) movingAverage = 0;
+//       // productionRate = movingAverage/24 * CRANKRATESCALER;
+//       return(movingAverage/24 * CRANKRATESCALER);
+//     }
+//     float productionRate = 0;
+//     int CRANKRATECALCDELAY 250 //value is in milliseconds
+//     int CRANKRATEMAX 24
+//     int CRANKRATESCALER 67
+//   private:
+//     volatile bool prevAVal;
+//     volatile bool prevBVal;
+//     volatile bool pinAVal;
+//     volatile bool pinBVal;
+//     float movingAverage = 0; //holds the moving average for the production of the hand crank. 
+//     float movingAveragePeriod = 1000/CRANKRATECALCDELAY; 
+//     // char quadratureLookupTable[16] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
+//     //removed extraneous values to help prevent bouncing, and inverted the polarity
+//     char quadratureLookupTable[16] = {0,0,0,0,0,0,0,-1,0,0,0,0,0,1,0,0};
+//     // http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html
+// };
 
-//generic pointer declarations
-_device *DCON1_ptr;
-_device *ACON1_ptr;
-_device *DACON1_ptr;
-_device *DCON2_ptr;
-_device *ACON2_ptr;
-_device *DACON2_ptr;
+// //generic pointer declarations
+// _device *DCON1_ptr;
+// _device *ACON1_ptr;
+// _device *DACON1_ptr;
+// _device *DCON2_ptr;
+// _device *ACON2_ptr;
+// _device *DACON2_ptr;
 
-// _device *Indicatorstrip_ptr = new _indicatorstrip; //object for the indicatorstrip
-// _device *Handgrip_ptr = new _handgrip; //object for the handgrip
-_device *Handcrank_ptr = new _encoder; //object for the encoder
-// _device *menu_ptr = new _menu; //object for the menu system
-_device *lcd_ptr = new _lcd;
+// // _device *Indicatorstrip_ptr = new _indicatorstrip; //object for the indicatorstrip
+// // _device *Handgrip_ptr = new _handgrip; //object for the handgrip
+// _device *Handcrank_ptr = new _encoder; //object for the encoder
+// // _device *menu_ptr = new _menu; //object for the menu system
+// _device *lcd_ptr = new _lcd;
 //this is the interrupt handler for Timer0 output conpare match. 
-ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
-  stripDelayCounter++;
-  crankRateCalcDelayCounter++;
-  lcdRefreshCounter++;
-  if(stripDelayCounter >= STRIPREFRESHDELAY) {  
-    stripDelayCounter = 0; //reset the timer counter for the next run.
-    STRIPREFRESHFLAG = true;
-    //Set Rates based on affector positions (one for each affector)
-  }
-  if(crankRateCalcDelayCounter >= (*Handcrank_ptr).CRANKRATECALCDELAY){
-    crankRateCalcDelayCounter = 0; 
-    CRANKRATECALCFLAG = true;
+// ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
+//   stripDelayCounter++;
+//   crankRateCalcDelayCounter++;
+//   lcdRefreshCounter++;
+//   if(stripDelayCounter >= STRIPREFRESHDELAY) {  
+//     stripDelayCounter = 0; //reset the timer counter for the next run.
+//     STRIPREFRESHFLAG = true;
+//     //Set Rates based on affector positions (one for each affector)
+//   }
+//   if(crankRateCalcDelayCounter >= (*Handcrank_ptr).CRANKRATECALCDELAY){
+//     crankRateCalcDelayCounter = 0; 
+//     CRANKRATECALCFLAG = true;
     
-  }
-  if(gameStatus == lost){
-    gameResetCounter++;
-    if(gameResetCounter >= GAMERESETDELAY){
-      gameResetCounter = 0;
-      gameStatus = notstarted;
-      RESETFLAG = true;
+//   }
+//   if(gameStatus == lost){
+//     gameResetCounter++;
+//     if(gameResetCounter >= GAMERESETDELAY){
+//       gameResetCounter = 0;
+//       gameStatus = notstarted;
+//       RESETFLAG = true;
 
-    }
-  }
+//     }
+//   }
 
-  if(lcdRefreshCounter >= LCDREFRESHDELAY){
-    LCDREFRESHFLAG = true;  
-    lcdRefreshCounter = 0;  
-  }
-}
+//   if(lcdRefreshCounter >= LCDREFRESHDELAY){
+//     LCDREFRESHFLAG = true;  
+//     lcdRefreshCounter = 0;  
+//   }
+// }
 
-ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
-  // if(CRANKACTIVE == 1){
-  //   int currentOut = (*Handcrank_ptr).returnDelta();
-  //     //make sure it's not an invalid state change
-  //     if(currentOut){ 
-  //       //two or more matching values. Helps with logical debounce
-  //       if(currentOut == prevOut){ 
-  //         crankSum += currentOut;
-  //       }
-  //       prevOut = currentOut; //update the previous value
-  //   }
-  // }
-}
+// ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
+//   // if(CRANKACTIVE == 1){
+//   //   int currentOut = (*Handcrank_ptr).returnDelta();
+//   //     //make sure it's not an invalid state change
+//   //     if(currentOut){ 
+//   //       //two or more matching values. Helps with logical debounce
+//   //       if(currentOut == prevOut){ 
+//   //         crankSum += currentOut;
+//   //       }
+//   //       prevOut = currentOut; //update the previous value
+//   //   }
+//   // }
+// }
 
 void setup() {
 
-  //init serial for debugging  
-  Serial.begin(2000000); 
+  // //init serial for debugging  
+  // Serial.begin(2000000); 
 
-  //setup timer0 to call interrupt OCR0A every REFRESHTIMEVAL
-  OCR0A = 0xFA; //set to trigger TIMER0_COMPA_vect every millisecond
-  TIMSK0 |= _BV(OCIE0A); //enable the output compare interrupt on timer0
+  // //setup timer0 to call interrupt OCR0A every REFRESHTIMEVAL
+  // OCR0A = 0xFA; //set to trigger TIMER0_COMPA_vect every millisecond
+  // TIMSK0 |= _BV(OCIE0A); //enable the output compare interrupt on timer0
 
-  //setup interrupt on pin change for the ender pins.
-  //This interrupt is enabled per group (digital pins 1-7, digtial pins 8-13)
-  // enable pin change interrupt for encoder pin A
-  *digitalPinToPCMSK(ENCODERPINA) |= bit (digitalPinToPCMSKbit(ENCODERPINA)); 
-  // enable ping change interrupt for encoder pin B
-  *digitalPinToPCMSK(ENCODERPINB) |= bit (digitalPinToPCMSKbit(ENCODERPINB)); 
-  // clear any outstanding interrupt flag
+  // //setup interrupt on pin change for the ender pins.
+  // //This interrupt is enabled per group (digital pins 1-7, digtial pins 8-13)
+  // // enable pin change interrupt for encoder pin A
+  // *digitalPinToPCMSK(ENCODERPINA) |= bit (digitalPinToPCMSKbit(ENCODERPINA)); 
+  // // enable ping change interrupt for encoder pin B
+  // *digitalPinToPCMSK(ENCODERPINB) |= bit (digitalPinToPCMSKbit(ENCODERPINB)); 
+  // // clear any outstanding interrupt flag
 
-  PCIFR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
-  // enable interrupt for the GROUP 
-  PCICR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
-  // (*Indicatorstrip_ptr).initialize();
-  // (*Handcrank_ptr).initialize();
+  // PCIFR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
+  // // enable interrupt for the GROUP 
+  // PCICR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
+  // // (*Indicatorstrip_ptr).initialize();
+  // // (*Handcrank_ptr).initialize();
 
-  //make all digital pins float high to prevent interrupting on stray voltages
+  // //make all digital pins float high to prevent interrupting on stray voltages
  
-  pinMode(0, INPUT_PULLUP);
-  pinMode(1, INPUT_PULLUP);
-  pinMode(2, INPUT_PULLUP);
-  pinMode(3, INPUT_PULLUP);
-  pinMode(4, INPUT_PULLUP);
-  pinMode(5, INPUT_PULLUP);
-  pinMode(6, INPUT_PULLUP);
-  pinMode(7, INPUT_PULLUP);
-  // pinMode(A0, INPUT);
-  INITIALSETUPFLAG = true;
+  // pinMode(0, INPUT_PULLUP);
+  // pinMode(1, INPUT_PULLUP);
+  // pinMode(2, INPUT_PULLUP);
+  // pinMode(3, INPUT_PULLUP);
+  // pinMode(4, INPUT_PULLUP);
+  // pinMode(5, INPUT_PULLUP);
+  // pinMode(6, INPUT_PULLUP);
+  // pinMode(7, INPUT_PULLUP);
+  // // pinMode(A0, INPUT);
+  // INITIALSETUPFLAG = true;
 }
 
 void loop() {
-  if(INITIALSETUPFLAG){
-  //init LCD
-    (*(_lcd*)(lcd_ptr)).lcd_ptr->begin(16, 2);
-  }
+  // if(INITIALSETUPFLAG){
+  // //init LCD
+  //   (*(_lcd*)(lcd_ptr)).lcd_ptr->begin(16, 2);
+  // }
   // if(STRIPREFRESHFLAG){
   //   if(HANDGRIPACTIVE == 1){
   //     if((*Handgrip_ptr)calibrationState == true){
