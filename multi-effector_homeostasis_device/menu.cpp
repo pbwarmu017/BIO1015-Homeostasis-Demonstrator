@@ -1,31 +1,49 @@
 #include "superclasses.cpp"
 #include "lcd.cpp"
+
+#ifndef MENU_CPP
+#define MENU_CPP
+
 class _menu: public _device{
   public:
-    static const int numOfScreens = 4;  //number of options in screens[]
-    static const int numOfModes = 2; //number of options in modescreens[]
-    static const int numOfPorts = 6; //number of options in portscreens[]
+    static const int numOfScreens = 6;  //number of options in screens[]
+    static const int numOfDconDevs = 1; //number of options in dconscreens[]
+    static const int numOfAconDevs = 1; //number of options in aconscreens[]
+    static const int numOfDaconDevs = 1; //number of options in daconscreens[]
     int currentScreen = 0;
     //The following are selection tracking variables. As the user uses the
     //menu the contents of these values will change.
-    int sqafport = 0;
-    int sqafmode = 0;
-    int crafport = 0;
-    int crafmode = 0;
+    int dcon1prevmode = -1
+    int dcon2prevmode = -1
+    int acon1prevmode = -1
+    int acon2prevmode = -1
+    int dacon1prevmode = -1
+    int dacon2prevmode = -1
+    int dcon1mode = 0;
+    int dcon2mode = 0;
+    int acon1mode = 0;
+    int acon2mode = 0;
+    int daconvmode = 0;
+    int daconvmode = 0;
+    
+    
+    
 
     //LCD MENU TEXT OPTIONS
 
     //Main Menu Screens
-    String screens[numOfScreens][2] = {{"SQUEEZE AFFECTOR","MODE: "},
-      {"SQUEEZE AFFECTOR","PORT: "},{"CRANK AFFECTOR","MODE:"},{"CRANK AFFECTOR","PORT: "}};
+    String screens[numOfScreens][2] = {{"DCON1","DEV: "},
+      {"DCON2","DEV: "},{"ACON1","DEV:"},{"ACON2","DEV: "},{"DACON1","DEV: "},{"DACON2","DEV: "}};
 
-    //Mode Selections. If you add to this, increase numOfModes to match.
-    String modescreens[2] = {"OFF","ON"};
+    //Valid selections for each port type
+    String dconscreens[2] = {"OFF","CRANK"};
+    String aconscreens[2] = {"OFF","SQUEEZE"};
+    String daconscreens[2] = {"OFF","SQUEEZE"};
 
     //Port Selections. If you add to this, increase numOfPorts to match. 
-    String portscreens[6] = {"DCON1","ACON1","DACON1","DCON2","ACON2","DACON2"};
+    // String portscreens[6] = {"DCON1","ACON1","DACON1","DCON2","ACON2","DACON2"};
     
-    int navigateMenu(int button, _lcd* lcd){
+    void navigateMenu(int button, _lcd* lcd){
       if(button & BUTTON_UP) {
         if (currentScreen == 0) {
               currentScreen = numOfScreens-1;
@@ -54,43 +72,47 @@ class _menu: public _device{
         parameterChange(1);
         printMenu(lcd);
       }
-      return(0);
     }
+
     void parameterChange(int index) {
       if(index == 1){
-        if(currentScreen == 0){
-          if(sqafmode < numOfModes-1) sqafmode++;
-          else sqafmode = 0;
+        if(currentScreen == 0){ //DCON1
+          if(dcon1mode < numOfDconDevs-1){
+          dcon1prevmode = dcon1mode;
+          dcon1mode++; 
+          }
+          else{
+            dcon1prevmode = dcon1mode;
+            dcon1mode = 0;
+          } 
         }
-        if(currentScreen == 1) {
-          if(sqafport < numOfPorts-1) sqafport++;
-          else sqafport = 0;
-        }
-        if(currentScreen == 2) {
-          if(crafmode < numOfModes-1) crafmode++;
-          else crafmode = 0;
-        }
-        if(currentScreen == 3) {
-          if(crafport < numOfPorts-1) crafport++;
-          else crafport = 0;
+        if(currentScreen == 1){ //ACON1
+          if(acon1mode < numOfDconDevs-1){
+          acon1prevmode = acon1mode;
+          acon1mode++; 
+          }
+          else{
+            acon1prevmode = acon1mode;
+            acon1mode = 0;
+
+          }
+          if(acon1mode == 1 && dacon1mode == 1){ //only one member of group 1 can be active at one time. 
+            dacon1mode = 0;
+            dacon1prevmode = -1;
+          }
         }
       }
+
       if(index == 0){
-        if(currentScreen == 0) {
-          if(sqafmode > 0) sqafmode--;
-          else sqafmode = numOfModes-1;
-        }
-        if(currentScreen == 1) {
-          if(sqafport > 0) sqafport--;
-          else sqafport = numOfPorts-1;
-        } 
-        if(currentScreen == 2) {
-          if(crafmode > 0) crafmode--;
-          else crafmode = numOfModes-1;
-        }
-        if(currentScreen == 3) {
-          if(crafport > 0) crafport--;
-          else crafport = numOfPorts-1;
+        if(currentScreen == 0) { //DCON1
+          if(dcon1mode > 0){
+            dcon1prevmode = dcon1mode;
+            dcon1mode--;
+          }
+          else{
+            dcon1prevmode = dcon1mode;
+            dcon1mode = numOfDconDevs-1;
+          }
         }
       }
     }
@@ -125,3 +147,5 @@ class _menu: public _device{
       }
     }
 };
+
+#endif
