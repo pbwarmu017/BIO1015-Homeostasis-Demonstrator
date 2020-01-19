@@ -1,35 +1,35 @@
 #include "superclasses.cpp"
+#include "lcd.cpp"
+#include "indicatorstrip.cpp"
+
+#ifndef ENCODER_CPP
+#define ENCODER_CPP 
 
 //encoder defines 
 #define CRANKRATECALCDELAY 250 //value is in milliseconds
 #define CRANKRATEMAX 24
 #define CRANKRATESCALER 67
 
-#define ENCODERPINA 3
-#define ENCODERPINB 5
-
 
 class _encoder: public _affector {
   public:
     float productionRate = 0;
+    int encoderpina;
+    int encoderpinb;
 
-    //set up the pins ands store the current values for the encoder
+    _lcd* lcd_ptr;
+    _indicatorstrip* indicatorstrip_ptr;
 
     //check https://playground.arduino.cc/Main/RotaryEncoders/#OnInterrupts
     //TO DO: Change to pin change interrupts and do software debouncing. 
-    void initialize(void){
-      pinMode(ENCODERPINA, INPUT_PULLUP);
-      pinMode(ENCODERPINB, INPUT_PULLUP);
-      prevAVal = digitalRead(ENCODERPINA);
-      prevBVal = digitalRead(ENCODERPINB);
-    }
+    
     //polls the encoder pins and evaluates if the encoder has moved forward, backward, or stayed the same. 
     //returns 0 if no change, 1 if a CW movement was detected, -1 if a CCW movement was detected. 
     //using this in conjuction with a low pass filter helps clean up switch bounce
     //http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html to see how it works
     char returnDelta(void){
-      pinAVal = digitalRead(ENCODERPINA);
-      pinBVal = digitalRead(ENCODERPINB);
+      pinAVal = digitalRead(encoderpina);
+      pinBVal = digitalRead(encoderpinb);
       unsigned char lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
       prevAVal = pinAVal;
       prevBVal = prevBVal;
@@ -51,6 +51,15 @@ class _encoder: public _affector {
       // productionRate = movingAverage/24 * CRANKRATESCALER;
       return(movingAverage/24 * CRANKRATESCALER);
     }
+    //upon object creation, set up the pins ands store the current values for the encoder
+    //this alsoo stores pointerse to the lcd and incicatorstrup objects
+    _encoder(_device* lcd, _device* indicatorstrip){
+      prevAVal = digitalRead(encoderpina);
+      prevBVal = digitalRead(encoderpinb);
+      //this object needs to know about the LCD and indicatorstrip
+      lcd_ptr = (_lcd*)lcd;
+      indicatorstrip_ptr = (_indicatorstrip*)indicatorstrip;
+    }
   private:
     volatile bool prevAVal;
     volatile bool prevBVal;
@@ -63,3 +72,5 @@ class _encoder: public _affector {
     char quadratureLookupTable[16] = {0,0,0,0,0,0,0,-1,0,0,0,0,0,1,0,0};
     // http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html
 };
+
+#endif

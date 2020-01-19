@@ -48,7 +48,7 @@ Adafruit RGB LCD Sheild Library
   _device *DCON2_ptr;
   _device *ACON2_ptr;
   _device *DACON2_ptr;
-  _device *indicatorstrip_ptr;
+  _device *INDICATORSTRIP_TYPE;
   _device *menu_ptr;
   _device *lcd_ptr;
   //generic device pointer to be used in createObject()
@@ -84,8 +84,8 @@ _device* createObject(int objtype, int portnum){
     return(gen_ptr);
   }
 
-  if(objtype == ENCODER_TYPE){
-    gen_ptr = new _encoder(lcd_ptr,indicatorstrip_ptr);
+  if(objtype == HANDCRANK_TYPE){
+    gen_ptr = new _encoder;
 
     if(portnum == DCON1_PORTNUM){
       ((_encoder*)gen_ptr)->encoderpina = 3;
