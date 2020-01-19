@@ -22,9 +22,8 @@ extern enum GAMESTATUS gameStatus;
 extern enum SYSTEMMODE systemMode;
 
 #define HANDGRIPDEVNUM 0 //device number for handgrip
-#define HANDGRIPACTIVE 1
 #define CRANKDEVNUM 1
-#define CRANKACTIVE 1
+
 //port number defines for readability 
 #define DCON1_PORTNUM 1
 #define ACON1_PORTNUM 2
@@ -53,11 +52,14 @@ extern enum SYSTEMMODE systemMode;
 
 class _device {
   public:
+    // !_device(){
+    //   return(0);
+    // }
     // return(0);`
 };
 
 class _affector: public _device {
-  public:
+  public: 
     float returnPosition(float currentPosition){
       return(currentPosition);
     }
