@@ -3,64 +3,125 @@ REQUIRED LIBRARIES: Must be installed in the arduino IDE to compile this
 Adafruit_Neopixel
 Adafruit RGB LCD Sheild Library
 */
-#include "superclasses.cpp"
-#include "encoder.cpp"
-#include "handgrip.cpp"
-#include "lcd.cpp"
-#include "indicatorstrip.cpp"
-#include "menu.cpp"
+//GLOBAL VARIABLES------------------------------------------
+  //used for trackikng how long the select button has been depressed. 
+  int selectTimer = 0;
+  // bool INITIALSETUPFLAG;
+  bool configchange; //used to prompt changes in system config by user.
 
-enum GAMESTATUS gameStatus = notstarted;
-enum SYSTEMMODE systemMode = running;
+//INCLUDES ------------------------------------------
+  #include "superclasses.cpp"
+  #include "encoder.cpp"
+  #include "handgrip.cpp"
+  #include "lcd.cpp"
+  #include "indicatorstrip.cpp"
+  #include "menu.cpp"
 
-// #include "parents.cpp"
-// #include "encoder.cpp"
-// #include "handgrip.cpp"
-// #include "lcd.cpp"
-// #include "ledstrip.cpp"
-// #include "menu.cpp"
 
-//used to track timer overflows for refreshing the strip
-volatile unsigned stripDelayCounter = 0; 
-volatile int prevOut = 0;
-volatile int crankRateCalcDelayCounter = 50;
-volatile int gameResetCounter = 0;
-volatile int lcdRefreshCounter = 0;
-volatile int crankSum = 0;
-volatile bool STRIPREFRESHFLAG = false;
-volatile bool CRANKRATECALCFLAG = false;
-volatile bool LCDREFRESHFLAG = false;
-volatile bool RESETFLAG = false;
+//ENUMS ------------------------------------------
+  enum GAMESTATUS gameStatus = notstarted;
+  enum SYSTEMMODE systemMode = running;
 
-int selectTimer = 0;
-bool INITIALSETUPFLAG;
 
-//generic pointer declarations
-_device *DCON1_ptr;
-_device *ACON1_ptr;
-_device *DACON1_ptr;
-_device *DCON2_ptr;
-_device *ACON2_ptr;
-_device *DACON2_ptr;
+//GLOBAl VARIABLES FOR USE IN ISRS------------------------------------------
+  volatile unsigned stripDelayCounter = 0; 
+  volatile int prevOut = 0;
+  volatile int crankRateCalcDelayCounter = 50;
+  volatile int gameResetCounter = 0;
+  volatile int lcdRefreshCounter = 0;
+  volatile int crankSum = 0;
+  volatile bool STRIPREFRESHFLAG = false;
+  volatile bool CRANKRATECALCFLAG = false;
+  volatile bool LCDREFRESHFLAG = false;
+  volatile bool RESETFLAG = false;
 
-//generic pointer used in createObject()
-_device *gen_ptr;
 
-_device *Indicatorstrip_ptr = new _indicatorstrip; //object for the indicatorstrip
-_device *menu_ptr = new _menu; //object for the menu system
-_device *lcd_ptr;
 
-_device *Handgrip_ptr = new _handgrip; //object for the handgrip
-_device *Handcrank_ptr = new _encoder; //object for the encoder
-//this is the interrupt handler for Timer0 output conpare match. 
 
+
+//GLOBAL OBJECTS------------------------------------------
+  //generic pointer declarations. Specific device pointers will be assigned to these as needed by the system. 
+
+  _device *DCON1_ptr;
+  _device *ACON1_ptr;
+  _device *DACON1_ptr;
+  _device *DCON2_ptr;
+  _device *ACON2_ptr;
+  _device *DACON2_ptr;
+  _device *indicatorstrip_ptr;
+  _device *menu_ptr;
+  _device *lcd_ptr;
+  //generic device pointer to be used in createObject()
+  _device *gen_ptr;
+
+
+//_device *Handgrip_ptr = new _handgrip; //object for the handgrip
+//_device *Handcrank_ptr = new _encoder; //object for the encoder
+
+
+//this function is responsible for creating a new object on the HEAP, setting up the ports for that object
+//and then returning a pointer to the newly created object. Use the new keyword. DO NOT create these objects on
+//the stack!
+//types and portnums are definded in superclasses.cpp
 _device* createObject(int objtype, int portnum){
-  if(objtype == lcd_type){
+  if(objtype == LCD_TYPE){
     gen_ptr = new _lcd;
     return(gen_ptr);
   }
+
+  if(objtype == MENU_TYPE){
+    gen_ptr = new _menu;
+    return(gen_ptr);
+  }
+
+  if(objtype == indicatorStrip_type){
+    gen_ptr = new _indicatorstrip; 
+    return(gen_ptr);
+  }
+
+  if(objtype == HANDGRIP_TYPE){
+    gen_ptr = new _handgrip;
+    return(gen_ptr);
+  }
+
+  if(objtype == ENCODER_TYPE){
+    gen_ptr = new _encoder(lcd_ptr,indicatorstrip_ptr);
+
+    if(portnum == DCON1_PORTNUM){
+      ((_encoder*)gen_ptr)->encoderpina = 3;
+      ((_encoder*)gen_ptr)->encoderpinb = 5;
+    }
+    if(portnum == DCON2_PORTNUM){
+      ((_encoder*)gen_ptr)->encoderpina = 9;
+      ((_encoder*)gen_ptr)->encoderpinb = 10;
+    }
+    // enable pin change interrupt for encoder pin A
+    *digitalPinToPCMSK(((_encoder*)gen_ptr)->encoderpina) |= 
+      bit(digitalPinToPCMSKbit(((_encoder*)gen_ptr)->encoderpina)); 
+
+    // enable ping change interrupt for encoder pin B
+    *digitalPinToPCMSK(((_encoder*)gen_ptr)->encoderpinb) |= 
+      bit(digitalPinToPCMSKbit(((_encoder*)gen_ptr)->encoderpinb)); 
+
+    // clear any outstanding pin change interrupt flags
+    PCIFR  |= bit (digitalPinToPCICRbit(((_encoder*)gen_ptr)->encoderpina)); 
+    PCIFR  |= bit (digitalPinToPCICRbit(((_encoder*)gen_ptr)->encoderpinb));
+
+    // enable interrupt for the GROUP (digital pins 1-7, digtial pins 8-13)
+    PCICR  |= bit (digitalPinToPCICRbit(((_encoder*)gen_ptr)->encoderpina)); 
+    PCICR  |= bit (digitalPinToPCICRbit(((_encoder*)gen_ptr)->encoderpinb));
+
+    pinMode(((_encoder*)gen_ptr)->encoderpinb, INPUT_PULLUP);
+    pinMode(((_encoder*)gen_ptr)->encoderpina, INPUT_PULLUP);
+  }
+  return(gen_ptr);
 }
-ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
+// INTERRUPT SERVICE ROUTINES------------------------------------------
+
+//Interrupt service routine for a timer that exectures every millisecond. DO NOT call functions/methods from within
+//an ISR. Set flags that are checked for within the main loop. You want to spend as little time inside of an ISR as
+//possible to prevent undefined program behavior.  
+ISR(TIMER0_COMPA_vect) {
   stripDelayCounter++;
   crankRateCalcDelayCounter++;
   lcdRefreshCounter++;
@@ -90,59 +151,56 @@ ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
   }
 }
 
+//Interrupt service routine for pin change interrupt on D0 to D7. DO NOT call functions/methods from within
+//an ISR. Set flags that are checked for within the main loop. You want to spend as little time inside of an ISR as
+//possible to prevent undefined program behavior.
 ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
-  if(CRANKACTIVE == 1){
-    int currentOut = ((_encoder  *)Handcrank_ptr)->returnDelta();
-      //make sure it's not an invalid state change
-      if(currentOut){ 
-        //two or more matching values. Helps with logical debounce
-        if(currentOut == prevOut){ 
-          crankSum += currentOut;
-        }
-        prevOut = currentOut; //update the previous value
-    }
-  }
+  // if(CRANKACTIVE == 1){
+  //   int currentOut = ((_encoder  *)Handcrank_ptr)->returnDelta();
+  //     //make sure it's not an invalid state change
+  //     if(currentOut){ 
+  //       //two or more matching values. Helps with logical debounce
+  //       if(currentOut == prevOut){ 
+  //         crankSum += currentOut;
+  //       }
+  //       prevOut = currentOut; //update the previous value
+  //   }
+  // }
 }
 
+//MAIN ARDINO FUNCTIONS------------------------------------------
 void setup() {
 
-  // //init serial for debugging  
-  Serial.begin(2000000); 
+  //init serial for debugging  
+  // Serial.begin(2000000); 
 
-  //setup timer0 to call interrupt OCR0A every REFRESHTIMEVAL
+
+  //setup timer0 to call interrupt OCR0A every millisecond
   OCR0A = 0xFA; //set to trigger TIMER0_COMPA_vect every millisecond
   TIMSK0 |= _BV(OCIE0A); //enable the output compare interrupt on timer0
 
-  //setup interrupt on pin change for the ender pins.
-  //This interrupt is enabled per group (digital pins 1-7, digtial pins 8-13)
-  // enable pin change interrupt for encoder pin A
-  *digitalPinToPCMSK(ENCODERPINA) |= bit (digitalPinToPCMSKbit(ENCODERPINA)); 
-  // enable ping change interrupt for encoder pin B
-  *digitalPinToPCMSK(ENCODERPINB) |= bit (digitalPinToPCMSKbit(ENCODERPINB)); 
-  // clear any outstanding interrupt flag
+  //make all digital pins float high to prevent pin change interrupt on stray voltages
+  pinMode(0, INPUT_PULLUP);
+  pinMode(1, INPUT_PULLUP);
+  pinMode(2, INPUT_PULLUP);
+  pinMode(3, INPUT_PULLUP);
+  pinMode(4, INPUT_PULLUP);
+  pinMode(5, INPUT_PULLUP);
+  pinMode(6, INPUT_PULLUP);
+  pinMode(7, INPUT_PULLUP);
 
-  PCIFR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
-  // enable interrupt for the GROUP 
-  PCICR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
   // Indicatorstrip_ptr->initialize();
   // Handcrank_ptr->initialize();
 
-  //make all digital pins float high to prevent interrupting on stray voltages
- 
-  // pinMode(0, INPUT_PULLUP);
-  // pinMode(1, INPUT_PULLUP);
-  // pinMode(2, INPUT_PULLUP);
-  // pinMode(3, INPUT_PULLUP);
-  // pinMode(4, INPUT_PULLUP);
-  // pinMode(5, INPUT_PULLUP);
-  // pinMode(6, INPUT_PULLUP);
-  // pinMode(7, INPUT_PULLUP);
-  // pinMode(A0, INPUT);
-
-  lcd_ptr = createObject(lcd_type, HARDCODED_PORTNUM);
+  //----------------------------------------------------------
+  lcd_ptr = createObject(LCD_TYPE, HARDCODED_PORTNUM);
   // Serial.print(lcd_ptr);
   (((_lcd *)lcd_ptr)->lcd_obj)->begin(16, 2);
   (((_lcd *)lcd_ptr)->lcd_obj)->setBacklight(WHITE);
+
+  menu_ptr = createObject(MENU_TYPE, HARDCODED_PORTNUM);
+
+  ILCD_TYPE = createObject(indicatorStrip_type, HARDCODED_PORTNUM);
 }
 
 void loop() {
@@ -190,7 +248,7 @@ void loop() {
     }
     if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == running){
       systemMode = config;
-      Serial.print("ENTERING MENU");
+      // Serial.print("ENTERING MENU");
       (((_lcd *)lcd_ptr)->lcd_obj)->clear();
       ((_menu *)menu_ptr)->currentScreen = 0;
       ((_menu *)menu_ptr)->printMenu( (_lcd*)lcd_ptr );
