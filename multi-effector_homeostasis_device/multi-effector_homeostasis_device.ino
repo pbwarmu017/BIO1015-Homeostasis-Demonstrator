@@ -200,7 +200,7 @@ void setup() {
 
   menu_ptr = createObject(MENU_TYPE, HARDCODED_PORTNUM);
 
-  ILCD_TYPE = createObject(INDICATORSTRIP_TYPE, HARDCODED_PORTNUM);
+  lcd_ptr = createObject(INDICATORSTRIP_TYPE, HARDCODED_PORTNUM);
 }
 
 void loop() {
