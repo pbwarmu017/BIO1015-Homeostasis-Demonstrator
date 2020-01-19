@@ -35,11 +35,11 @@ extern enum SYSTEMMODE systemMode;
 #define INDICATORSTRIP_PORTNUM 7
 #define HARDCODED_PORTNUM 8 //this is used when the port is hardcoded in the library (lcd)
 
-#define indicatorStrip_type 1
-#define handGrip_type 2
-#define handCrank_type 3
-#define lcd_type 4
-#define menu_type 5
+#define INDICATORSTRIP_TYPE 1
+#define LCD_TYPE 2
+#define MENU_TYPE 3
+#define HANDGRIP_TYPE 4
+#define ENCODER_TYPE 5
 
 
 
