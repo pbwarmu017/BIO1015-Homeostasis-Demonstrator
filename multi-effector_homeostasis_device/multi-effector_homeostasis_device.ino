@@ -11,11 +11,6 @@ Adafruit RGB LCD Sheild Library
 
 //INCLUDES ------------------------------------------
   #include "superclasses.cpp"
-  #include "encoder.cpp"
-  #include "handgrip.cpp"
-  #include "lcd.cpp"
-  #include "indicatorstrip.cpp"
-  #include "menu.cpp"
 
 
 //ENUMS ------------------------------------------
@@ -116,6 +111,10 @@ _device* createObject(int objtype, int portnum){
   }
   return(gen_ptr);
 }
+
+void destroyObject(int objtype, _device* port){
+
+}
 // INTERRUPT SERVICE ROUTINES------------------------------------------
 
 //Interrupt service routine for a timer that exectures every millisecond. DO NOT call functions/methods from within
@@ -200,7 +199,7 @@ void setup() {
 
   menu_ptr = createObject(MENU_TYPE, HARDCODED_PORTNUM);
 
-  lcd_ptr = createObject(INDICATORSTRIP_TYPE, HARDCODED_PORTNUM);
+  indicatorstrip_ptr = createObject(INDICATORSTRIP_TYPE, HARDCODED_PORTNUM);
 }
 
 void loop() {
@@ -250,7 +249,7 @@ void loop() {
       systemMode = config;
       // Serial.print("ENTERING MENU");
       (((_lcd *)lcd_ptr)->lcd_obj)->clear();
-      ((_menu *)menu_ptr)->currentScreen = 0;
+      ((_menu *)menu_ptr)->currentScreen = 6;
       ((_menu *)menu_ptr)->printMenu( (_lcd*)lcd_ptr );
 
       (((_lcd *)lcd_ptr)->lcd_obj)->setBacklight(RED);
@@ -272,7 +271,8 @@ void loop() {
       // (((_lcd *)lcd_ptr)->lcd_obj)->print("Operational");
     }
     if(systemMode == config){
-      ((_menu *)menu_ptr)->navigateMenu(button, (_lcd*)lcd_ptr);
+      ((_menu *)menu_ptr)->navigateMenu(button, (_lcd*)lcd_ptr, DCON1_ptr, ACON1_ptr, 
+        DACON1_ptr, DCON2_ptr, ACON2_ptr, DACON2_ptr);
     }
     // navigateMenu(button);
   LCDREFRESHFLAG = false;

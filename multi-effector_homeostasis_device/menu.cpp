@@ -1,15 +1,14 @@
 #include "superclasses.cpp"
-#include "lcd.cpp"
 
 #ifndef MENU_CPP
 #define MENU_CPP
 
 class _menu: public _device{
   public:
-    static const int numOfScreens = 6;  //number of options in screens[]
-    static const int numOfDconDevs = 1; //number of options in dconscreens[]
-    static const int numOfAconDevs = 1; //number of options in aconscreens[]
-    static const int numOfDaconDevs = 1; //number of options in daconscreens[]
+    static const int numOfScreens = 7;  //number of options in screens[]
+    static const int numOfDconDevs = 2; //number of options in dconscreens[]
+    static const int numOfAconDevs = 2; //number of options in aconscreens[]
+    static const int numOfDaconDevs = 2; //number of options in daconscreens[]
     int currentScreen = 0;
     //The following are selection tracking variables. As the user uses the
     //menu the contents of these values will change.
@@ -32,8 +31,9 @@ class _menu: public _device{
     //LCD MENU TEXT OPTIONS
 
     //Main Menu Screens
-    String screens[numOfScreens][2] = {{"DCON1","DEV: "},
-      {"DCON2","DEV: "},{"ACON1","DEV:"},{"ACON2","DEV: "},{"DACON1","DEV: "},{"DACON2","DEV: "}};
+    String screens[numOfScreens][2] = {{"DCON1","DEV:"},
+      {"ACON1","DEV:"},{"DACON1","DEV:"},{"DCON2","DEV:"},{"ACON2","DEV:"},{"DACON2","DEV:"},
+      {"PORT GROUPS","SHARE ANALOG CH!"}};
 
     //Valid selections for each port type
     String dconscreens[2] = {"OFF","CRANK"};
@@ -43,10 +43,11 @@ class _menu: public _device{
     //Port Selections. If you add to this, increase numOfPorts to match. 
     // String portscreens[6] = {"DCON1","ACON1","DACON1","DCON2","ACON2","DACON2"};
     
-    void navigateMenu(int button, _lcd* lcd){
+    void navigateMenu(int button, _lcd* lcd, _device *DCON1_ptr, _device *ACON1_ptr, _device *DACON1_ptr, 
+                    _device *DCON2_ptr, _device *ACON2_ptr, _device *DACON2_ptr){
       if(button & BUTTON_UP) {
         if (currentScreen == 0) {
-              currentScreen = numOfScreens-1;
+              currentScreen = numOfScreens-2;
               printMenu(lcd);
             }
             else{
@@ -55,7 +56,7 @@ class _menu: public _device{
             }
       }
       if(button & BUTTON_DOWN){
-        if (currentScreen == numOfScreens-1) {
+        if (currentScreen >= numOfScreens-2) {
               currentScreen = 0;
               printMenu(lcd);
             }
@@ -65,21 +66,22 @@ class _menu: public _device{
         }
       }
       if(button & BUTTON_LEFT) {
-        parameterChange(0);
+        parameterChange(0, DCON1_ptr, ACON1_ptr, DACON1_ptr, DCON2_ptr, ACON2_ptr, DACON2_ptr);
         printMenu(lcd);
       }
       if(button & BUTTON_RIGHT) {
-        parameterChange(1);
+        parameterChange(1, DCON1_ptr, ACON1_ptr, DACON1_ptr, DCON2_ptr, ACON2_ptr, DACON2_ptr);
         printMenu(lcd);
       }
     }
 
-    void parameterChange(int index) {
+    void parameterChange(int index, _device *DCON1_ptr, _device *ACON1_ptr, _device *DACON1_ptr, _device *DCON2_ptr,
+                      _device *ACON2_ptr, _device *DACON2_ptr) {
       if(index == 1){
         if(currentScreen == 0){ //DCON1
           if(dcon1mode < numOfDconDevs-1){
-          dcon1prevmode = dcon1mode;
-          dcon1mode++; 
+            dcon1prevmode = dcon1mode;
+            dcon1mode++; 
           }
           else{
             dcon1prevmode = dcon1mode;
@@ -87,33 +89,25 @@ class _menu: public _device{
           } 
         }
         if(currentScreen == 1){ //ACON1
+          if(acon1prevmode != -1) ~*ACON1_ptr();
           if(acon1mode < numOfAconDevs-1){
           acon1prevmode = acon1mode;
           acon1mode++; 
+          if(acon1mode == 1) *ACON1_ptr = new _handgrip;
           }
           else{
             acon1prevmode = acon1mode;
             acon1mode = 0;
-
-          }
-          if(acon1mode == 1 && dacon1mode == 1){ //only one member of group 1 can be active at one time. 
-            dacon1prevmode = dacon1mode; //deactivate the other one
-            dacon1mode = 0;
           }
         }
         if(currentScreen == 2){ //DACON1
           if(dacon1mode < numOfDaconDevs-1){
-          dacon1prevmode = dacon1mode;
-          dacon1mode++; 
+            dacon1prevmode = dacon1mode;
+            dacon1mode++; 
           }
           else{
             dacon1prevmode = dacon1mode;
             dacon1mode = 0;
-
-          }
-          if(dacon1mode == 1 && acon1mode == 1){ //only one member of group 1 can be active at one time. 
-            acon1prevmode = acon1mode; //deactivate the other one
-            acon1mode = 0;
           }
         }
         if(currentScreen == 3){ //DCON2
@@ -134,11 +128,6 @@ class _menu: public _device{
           else{
             acon2prevmode = acon2mode;
             acon2mode = 0;
-
-          }
-          if(acon2mode == 1 && dacon2mode == 1){ //only one member of group 1 can be active at one time. 
-            dacon2mode = 0;
-            dacon2prevmode = -1;
           }
         }
         if(currentScreen == 5){ //DACON2
@@ -149,11 +138,6 @@ class _menu: public _device{
           else{
             dacon2prevmode = dacon2mode;
             dacon2mode = 0;
-
-          }
-          if(dacon2mode == 1 && acon2mode == 1){ //only one member of group 1 can be active at one time. 
-            acon2prevmode =acon2mode;
-            acon2mode = 0;
           }
         }
       }
@@ -178,10 +162,6 @@ class _menu: public _device{
             acon1prevmode = acon1mode;
             acon1mode = numOfDconDevs-1;
           }
-          if(acon1mode == 1 && dacon1mode == 1){ //only one member of group 1 can be active at one time. 
-            dacon1prevmode = dacon1mode; //deactivate the other one
-            dacon1mode = 0;
-          }
         }
         if(currentScreen == 2) { //DACON1
           if(dacon1mode > 0){
@@ -191,10 +171,6 @@ class _menu: public _device{
           else{
             dacon1prevmode = dacon1mode;
             dacon1mode = numOfDconDevs-1;
-          }
-          if(dacon1mode == 1 && acon1mode == 1){ //only one member of group 1 can be active at one time. 
-            acon1prevmode = acon1mode; //deactivate the other one
-            acon1mode = 0;
           }
         }
         if(currentScreen == 3) { //DCON2
@@ -216,10 +192,6 @@ class _menu: public _device{
             acon2prevmode = acon2mode;
             acon2mode = numOfDconDevs-1;
           }
-          if(acon2mode == 1 && dacon2mode == 1){ //only one member of group 2 can be active at one time. 
-            dacon2prevmode = dacon2mode; //deactivate the other one
-            dacon2mode = 0;
-          }
         }
         if(currentScreen == 5) { //DACON2
           if(dacon2mode > 0){
@@ -229,10 +201,6 @@ class _menu: public _device{
           else{
             dacon2prevmode = dacon2mode;
             dacon2mode = numOfDconDevs-1;
-          }
-          if(dacon2mode == 1 && acon2mode == 1){ //only one member of group 2 can be active at one time. 
-            acon2prevmode = acon2mode; //deactivate the other one
-            acon2mode = 0;
           }
         }
       }

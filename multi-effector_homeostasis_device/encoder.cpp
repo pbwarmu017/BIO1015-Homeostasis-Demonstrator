@@ -1,6 +1,4 @@
 #include "superclasses.cpp"
-#include "lcd.cpp"
-#include "indicatorstrip.cpp"
 
 #ifndef ENCODER_CPP
 #define ENCODER_CPP 
@@ -59,6 +57,9 @@ class _encoder: public _affector {
       //this object needs to know about the LCD and indicatorstrip
 
       indicatorstrip_ptr = indicatorstrip;
+    }
+    ~_encoder(){
+
     }
   private:
     volatile bool prevAVal;
