@@ -1,12 +1,7 @@
 #include "superclasses.cpp"
 
-#define RED 0x1
-#define YELLOW 0x3
-#define GREEN 0x2
-#define TEAL 0x6
-#define BLUE 0x4
-#define VIOLET 0x5
-#define WHITE 0x7
+#ifndef INDICATORSTRIP_CPP
+#define INDICATORSTRIP_CPP
 
 //LED COLOR CODE DEFINITIONS. 
 #define COLORRED strip->Color(128,0,0) //USED FOR PRE GAME INDICATION
@@ -33,6 +28,11 @@ class _indicatorstrip: public _device {
 
   public:
      /*VARIABLES*/
+
+    bool handgripStatus[2] = {0};
+    bool handcrankStatus[2] = {0};
+    int HANDGRIPACTIVE = 0;
+    int CRANKACTIVE = 0;
 
     int boxSize = 3; //the size of the box centered around boxposition (must be at least 3)
     int boxStart = BOXSTART; //the position of the bounding box as an LED number the box is centered around. 
@@ -181,9 +181,27 @@ class _indicatorstrip: public _device {
     _indicatorstrip(){
       strip = new Adafruit_NeoPixel(LED_COUNTa, LED_PIN, NEO_GRB + NEO_KHZ800);
     }
+    void updateStatus(int objtype){
+      int status = 0;
+      if(objtype == HANDGRIP_TYPE){
+        for(int i = 0; i < sizeof(handgripStatus)/sizeof(handgripStatus[0]); i++){
+          status |= handgripStatus[i];
+          return(status);
+        }
+      }
+
+      if(objtype == HANDCRANK_TYPE){
+        for(int i = 0; i < sizeof(handcrankStatus)/sizeof(handcrankStatus[0]); i++){
+          status |= handcrankStatus[i];
+          return(status);
+        }
+      }
+    }
   private:
     float consumptionRate = DEFAULTCONSUMPTIONRATE/100.; //stays the same for all players
     float crankProductionRate = DEFAULTPRODUCTIONRATE/100.;
     unsigned long losingColor;
     float squeezeProductionRate = DEFAULTPRODUCTIONRATE/100.;
 };
+
+#endif

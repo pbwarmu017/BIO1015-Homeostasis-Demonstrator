@@ -1,4 +1,6 @@
 #include "superclasses.cpp"
+#ifndef HANDGRIP_CPP
+#define HANDGRIP_CPP
 
 #define HANDGRIPPIN A0
 
@@ -24,3 +26,5 @@ class _handgrip: public _affector {
       float productionRate = 0;
   private:
 };
+
+#endif
