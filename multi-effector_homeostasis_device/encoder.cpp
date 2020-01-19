@@ -53,12 +53,12 @@ class _encoder: public _affector {
     }
     //upon object creation, set up the pins ands store the current values for the encoder
     //this alsoo stores pointerse to the lcd and incicatorstrup objects
-    _encoder(_device* lcd, _device* indicatorstrip){
+    _encoder(_indicatorstrip& indicatorstrip){
       prevAVal = digitalRead(encoderpina);
       prevBVal = digitalRead(encoderpinb);
       //this object needs to know about the LCD and indicatorstrip
-      lcd_ptr = (_lcd*)lcd;
-      indicatorstrip_ptr = (_indicatorstrip*)indicatorstrip;
+
+      indicatorstrip_ptr = indicatorstrip;
     }
   private:
     volatile bool prevAVal;

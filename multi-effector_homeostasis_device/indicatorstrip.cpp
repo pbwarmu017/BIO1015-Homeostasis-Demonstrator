@@ -181,7 +181,7 @@ class _indicatorstrip: public _device {
     _indicatorstrip(){
       strip = new Adafruit_NeoPixel(LED_COUNTa, LED_PIN, NEO_GRB + NEO_KHZ800);
     }
-    void updateStatus(int objtype){
+    int updateStatus(int objtype){
       int status = 0;
       if(objtype == HANDGRIP_TYPE){
         for(int i = 0; i < sizeof(handgripStatus)/sizeof(handgripStatus[0]); i++){
@@ -190,7 +190,7 @@ class _indicatorstrip: public _device {
         }
       }
 
-      if(objtype == HANDCRANK_TYPE){
+      if(objtype == ENCODER_TYPE){
         for(int i = 0; i < sizeof(handcrankStatus)/sizeof(handcrankStatus[0]); i++){
           status |= handcrankStatus[i];
           return(status);

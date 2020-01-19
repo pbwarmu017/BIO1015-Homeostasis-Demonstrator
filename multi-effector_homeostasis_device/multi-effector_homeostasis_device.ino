@@ -48,7 +48,7 @@ Adafruit RGB LCD Sheild Library
   _device *DCON2_ptr;
   _device *ACON2_ptr;
   _device *DACON2_ptr;
-  _device *INDICATORSTRIP_TYPE;
+  _device *indicatorstrip_ptr;
   _device *menu_ptr;
   _device *lcd_ptr;
   //generic device pointer to be used in createObject()
@@ -74,7 +74,7 @@ _device* createObject(int objtype, int portnum){
     return(gen_ptr);
   }
 
-  if(objtype == indicatorStrip_type){
+  if(objtype == INDICATORSTRIP_TYPE){
     gen_ptr = new _indicatorstrip; 
     return(gen_ptr);
   }
@@ -84,8 +84,8 @@ _device* createObject(int objtype, int portnum){
     return(gen_ptr);
   }
 
-  if(objtype == HANDCRANK_TYPE){
-    gen_ptr = new _encoder;
+  if(objtype == ENCODER_TYPE){
+    gen_ptr = new _encoder((_indicatorstrip*)indicatorstrip_ptr);
 
     if(portnum == DCON1_PORTNUM){
       ((_encoder*)gen_ptr)->encoderpina = 3;
@@ -189,7 +189,7 @@ void setup() {
   pinMode(6, INPUT_PULLUP);
   pinMode(7, INPUT_PULLUP);
 
-  // Indicatorstrip_ptr->initialize();
+  // indicatorstrip_ptr->initialize();
   // Handcrank_ptr->initialize();
 
   //----------------------------------------------------------
@@ -200,18 +200,18 @@ void setup() {
 
   menu_ptr = createObject(MENU_TYPE, HARDCODED_PORTNUM);
 
-  ILCD_TYPE = createObject(indicatorStrip_type, HARDCODED_PORTNUM);
+  ILCD_TYPE = createObject(INDICATORSTRIP_TYPE, HARDCODED_PORTNUM);
 }
 
 void loop() {
   // if(STRIPREFRESHFLAG){
   //   if(HANDGRIPACTIVE == 1){
   //     if->Handgrip_ptrcalibrationState == true){
-  //      ->Indicatorstrip_ptrsetProductionRate->Handgrip_ptrcalculateProductionRate(
+  //      ->indicatorstrip_ptrsetProductionRate->Handgrip_ptrcalculateProductionRate(
   //         analogRead(HANDGRIPPIN), Handgrip_ptr), HANDGRIPDEVNUM);
   //       //set the indicator positions based on the production rate 
-  //      ->Indicatorstrip_ptrsetIndicatorPosition(
-  //        ->Handgrip_ptrproductionRate =->Indicatorstrip_ptrcalculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
+  //      ->indicatorstrip_ptrsetIndicatorPosition(
+  //        ->Handgrip_ptrproductionRate =->indicatorstrip_ptrcalculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
   //     } else {
   //      ->Handgrip_ptrhandgripMaxVoltage =->Handgrip_ptrvoltageValue();
   //      ->Handgrip_ptrcalibrationState = true;
@@ -219,16 +219,16 @@ void loop() {
   //   }
   //   //set the bounding box. 
   //   if(CRANKACTIVE == 1){
-  //    ->Indicatorstrip_ptrsetIndicatorPosition(
-  //      ->Handcrank_ptrproductionRate =->Indicatorstrip_ptrcalculatePosition(CRANKDEVNUM), CRANKDEVNUM);
+  //    ->indicatorstrip_ptrsetIndicatorPosition(
+  //      ->Handcrank_ptrproductionRate =->indicatorstrip_ptrcalculatePosition(CRANKDEVNUM), CRANKDEVNUM);
   //   }
-  //  ->Indicatorstrip_ptrsetBoundingBox(BOXSTART, BOXSIZE);
-  //  ->Indicatorstrip_ptrupdate();
+  //  ->indicatorstrip_ptrsetBoundingBox(BOXSTART, BOXSIZE);
+  //  ->indicatorstrip_ptrupdate();
   //   STRIPREFRESHFLAG = false;
   // }
   // if(CRANKRATECALCFLAG){
   //   if(CRANKACTIVE == 1){
-  //    ->Indicatorstrip_ptrsetProductionRate->Handcrank_ptrcalculateProductionRate(
+  //    ->indicatorstrip_ptrsetProductionRate->Handcrank_ptrcalculateProductionRate(
   //       crankSum), CRANKDEVNUM);
   //     //reset the sum because it has just been incorporated into a moving avg
   //     crankSum = 0; 
@@ -237,7 +237,7 @@ void loop() {
   //   }
   // }
   // if(RESETFLAG){
-  //  ->Indicatorstrip_ptrsetBoundingBox(BOXSTART, BOXSIZE);
+  //  ->indicatorstrip_ptrsetBoundingBox(BOXSTART, BOXSIZE);
   //   RESETFLAG = false;
   // }
   if(LCDREFRESHFLAG){
