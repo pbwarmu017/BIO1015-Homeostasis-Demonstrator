@@ -52,6 +52,12 @@ extern enum SYSTEMMODE systemMode;
 
 class _device {
   public:
+    int DCON1_status = 0;
+    int ACON1_status = 0;
+    int DACON1_status = 0;
+    int DCON2_status = 0;
+    int ACON2_status = 0;
+    int DACON2_status = 0;
     // virtual ~_device(); //virtualized destructor
     // !_device(){
     //   return(0);
@@ -61,6 +67,7 @@ class _device {
 
 class _affector: public _device {
   public: 
+
     float returnPosition(float currentPosition){
       return(currentPosition);
     }
