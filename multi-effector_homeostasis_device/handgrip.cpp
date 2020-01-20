@@ -7,19 +7,19 @@ class _handgrip: public _affector {
     _handgrip(const int portnum){
       switch(portnum){
         case ACON1_PORTNUM:
-          handGripPin = 0;
+          handGripPin = ACON1_PINNUM;
           ACON1_status = 1;
           break;
         case ACON2_PORTNUM:
-          handGripPin = 2;
+          handGripPin = ACON2_PINNUM;
           ACON2_status = 1;
           break;
         case DACON1_PORTNUM:
-          handGripPin = 1;
+          handGripPin = DACON1_PINNUM;
           DACON1_status = 1;
           break;
         case DACON2_PORTNUM:
-          handGripPin = 2;
+          handGripPin = DACON2_PINNUM;
           DACON2_status = 1;
           break;
       }

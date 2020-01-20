@@ -32,8 +32,14 @@ extern enum SYSTEMMODE systemMode;
 #define ACON2_PORTNUM 5
 #define DACON2_PORTNUM 6
 #define INDICATORSTRIP_PORTNUM 7
-//this is used when the port is hardcoded in the library (lcd)
-#define HARDCODED_PORTNUM 8 
+
+#define HARDCODED_PORTNUM 8 //used when the port is hardcoded in the library (lcd)
+
+#define ACON1_PINNUM 0
+#define ACON2_PINNUM 2
+#define DACON1_PINNUM 1
+#define DACON2_PINNUM 2
+
 #define INDICATORSTRIP_TYPE 1
 #define LCD_TYPE 2
 #define MENU_TYPE 3
