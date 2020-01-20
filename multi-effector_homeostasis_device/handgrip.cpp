@@ -25,7 +25,25 @@ class _handgrip: public _affector {
       }
       color = portnum;
 
-
+    ~_handgrip(const int portnum)
+    { //destructor (virtualized in _device)
+      switch(portnum)
+      {
+        case ACON1_PORTNUM:
+          ACON1_status = 0;
+          break;
+        case ACON2_PORTNUM:
+          ACON2_status = 0;
+          break;
+        case DACON1_PORTNUM:
+          DACON1_status = 0;
+          break;
+        case DACON2_PORTNUM:
+          DACON2_status = 0;
+          break;
+      }
+      handGripPin = -1;
+      color = 0;
     }
     float voltageValue(void) {
       return 5*analogRead(handGripPin)/1023.; //simply returns the voltage read off the handgrip
