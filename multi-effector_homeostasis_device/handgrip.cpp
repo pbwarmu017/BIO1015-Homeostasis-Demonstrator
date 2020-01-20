@@ -8,17 +8,23 @@ class _handgrip: public _affector {
       switch(portnum){
         case ACON1_PORTNUM:
           handGripPin = 0;
+          ACON1_status = 1;
           break;
         case ACON2_PORTNUM:
           handGripPin = 2;
+          ACON2_status = 1;
           break;
         case DACON1_PORTNUM:
           handGripPin = 1;
+          DACON1_status = 1;
           break;
         case DACON2_PORTNUM:
           handGripPin = 2;
+          DACON2_status = 1;
           break;
       }
+      color = portnum;
+
 
     }
     float voltageValue(void) {
@@ -40,6 +46,7 @@ class _handgrip: public _affector {
       float productionRate = 0;
   private:
     int handGripPin = -1;
+    int color = 0;
 };
 
 #endif
