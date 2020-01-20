@@ -25,7 +25,8 @@ class _encoder: public _affector {
     //returns 0 if no change, 1 if a CW movement was detected, -1 if a CCW movement was detected. 
     //using this in conjuction with a low pass filter helps clean up switch bounce
     //http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html to see how it works
-    char returnDelta(void){
+    char returnDelta(void)
+    {
       pinAVal = digitalRead(encoderpina);
       pinBVal = digitalRead(encoderpinb);
       unsigned char lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
@@ -36,7 +37,8 @@ class _encoder: public _affector {
     //we want to limit the crank to 1 RPM, as the encoder is only rated to that. It will
     //also make the device last longer as students wont be wild with it.
     //return a number between 0 and CRANKRATESCALER
-    int calculateProductionRate(int crankSum){
+    int calculateProductionRate(int crankSum)
+    {
       // calculates current moving average efficiently
       movingAverage += -movingAverage/movingAveragePeriod + crankSum;
       //make it pointless to spin the crank faster than the max spec RPM of 60
@@ -51,7 +53,8 @@ class _encoder: public _affector {
     }
     //upon object creation, set up the pins ands store the current values for the encoder
     //this alsoo stores pointerse to the lcd and incicatorstrup objects
-    _encoder(_indicatorstrip* indicatorstrip){
+    _encoder(_indicatorstrip* indicatorstrip)
+    {
       prevAVal = digitalRead(encoderpina);
       prevBVal = digitalRead(encoderpinb);
       //this object needs to know about the LCD and indicatorstrip

@@ -2,10 +2,14 @@
 #define HANDGRIP_CPP
 
 #include "superclasses.cpp"
-class _handgrip: public _affector {
+class _handgrip: public _affector 
+{
   public:
-    _handgrip(const int portnum){
-      switch(portnum){
+
+    _handgrip(const int portnum)
+    { //constructor
+      switch(portnum)
+      {
         case ACON1_PORTNUM:
           handGripPin = ACON1_PINNUM;
           ACON1_status = 1;
@@ -24,6 +28,7 @@ class _handgrip: public _affector {
           break;
       }
       color = portnum;
+    }
 
     ~_handgrip(const int portnum)
     { //destructor (virtualized in _device)
@@ -45,12 +50,14 @@ class _handgrip: public _affector {
       handGripPin = -1;
       color = 0;
     }
-    float voltageValue(void) {
+    float voltageValue(void) 
+    {
       return 5*analogRead(handGripPin)/1023.; //simply returns the voltage read off the handgrip
     }
     //calculates the productionrate to feed into _indicatorstrip.setRate()
     //returns a value between 0 and HANDGRIPPRESCALER
-    int calculateProductionRate(float pinADCval, _handgrip *Handgrip) {
+    int calculateProductionRate(float pinADCval, _handgrip *Handgrip) 
+    {
       float voltagedelta = voltageValue()-Handgrip->handgripMinVoltage;
       float delta = (voltagedelta /(Handgrip->handgripMaxVoltage-Handgrip->handgripMinVoltage)) * 
         Handgrip->handgripPrescaler;

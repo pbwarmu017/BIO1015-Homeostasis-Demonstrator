@@ -71,10 +71,12 @@ class _device {
     // return(0);`
 };
 
-class _affector: public _device {
+class _affector: public _device
+{
   public: 
 
-    float returnPosition(float currentPosition){
+    float returnPosition(float currentPosition)
+    {
       return(currentPosition);
     }
 };

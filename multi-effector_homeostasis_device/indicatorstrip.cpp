@@ -25,7 +25,8 @@
 #define LEDMAXINCREMENT 5 //Max # of LEDs to jump per cycle
 //END LEDSTRIP
 
-class _indicatorstrip: public _device {
+class _indicatorstrip: public _device 
+{
 
   public:
      /*VARIABLES*/
@@ -49,77 +50,94 @@ class _indicatorstrip: public _device {
     int BOXSIZE = 10; //bounding box default size
     Adafruit_NeoPixel *strip;
     /*FUNCTIONS*/
-    float calculatePosition(int devnum) {
-      if(devnum == HANDGRIPDEVNUM){
+    float calculatePosition(int devnum) 
+    {
+      if(devnum == HANDGRIPDEVNUM)
+      {
         float delta = squeezeProductionRate-consumptionRate;
         return(squeezeIndicatorPosition+(LEDMAXINCREMENT * delta));  
       }
-      if(devnum == CRANKDEVNUM){
+      if(devnum == CRANKDEVNUM)
+      {
         float delta = crankProductionRate-consumptionRate;
         return(crankIndicatorPosition+(LEDMAXINCREMENT * delta));
       }
       return 0;
     }
-    bool indicatorsWithinBounds(void) {
+    bool indicatorsWithinBounds(void) 
+    {
       //checking for the squeeze indicator
       bool statusVariable = true;
 
-      if(HANDGRIPACTIVE == 1){
-        if(squeezeIndicatorPosition <= boxLowerBound){
+      if(HANDGRIPACTIVE == 1)
+      {
+        if(squeezeIndicatorPosition <= boxLowerBound)
+        {
           losingColor = SQUEEZEINDICATORCOLOR;
           statusVariable = false;
         }
-        if(squeezeIndicatorPosition >= boxUpperBound) {
+        if(squeezeIndicatorPosition >= boxUpperBound) 
+        {
           losingColor = SQUEEZEINDICATORCOLOR;
           statusVariable = false;
         }
       }
 
       //checking for the hand crank indicator
-      if(CRANKACTIVE == 1){
-        if(crankIndicatorPosition <= boxLowerBound){
+      if(CRANKACTIVE == 1)
+      {
+        if(crankIndicatorPosition <= boxLowerBound)
+        {
           losingColor = CRANKINDICATORCOLOR;
           statusVariable =  false;
         }
 
-        if(crankIndicatorPosition >= boxUpperBound) {
+        if(crankIndicatorPosition >= boxUpperBound) 
+        {
           losingColor = CRANKINDICATORCOLOR;
           statusVariable =  false;
         }
       }
       return(statusVariable);
     }
-    void initialize(void) {
+    void initialize(void) 
+    {
       strip->begin();
       strip->show();
       return;
     }
-    void setBoundingBox(int boxstart, int boxsize) {
+    void setBoundingBox(int boxstart, int boxsize) 
+    {
       boxLowerBound = boxstart;
       boxUpperBound = boxstart+boxsize+1;
 
 
-      if(gameStatus == started && indicatorsWithinBounds()){
+      if(gameStatus == started && indicatorsWithinBounds())
+      {
         strip->setPixelColor(boxstart, COLORGREEN);
         strip->setPixelColor(boxstart+boxsize+1, COLORGREEN);
       }
-      if(gameStatus == started && !indicatorsWithinBounds()){
+      if(gameStatus == started && !indicatorsWithinBounds())
+      {
         gameStatus = lost;
         strip->setPixelColor(boxstart, losingColor);
         strip->setPixelColor(boxstart+boxsize+1, losingColor);
       }
 
-      if(gameStatus == notstarted && indicatorsWithinBounds()){
+      if(gameStatus == notstarted && indicatorsWithinBounds())
+      {
         gameStatus = started;
         strip->setPixelColor(boxstart, COLORGREEN);
         strip->setPixelColor(boxstart+boxsize+1, COLORGREEN);
       }
-      if(gameStatus == notstarted && !indicatorsWithinBounds()){
+      if(gameStatus == notstarted && !indicatorsWithinBounds())
+      {
         strip->setPixelColor(boxstart, COLORRED);
         strip->setPixelColor(boxstart+boxsize+1, COLORRED);
       }
 
-      if(gameStatus == lost){
+      if(gameStatus == lost)
+      {
         strip->setPixelColor(boxstart, losingColor);
         strip->setPixelColor(boxstart+boxsize+1, losingColor);
       }
@@ -127,22 +145,28 @@ class _indicatorstrip: public _device {
       strip->show();
       return;
     }
-    void setConsumptionRate(float consrate) {
+    void setConsumptionRate(float consrate) 
+    {
       consumptionRate = 1+consrate/100.;
       return;
     }
-    void setIndicatorPosition(float position, int devnum) {
-      if(devnum == HANDGRIPDEVNUM){
+    void setIndicatorPosition(float position, int devnum) 
+    {
+      if(devnum == HANDGRIPDEVNUM)
+      {
         strip->setPixelColor(prevSqueezeIndPos, 0,0,0);
-        if(position < LED_COUNTa && position >= 0){
+        if(position < LED_COUNTa && position >= 0)
+        {
           squeezeIndicatorPosition = position;
           strip->setPixelColor(position, SQUEEZEINDICATORCOLOR);
           prevSqueezeIndPos = (int)position;
         }
       }
-      if(devnum == CRANKDEVNUM){
+      if(devnum == CRANKDEVNUM)
+      {
         strip->setPixelColor(prevCrankIndPos, 0,0,0);
-        if(position < LED_COUNTa && position >= 0){
+        if(position < LED_COUNTa && position >= 0)
+        {
           crankIndicatorPosition = position;
           strip->setPixelColor(position, CRANKINDICATORCOLOR);
           prevCrankIndPos = (int)position;
@@ -153,42 +177,56 @@ class _indicatorstrip: public _device {
     //used to set the production rate. 
     //prodrate: a number between 0 and 100.
     //the final set rate will be a number between 0 and 1. 
-    float setProductionRate(float prodrate, int devnum) {
-      if(devnum == HANDGRIPDEVNUM){
+    float setProductionRate(float prodrate, int devnum) 
+    {
+      if(devnum == HANDGRIPDEVNUM)
+      {
         squeezeProductionRate = prodrate/100.;
       }
-      if(devnum == CRANKDEVNUM){
+      if(devnum == CRANKDEVNUM)
+      {
         crankProductionRate = prodrate/100.;
       }
     }
-    float returnConsumptionRate() {
+    float returnConsumptionRate() 
+    {
       return consumptionRate;
     }
     //this is used to set the rates of production and consumption for homeostasis. 
     // void setRates(float productionrate, float consumptionrate, int devnum); 
-    void update(void) {
+    void update(void) 
+    {
       strip->show();
-      if(STRIPTESTMODE){
-        if(HANDGRIPACTIVE == 1){
+      if(STRIPTESTMODE)
+      {
+        if(HANDGRIPACTIVE == 1)
+        {
         }
-        if(CRANKACTIVE == 1){
+        if(CRANKACTIVE == 1)
+        {
         }
       }
     }
-    _indicatorstrip(){
+    _indicatorstrip()
+    {
       strip = new Adafruit_NeoPixel(LED_COUNTa, LED_PIN, NEO_GRB + NEO_KHZ800);
     }
-    int updateStatus(int objtype){
+    int updateStatus(int objtype)
+    {
       int status = 0;
-      if(objtype == HANDGRIP_TYPE){
-        for(int i = 0; i < sizeof(handgripStatus)/sizeof(handgripStatus[0]); i++){
+      if(objtype == HANDGRIP_TYPE)
+      {
+        for(int i = 0; i < sizeof(handgripStatus)/sizeof(handgripStatus[0]); i++)
+        {
           status |= handgripStatus[i];
           return(status);
         }
       }
 
-      if(objtype == ENCODER_TYPE){
-        for(int i = 0; i < sizeof(handcrankStatus)/sizeof(handcrankStatus[0]); i++){
+      if(objtype == ENCODER_TYPE)
+      {
+        for(int i = 0; i < sizeof(handcrankStatus)/sizeof(handcrankStatus[0]); i++)
+        {
           status |= handcrankStatus[i];
           return(status);
         }

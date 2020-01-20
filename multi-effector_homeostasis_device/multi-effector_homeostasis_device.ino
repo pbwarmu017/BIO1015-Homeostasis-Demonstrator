@@ -48,25 +48,28 @@ Adafruit RGB LCD Sheild Library
   //this function is responsible for creating a new object on the HEAP (using the new keyword), setting up the ports 
   //for that object and then assigning it to the correct global object. 
   //types and portnums are definded in superclasses.cpp
-  void createObject(int objtype, int portnum){
-    if(objtype == LCD_TYPE){
+  void createObject(int objtype, int portnum)
+  {
+    if(objtype == LCD_TYPE)
+    {
+
       lcd_ptr = new _lcd;
     }
 
-    if(objtype == MENU_TYPE){
+    if(objtype == MENU_TYPE)
+    {
+
       menu_ptr = new _menu;
     }
 
-    if(objtype == INDICATORSTRIP_TYPE){
+    if(objtype == INDICATORSTRIP_TYPE)
+    {
+
       indicatorstrip_ptr = new _indicatorstrip; 
     }
 
     if(objtype == HANDGRIP_TYPE){
-      if(portnum == ACON1_PORTNUM){
-        ACON1_ptr = new _handgrip(ACON1_PORTNUM);
-        Serial.print(ACON1_ptr->ACON1_status);
-        Serial.print("\n");
-      } 
+      if(portnum == ACON1_PORTNUM) ACON1_ptr = new _handgrip(ACON1_PORTNUM); 
 
       if(portnum == ACON2_PORTNUM) ACON2_ptr = new _handgrip(ACON2_PORTNUM);
 
@@ -75,10 +78,8 @@ Adafruit RGB LCD Sheild Library
       if(portnum == DACON2_PORTNUM) DACON2_ptr = new _handgrip(DACON2_PORTNUM);
     }
 
-    if(objtype == ENCODER_TYPE){
-      Serial.print("(Funmction) Encoder Created, Port ");
-      Serial.print(portnum);
-      Serial.print("\n");
+    if(objtype == ENCODER_TYPE)
+    {
   //     // gen_ptr = new _encoder((_indicatorstrip*)indicatorstrip_ptr);
 
   //     if(portnum == DCON1_PORTNUM){
@@ -123,7 +124,8 @@ Adafruit RGB LCD Sheild Library
       if(portnum == DACON2_PORTNUM) delete DACON2_ptr(DACON2_PORTNUM);
     }
 
-    if(objtype == ENCODER_TYPE){
+    if(objtype == ENCODER_TYPE)
+    {
       Serial.print("(Funmction) Encoder Deleted, Port ");
       Serial.print(portnum);
       Serial.print("\n");
@@ -134,23 +136,29 @@ Adafruit RGB LCD Sheild Library
   //Interrupt service routine for a timer that exectures every millisecond. DO NOT call functions/methods from within
   //an ISR. Set flags that are checked for within the main loop. You want to spend as little time inside of an ISR as
   //possible to prevent undefined program behavior.  
-  ISR(TIMER0_COMPA_vect) {
+  ISR(TIMER0_COMPA_vect)
+  {
     stripDelayCounter++;
     crankRateCalcDelayCounter++;
     lcdRefreshCounter++;
-    if(stripDelayCounter >= STRIPREFRESHDELAY) {  
+    if(stripDelayCounter >= STRIPREFRESHDELAY)
+    { 
       stripDelayCounter = 0; //reset the timer counter for the next run.
       STRIPREFRESHFLAG = true;
       //Set Rates based on affector positions (one for each affector)
     }
-    if(crankRateCalcDelayCounter >= CRANKRATECALCDELAY){
+    if(crankRateCalcDelayCounter >= CRANKRATECALCDELAY)
+    {
       crankRateCalcDelayCounter = 0; 
       CRANKRATECALCFLAG = true;
       
     }
-    if(gameStatus == lost){
+
+    if(gameStatus == lost)
+    {
       gameResetCounter++;
-      if(gameResetCounter >= GAMERESETDELAY){
+      if(gameResetCounter >= GAMERESETDELAY)
+      {
         gameResetCounter = 0;
         gameStatus = notstarted;
         RESETFLAG = true;
@@ -158,7 +166,8 @@ Adafruit RGB LCD Sheild Library
       }
     }
 
-    if(lcdRefreshCounter >= LCDREFRESHDELAY){
+    if(lcdRefreshCounter >= LCDREFRESHDELAY)
+    {
       LCDREFRESHFLAG = true;  
       lcdRefreshCounter = 0;  
     }
@@ -167,7 +176,8 @@ Adafruit RGB LCD Sheild Library
   //Interrupt service routine for pin change interrupt on D0 to D7. DO NOT call functions/methods from within
   //an ISR. Set flags that are checked for within the main loop. You want to spend as little time inside of an ISR as
   //possible to prevent undefined program behavior.
-  ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
+  ISR(PCINT2_vect)
+  { // handle pin change interrupt for D0 to D7 here
     // if(CRANKACTIVE == 1){
     //   int currentOut = ((_encoder  *)Handcrank_ptr)->returnDelta();
     //     //make sure it's not an invalid state change
@@ -182,7 +192,8 @@ Adafruit RGB LCD Sheild Library
   }
 
 //MAIN ARDINO FUNCTIONS------------------------------------------
-  void setup() {
+  void setup()
+  {
 
     //init serial for debugging  
     Serial.begin(2000000); 
@@ -192,6 +203,7 @@ Adafruit RGB LCD Sheild Library
     TIMSK0 |= _BV(OCIE0A); //enable the output compare interrupt on timer0
 
     //make all digital pins float high to prevent pin change interrupt on stray voltages
+    //these will be individually modified as needed by objects. 
     pinMode(0, INPUT_PULLUP);
     pinMode(1, INPUT_PULLUP);
     pinMode(2, INPUT_PULLUP);
@@ -200,25 +212,20 @@ Adafruit RGB LCD Sheild Library
     pinMode(5, INPUT_PULLUP);
     pinMode(6, INPUT_PULLUP);
     pinMode(7, INPUT_PULLUP);
-    pinMode(A0, INPUT);
-    pinMode(A1, INPUT);
-    pinMode(A2, INPUT);
-    pinMode(A3, INPUT);
-
-    // indicatorstrip_ptr->initialize();
-    // Handcrank_ptr->initialize();
+    // //set all analog ports as inputs. 
+    // pinMode(A0, INPUT);
+    // pinMode(A1, INPUT);
+    // pinMode(A2, INPUT);
+    // pinMode(A3, INPUT);
 
     //----------------------------------------------------------
     createObject(LCD_TYPE, HARDCODED_PORTNUM);
-    (((_lcd *)lcd_ptr)->lcd_obj)->begin(16, 2);
-    (((_lcd *)lcd_ptr)->lcd_obj)->setBacklight(WHITE);
-
     createObject(MENU_TYPE, HARDCODED_PORTNUM);
-
-    // indicatorstrip_ptr = createObject(INDICATORSTRIP_TYPE, HARDCODED_PORTNUM);
+    createObject(INDICATORSTRIP_TYPE, HARDCODED_PORTNUM);
   }
 
-  void loop() {
+  void loop()
+  {
     // if(STRIPREFRESHFLAG){
     //   if(HANDGRIPACTIVE == 1){
     //     if->Handgrip_ptrcalibrationState == true){
@@ -255,13 +262,17 @@ Adafruit RGB LCD Sheild Library
     //  ->indicatorstrip_ptrsetBoundingBox(BOXSTART, BOXSIZE);
     //   RESETFLAG = false;
     // }
-    if(LCDREFRESHFLAG){
+    if(LCDREFRESHFLAG)
+    {
       // (note: line 1 is the second row, since counting begins with 0)
       uint8_t button = (((_lcd *)lcd_ptr)->lcd_obj)->readButtons();
-      if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == running){
+      if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == running)
+      {
         selectTimer++;
       }
-      if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == running){
+
+      if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == running)
+      {
         systemMode = config;
         (((_lcd *)lcd_ptr)->lcd_obj)->clear();
         ((_menu *)menu_ptr)->currentScreen = 6;
@@ -270,25 +281,28 @@ Adafruit RGB LCD Sheild Library
         (((_lcd *)lcd_ptr)->lcd_obj)->setBacklight(RED);
         selectTimer = 0;
       }
-      if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == config){
+
+      if(button & BUTTON_SELECT && selectTimer <= 10 && systemMode == config)
+      {
         selectTimer++;
       }
-      if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == config){
+
+      if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == config)
+      {
         systemMode = running;
         (((_lcd *)lcd_ptr)->lcd_obj)->setBacklight(WHITE);
         selectTimer = 0;
       }
-      if(systemMode == running){
+
+      if(systemMode == running)
+      {
         (((_lcd *)lcd_ptr)->lcd_obj)->clear();
-        // (((_lcd *)lcd_ptr)->lcd_obj)->setCursor(0,0);
-        // (((_lcd *)lcd_ptr)->lcd_obj)->print("System");
-        // (((_lcd *)lcd_ptr)->lcd_obj)->setCursor(0,1);
-        // (((_lcd *)lcd_ptr)->lcd_obj)->print("Operational");
       }
-      if(systemMode == config){
+
+      if(systemMode == config)
+      {
         ((_menu *)menu_ptr)->navigateMenu(button, (_lcd*)lcd_ptr);
       }
-      // navigateMenu(button);
     LCDREFRESHFLAG = false;
     }
   }

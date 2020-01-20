@@ -11,11 +11,15 @@
 #define VIOLET 0x5
 #define WHITE 0x7
 
-class _lcd: public _device {
+class _lcd: public _device 
+{
   public: 
     Adafruit_RGBLCDShield *lcd_obj;
-    _lcd(){
+    _lcd()
+    {
       lcd_obj = new Adafruit_RGBLCDShield();
+      lcd_obj->begin(16,2);
+      lcd_obj->setBacklight(WHITE)
     }
 };
 #endif
