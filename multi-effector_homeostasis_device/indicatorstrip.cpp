@@ -232,6 +232,10 @@ class _indicatorstrip: public _device
         }
       }
     }
+    ~_indicatorstrip()
+    {
+      //must define a destructor, but I have no use for it here. 
+    }
   private:
     float consumptionRate = DEFAULTCONSUMPTIONRATE/100.; //stays the same for all players
     float crankProductionRate = DEFAULTPRODUCTIONRATE/100.;

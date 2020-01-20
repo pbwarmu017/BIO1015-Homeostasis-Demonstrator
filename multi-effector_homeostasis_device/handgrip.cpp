@@ -30,10 +30,10 @@ class _handgrip: public _affector
       color = portnum;
     }
 
-    ~_handgrip(const int portnum)
+    ~_handgrip()
     { //destructor (virtualized in _device)
-      switch(portnum)
-      {
+      switch(color) 
+      {//color was used to store portnum earlier. Destructors cannot take parameters. 
         case ACON1_PORTNUM:
           ACON1_status = 0;
           break;

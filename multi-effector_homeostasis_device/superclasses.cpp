@@ -64,11 +64,10 @@ class _device {
     int DCON2_status = 0;
     int ACON2_status = 0;
     int DACON2_status = 0;
-    virtual ~_device(); //virtualized destructor
-    // !_device(){
-    //   return(0);
-    // }
-    // return(0);`
+    virtual ~_device()
+    { //virtualized destructor
+      //must provide a body for a virtual destructor, even if its empty. 
+    }
 };
 
 class _affector: public _device
@@ -78,6 +77,10 @@ class _affector: public _device
     float returnPosition(float currentPosition)
     {
       return(currentPosition);
+    }
+    ~_affector()
+    {
+      //must define a destructor, but I have no use for it here. 
     }
 };
 #endif

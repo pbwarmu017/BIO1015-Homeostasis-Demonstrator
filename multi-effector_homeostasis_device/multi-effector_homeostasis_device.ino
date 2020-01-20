@@ -115,13 +115,13 @@ Adafruit RGB LCD Sheild Library
   {
     if(objtype == HANDGRIP_TYPE)
     {
-      if(portnum == ACON1_PORTNUM) delete ACON1_ptr(ACON1_PORTNUM);
+      if(portnum == ACON1_PORTNUM) delete ACON1_ptr;
 
-      if(portnum == ACON2_PORTNUM) delete ACON2_ptr(ACON2_PORTNUM);
+      if(portnum == ACON2_PORTNUM) delete ACON2_ptr;
 
-      if(portnum == DACON1_PORTNUM) delete DACON1_ptr(DACON1_PORTNUM);
+      if(portnum == DACON1_PORTNUM) delete DACON1_ptr;
 
-      if(portnum == DACON2_PORTNUM) delete DACON2_ptr(DACON2_PORTNUM);
+      if(portnum == DACON2_PORTNUM) delete DACON2_ptr;
     }
 
     if(objtype == ENCODER_TYPE)

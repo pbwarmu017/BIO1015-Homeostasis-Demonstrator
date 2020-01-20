@@ -60,6 +60,10 @@ class _encoder: public _affector {
       //this object needs to know about the LCD and indicatorstrip
 
     }
+    ~_encoder()
+    {//destructor (virtualized in _device)
+      
+    }
   private:
     volatile bool prevAVal;
     volatile bool prevBVal;

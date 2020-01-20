@@ -435,6 +435,10 @@ class _menu: public _device{
         (lcd->lcd_obj)->print(daconscreens[dacon2mode]);
       }
     }
+    ~_menu()
+    {
+      //must define a destructor, but I have no use for it here. 
+    }
 };
 
 #endif

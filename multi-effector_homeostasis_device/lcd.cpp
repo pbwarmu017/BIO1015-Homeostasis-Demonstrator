@@ -19,7 +19,11 @@ class _lcd: public _device
     {
       lcd_obj = new Adafruit_RGBLCDShield();
       lcd_obj->begin(16,2);
-      lcd_obj->setBacklight(WHITE)
+      lcd_obj->setBacklight(WHITE);
+    }
+    ~_lcd()
+    { //destructor (virtualized in _device)
+
     }
 };
 #endif
