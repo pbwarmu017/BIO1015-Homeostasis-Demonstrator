@@ -4,9 +4,7 @@ Adafruit_Neopixel
 Adafruit RGB LCD Sheild Library
 */
 //GLOBAL VARIABLES------------------------------------------
-  //used for trackikng how long the select button has been depressed. 
-  int selectTimer = 0;
-  // bool INITIALSETUPFLAG;
+  int selectTimer = 0; //used for trackikng how long the select button has been depressed.
   bool configchange; //used to prompt changes in system config by user.
 
 //INCLUDES ------------------------------------------
@@ -16,13 +14,10 @@ Adafruit RGB LCD Sheild Library
   #include "lcd.cpp"
   #include "indicatorstrip.cpp"
   #include "menu.cpp"
-  #include "objects.cpp"
 
-
-//ENUMS ------------------------------------------
+//ENUM DEFINITIONS ------------------------------------------
   enum GAMESTATUS gameStatus = notstarted;
   enum SYSTEMMODE systemMode = running;
-
 
 //GLOBAl VARIABLES FOR USE IN ISRS------------------------------------------
   volatile unsigned stripDelayCounter = 0; 
@@ -36,22 +31,15 @@ Adafruit RGB LCD Sheild Library
   volatile bool LCDREFRESHFLAG = false;
   volatile bool RESETFLAG = false;
 
-
-
-
-
 //GLOBAL OBJECTS------------------------------------------
   //generic pointer declarations. Specific device pointers will be assigned to these as needed by the system. 
   _device *indicatorstrip_ptr;
   _device *menu_ptr;
   _device *lcd_ptr;
-  //generic device pointer to be used in createObject()
-  _device *gen_ptr;
-  _object *objects_ptr;
 
 
-//_device *Handgrip_ptr = new _handgrip; //object for the handgrip
-//_device *Handcrank_ptr = new _encoder; //object for the encoder
+    if(objtype == MENU_TYPE){
+      menu_ptr = new _menu;
 
 
 //this function is responsible for creating a new object on the HEAP, setting up the ports for that object
@@ -252,7 +240,6 @@ void loop() {
     }
     if(button & BUTTON_SELECT && selectTimer > 10 && systemMode == running){
       systemMode = config;
-      // Serial.print("ENTERING MENU");
       (((_lcd *)lcd_ptr)->lcd_obj)->clear();
       ((_menu *)menu_ptr)->currentScreen = 6;
       ((_menu *)menu_ptr)->printMenu( (_lcd*)lcd_ptr );

@@ -18,8 +18,6 @@ class _encoder: public _affector {
     int encoderpinb;
 
     _lcd* lcd_ptr;
-    _indicatorstrip* indicatorstrip_ptr;
-
     //check https://playground.arduino.cc/Main/RotaryEncoders/#OnInterrupts
     //TO DO: Change to pin change interrupts and do software debouncing. 
     
@@ -58,11 +56,7 @@ class _encoder: public _affector {
       prevBVal = digitalRead(encoderpinb);
       //this object needs to know about the LCD and indicatorstrip
 
-      indicatorstrip_ptr = indicatorstrip;
     }
-    // ~_encoder(){
-      
-    // }
   private:
     volatile bool prevAVal;
     volatile bool prevBVal;

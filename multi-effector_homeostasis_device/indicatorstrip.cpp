@@ -169,12 +169,8 @@ class _indicatorstrip: public _device {
       strip->show();
       if(STRIPTESTMODE){
         if(HANDGRIPACTIVE == 1){
-          Serial.print(" GRIP LED POSITION: ");
-          
         }
         if(CRANKACTIVE == 1){
-          Serial.print("CRANK LED POSITION: ");
-          Serial.println(crankIndicatorPosition);
         }
       }
     }
