@@ -1,9 +1,9 @@
+#ifndef MENU_CPP
+#define MENU_CPP
+
 #include "superclasses.cpp"
 #include "lcd.cpp"
 #include "objects.cpp"
-
-#ifndef MENU_CPP
-#define MENU_CPP
 
 class _menu: public _device{
   public:

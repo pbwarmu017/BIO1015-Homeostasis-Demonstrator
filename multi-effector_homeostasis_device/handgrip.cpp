@@ -1,7 +1,7 @@
-#include "superclasses.cpp"
 #ifndef HANDGRIP_CPP
 #define HANDGRIP_CPP
 
+#include "superclasses.cpp"
 class _handgrip: public _affector {
   public:
     _handgrip(const int portnum){

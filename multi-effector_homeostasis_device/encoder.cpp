@@ -1,10 +1,10 @@
-#include "superclasses.cpp"
-#include "lcd.cpp"
-#include "indicatorstrip.cpp"
 
 #ifndef ENCODER_CPP
 #define ENCODER_CPP 
 
+#include "superclasses.cpp"
+#include "lcd.cpp"
+#include "indicatorstrip.cpp"
 //encoder defines 
 #define CRANKRATECALCDELAY 250 //value is in milliseconds
 #define CRANKRATEMAX 24

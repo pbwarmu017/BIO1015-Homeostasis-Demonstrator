@@ -1,5 +1,6 @@
 #ifndef LCD_CPP
 #define LCD_CPP
+
 #include "superclasses.cpp"
  //LCD background color defines
 #define RED 0x1

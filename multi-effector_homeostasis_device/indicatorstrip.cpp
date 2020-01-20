@@ -1,8 +1,8 @@
-#include "superclasses.cpp"
 
 #ifndef INDICATORSTRIP_CPP
 #define INDICATORSTRIP_CPP
 
+#include "superclasses.cpp"
 //LED COLOR CODE DEFINITIONS. 
 #define COLORRED strip->Color(128,0,0) //USED FOR PRE GAME INDICATION
 #define COLORORANGE strip->Color(128,64,0) //USED FOR SECONDINDICATORCOLOR

@@ -1,5 +1,6 @@
 #ifndef OBJECTS_CPP
 #define OBJECTS_CPP
+
 #include "superclasses.cpp"
 #include "lcd.cpp"
 #include "handgrip.cpp"
@@ -9,6 +10,7 @@
 
 class _objects {
   public:
+    _objects();
     _device *DCON1_ptr;
     _device *ACON1_ptr;
     _device *DACON1_ptr;
