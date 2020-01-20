@@ -1,11 +1,13 @@
 #include "superclasses.cpp"
+#include "lcd.cpp"
+#include "objects.cpp"
 
 #ifndef MENU_CPP
 #define MENU_CPP
 
 class _menu: public _device{
   public:
-    static const int numOfScreens = 7;  //number of options in screens[]
+    static const int numOfScreens = 8;  //number of options in screens[]
     static const int numOfDconDevs = 2; //number of options in dconscreens[]
     static const int numOfAconDevs = 2; //number of options in aconscreens[]
     static const int numOfDaconDevs = 2; //number of options in daconscreens[]
@@ -33,7 +35,7 @@ class _menu: public _device{
     //Main Menu Screens
     String screens[numOfScreens][2] = {{"DCON1","DEV:"},
       {"ACON1","DEV:"},{"DACON1","DEV:"},{"DCON2","DEV:"},{"ACON2","DEV:"},{"DACON2","DEV:"},
-      {"PORT GROUPS","SHARE ANALOG CH!"}};
+      {"PORT GROUPS","SHARE ANALOG CH!"},{"DO NOT USE","CONCURRENTLY!"}};
 
     //Valid selections for each port type
     String dconscreens[2] = {"OFF","CRANK"};
@@ -43,40 +45,53 @@ class _menu: public _device{
     //Port Selections. If you add to this, increase numOfPorts to match. 
     // String portscreens[6] = {"DCON1","ACON1","DACON1","DCON2","ACON2","DACON2"};
     
-    void navigateMenu(int button, _lcd* lcd, _device *DCON1_ptr, _device *ACON1_ptr, _device *DACON1_ptr, 
-                    _device *DCON2_ptr, _device *ACON2_ptr, _device *DACON2_ptr){
+    void navigateMenu(int button, _lcd* lcd, _objects* objects_ptr){
       if(button & BUTTON_UP) {
         if (currentScreen == 0) {
-              currentScreen = numOfScreens-2;
-              printMenu(lcd);
-            }
-            else{
-              currentScreen--;
-              printMenu(lcd);
-            }
+          currentScreen = numOfScreens-3;
+          printMenu(lcd);
+        }
+        if(currentScreen == 6){
+          currentScreen++;
+          printMenu(lcd);
+        }
+        if(currentScreen == 7){
+          currentScreen = 0;
+          printMenu(lcd);
+        }
+        else{
+          currentScreen--;
+          printMenu(lcd);
+        }
       }
       if(button & BUTTON_DOWN){
-        if (currentScreen >= numOfScreens-2) {
+        if (currentScreen >= numOfScreens-3 && currentScreen != 6) {
               currentScreen = 0;
               printMenu(lcd);
-            }
+        }
+        if(currentScreen == 6){
+          currentScreen++;
+          printMenu(lcd);
+        }
+        if(currentScreen == 7){
+          currentScreen = 0;
+        }
         else{
           currentScreen++;
           printMenu(lcd);
         }
       }
       if(button & BUTTON_LEFT) {
-        parameterChange(0, DCON1_ptr, ACON1_ptr, DACON1_ptr, DCON2_ptr, ACON2_ptr, DACON2_ptr);
+        parameterChange(0, objects_ptr);
         printMenu(lcd);
       }
       if(button & BUTTON_RIGHT) {
-        parameterChange(1, DCON1_ptr, ACON1_ptr, DACON1_ptr, DCON2_ptr, ACON2_ptr, DACON2_ptr);
+        parameterChange(1, objects_ptr);
         printMenu(lcd);
       }
     }
 
-    void parameterChange(int index, _device *DCON1_ptr, _device *ACON1_ptr, _device *DACON1_ptr, _device *DCON2_ptr,
-                      _device *ACON2_ptr, _device *DACON2_ptr) {
+    void parameterChange(int index, _object *objects_ptr) {
       if(index == 1){
         if(currentScreen == 0){ //DCON1
           if(dcon1mode < numOfDconDevs-1){
@@ -89,11 +104,13 @@ class _menu: public _device{
           } 
         }
         if(currentScreen == 1){ //ACON1
-          if(acon1prevmode != -1) ~*ACON1_ptr();
+          if(acon1prevmode == 1){
+            objects_ptr->deleteObject(ACON1_PORTNUM);; 
+          }
           if(acon1mode < numOfAconDevs-1){
           acon1prevmode = acon1mode;
           acon1mode++; 
-          if(acon1mode == 1) *ACON1_ptr = new _handgrip;
+          if(acon1mode == 1) objects_ptr->createObject(HANDGRIP_TYPE, ACON1_PORTNUM);
           }
           else{
             acon1prevmode = acon1mode;

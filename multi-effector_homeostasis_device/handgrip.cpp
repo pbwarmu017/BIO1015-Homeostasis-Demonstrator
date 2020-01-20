@@ -2,13 +2,27 @@
 #ifndef HANDGRIP_CPP
 #define HANDGRIP_CPP
 
-#define HANDGRIPPIN A0
-
 class _handgrip: public _affector {
   public:
-    // _handgrip();
+    _handgrip(const int portnum){
+      switch(portnum){
+        case ACON1_PORTNUM:
+          handGripPin = 0;
+          break;
+        case ACON2_PORTNUM:
+          handGripPin = 2;
+          break;
+        case DACON1_PORTNUM:
+          handGripPin = 1;
+          break;
+        case DACON2_PORTNUM:
+          handGripPin = 2;
+          break;
+      }
+
+    }
     float voltageValue(void) {
-      return 5*analogRead(HANDGRIPPIN)/1023.; //simply returns the voltage read off the handgrip
+      return 5*analogRead(handGripPin)/1023.; //simply returns the voltage read off the handgrip
     }
     //calculates the productionrate to feed into _indicatorstrip.setRate()
     //returns a value between 0 and HANDGRIPPRESCALER
@@ -25,6 +39,7 @@ class _handgrip: public _affector {
       float handgripPrescaler = 75;
       float productionRate = 0;
   private:
+    int handGripPin = -1;
 };
 
 #endif

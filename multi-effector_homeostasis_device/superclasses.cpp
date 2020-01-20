@@ -5,11 +5,6 @@
 #include <Adafruit_NeoPixel.h>
 #include <Wire.h>
 #include <Adafruit_RGBLCDShield.h>
-#include "encoder.cpp"
-#include "handgrip.cpp"
-#include "lcd.cpp"
-#include "indicatorstrip.cpp"
-#include "menu.cpp"
 
 enum GAMESTATUS {
   notstarted,
@@ -57,7 +52,11 @@ extern enum SYSTEMMODE systemMode;
 
 class _device {
   public:
-    virtual ~device(); //virtualized destructor
+    // virtual ~_device(); //virtualized destructor
+    // !_device(){
+    //   return(0);
+    // }
+    // return(0);`
 };
 
 class _affector: public _device {
