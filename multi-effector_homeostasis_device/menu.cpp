@@ -4,10 +4,11 @@
 #include "superclasses.cpp"
 #include "lcd.cpp"
 #include "multi-effector_homeostasis_device.h"
+// #include "objects.h"
 
 class _menu: public _device{
   public:
-    static const int numOfScreens = 8;  //number of options in screens[]
+    static const int numOfScreens = 7;  //number of options in screens[]
     static const int numOfDconDevs = 2; //number of options in dconscreens[]
     static const int numOfAconDevs = 2; //number of options in aconscreens[]
     static const int numOfDaconDevs = 2; //number of options in daconscreens[]
@@ -33,19 +34,19 @@ class _menu: public _device{
     //LCD MENU TEXT OPTIONS
 
     //Main Menu Screens
-    String screens[numOfScreens][2] = {{"DCON1","DEV:"},
-      {"ACON1","DEV:"},{"DACON1","DEV:"},{"DCON2","DEV:"},{"ACON2","DEV:"},{"DACON2","DEV:"},
-      {"PORT GROUPS","SHARE ANALOG CH!"},{"DO NOT USE","CONCURRENTLY!"}};
+    String screens[numOfScreens][2] = {{"DCON1 COLOR PNK","DEV:"},
+      {"ACON1 COLOR ORN","DEV:"},{"DACON1 COLOR YEL","DEV:"},{"DCON2 COLOR BLU","DEV:"},{"ACON2 COLOR CYA","DEV:"},
+      {"DACON2 COLOR VIO","DEV:"},{"PORT GROUPS","SHARE ANALOG CH!"}};
 
     //Valid selections for each port type
-    String dconscreens[2] = {"OFF","CRANK"};
-    String aconscreens[2] = {"OFF","SQUEEZE"};
-    String daconscreens[2] = {"OFF","SQUEEZE"};
+    String dconscreens[2] = {"OFF","HANDCRANK"};
+    String aconscreens[2] = {"OFF","HANDGRIP"};
+    String daconscreens[2] = {"OFF","HANDGRIP"};
 
     //Port Selections. If you add to this, increase numOfPorts to match. 
     // String portscreens[6] = {"DCON1","ACON1","DACON1","DCON2","ACON2","DACON2"};
     
-    void navigateMenu(int button, _lcd* lcd, _objects* objects_ptr){
+    void navigateMenu(int button, _lcd* lcd){
       if(button & BUTTON_UP) {
         if (currentScreen == 0) {
           currentScreen = numOfScreens-3;
@@ -65,16 +66,9 @@ class _menu: public _device{
         }
       }
       if(button & BUTTON_DOWN){
-        if (currentScreen >= numOfScreens-3 && currentScreen != 6) {
-              currentScreen = 0;
-              printMenu(lcd);
-        }
-        if(currentScreen == 6){
-          currentScreen++;
-          printMenu(lcd);
-        }
-        if(currentScreen == 7){
+        if (currentScreen >= numOfScreens-2) {
           currentScreen = 0;
+          printMenu(lcd);
         }
         else{
           currentScreen++;
@@ -82,16 +76,16 @@ class _menu: public _device{
         }
       }
       if(button & BUTTON_LEFT) {
-        parameterChange(0, objects_ptr);
+        parameterChange(0);
         printMenu(lcd);
       }
       if(button & BUTTON_RIGHT) {
-        parameterChange(1, objects_ptr);
+        parameterChange(1);
         printMenu(lcd);
       }
     }
 
-    void parameterChange(int index, _objects *objects_ptr) {
+    void parameterChange(int index) {
       if(index == 1){
         if(currentScreen == 0){ //DCON1
           if(dcon1mode < numOfDconDevs-1){
@@ -101,30 +95,54 @@ class _menu: public _device{
           else{
             dcon1prevmode = dcon1mode;
             dcon1mode = 0;
+          }
+          if(dcon1prevmode == 1){ //if there has been an encoder configured previously
+            deleteObject(ENCODER_TYPE, DCON1_PORTNUM);
+          }
+          if(dcon1mode == 1){
+            createObject(ENCODER_TYPE, DCON1_PORTNUM);
           } 
         }
         if(currentScreen == 1){ //ACON1
-          if(acon1prevmode == 1){
-            objects_ptr->deleteObject(ACON1_PORTNUM);; 
+          if(dacon1mode == 1){ //only one member of group 1 can be active at one time.
+            deleteObject(HANDGRIP_TYPE, DACON1_PORTNUM); 
+            dacon1prevmode = dacon1mode;
+            dacon1mode = 0;
           }
           if(acon1mode < numOfAconDevs-1){
-          acon1prevmode = acon1mode;
-          acon1mode++; 
-          if(acon1mode == 1) objects_ptr->createObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+            acon1prevmode = acon1mode;
+            acon1mode++; 
           }
           else{
             acon1prevmode = acon1mode;
             acon1mode = 0;
           }
+          if(acon1prevmode == 1){ //if there has been a handgrip configured previously
+            deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+          }
+          if(acon1mode == 1){
+            createObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+          }
         }
         if(currentScreen == 2){ //DACON1
-          if(dacon1mode < numOfDaconDevs-1){
+          if(acon1mode == 1){ //only one member of group 1 can be active at one time.
+            deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM); 
+            acon1prevmode = acon1mode;
+            acon1mode = 0;
+          }
+          if(dacon1mode < numOfAconDevs-1){
             dacon1prevmode = dacon1mode;
             dacon1mode++; 
           }
           else{
             dacon1prevmode = dacon1mode;
             dacon1mode = 0;
+          }
+          if(dacon1prevmode == 1){ //if there has been a handgrip configured previously
+            deleteObject(HANDGRIP_TYPE, DACON1_PORTNUM); 
+          }
+          if(dacon1mode == 1){
+            createObject(HANDGRIP_TYPE, DACON1_PORTNUM);
           }
         }
         if(currentScreen == 3){ //DCON2
@@ -136,25 +154,53 @@ class _menu: public _device{
             dcon2prevmode = dcon2mode;
             dcon2mode = 0;
           } 
+          if(dcon2prevmode == 1){ //if there has been an encoder configured previously
+            deleteObject(ENCODER_TYPE, DCON2_PORTNUM);
+          }
+          if(dcon2mode == 1){
+            createObject(ENCODER_TYPE, DCON2_PORTNUM);
+          }
         }
         if(currentScreen == 4){ //ACON2
+          if(dacon2mode == 1){ //only one member of group 1 can be active at one time.
+            deleteObject(HANDGRIP_TYPE, DACON2_PORTNUM); 
+            dacon1prevmode = dacon2mode;
+            dacon2mode = 0;
+          }
           if(acon2mode < numOfAconDevs-1){
-          acon2prevmode = acon2mode;
-          acon2mode++; 
+            acon2prevmode = acon2mode;
+            acon2mode++; 
           }
           else{
             acon2prevmode = acon2mode;
             acon2mode = 0;
           }
+          if(acon2prevmode == 1){ //if there has been a handgrip configured previously
+            deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM);
+          }
+          if(acon2mode == 1){
+            createObject(HANDGRIP_TYPE, ACON2_PORTNUM);
+          }
         }
         if(currentScreen == 5){ //DACON2
-          if(dacon2mode < numOfDaconDevs-1){
-          dacon2prevmode = dacon2mode;
-          dacon2mode++; 
+          if(acon2mode == 1){ //only one member of group 1 can be active at one time.
+            deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM); 
+            acon2prevmode = acon2mode;
+            acon2mode = 0;
+          }
+          if(dacon2mode < numOfAconDevs-1){
+            dacon2prevmode = dacon2mode;
+            dacon2mode++; 
           }
           else{
             dacon2prevmode = dacon2mode;
             dacon2mode = 0;
+          }
+          if(dacon2prevmode == 1){ //if there has been a handgrip configured previously
+            deleteObject(HANDGRIP_TYPE, DACON2_PORTNUM); 
+          }
+          if(dacon2mode == 1){
+            createObject(HANDGRIP_TYPE, DACON2_PORTNUM);
           }
         }
       }
@@ -169,8 +215,19 @@ class _menu: public _device{
             dcon1prevmode = dcon1mode;
             dcon1mode = numOfDconDevs-1;
           }
+          if(dcon1prevmode == 1){ //if there has been an encoder configured previously
+            deleteObject(ENCODER_TYPE, DCON1_PORTNUM);
+          }
+          if(dcon1mode == 1){
+            createObject(ENCODER_TYPE, DCON1_PORTNUM);
+          }
         }
         if(currentScreen == 1) { //ACON1
+          if(dacon1mode == 1){ //only one member of group 1 can be active at one time.
+            deleteObject(HANDGRIP_TYPE, DACON1_PORTNUM); 
+            dacon1prevmode = dacon1mode;
+            dacon1mode = 0;
+          }
           if(acon1mode > 0){
             acon1prevmode = acon1mode;
             acon1mode--;
@@ -179,8 +236,19 @@ class _menu: public _device{
             acon1prevmode = acon1mode;
             acon1mode = numOfDconDevs-1;
           }
+          if(acon1prevmode == 1){ //if there has been a handgrip configured previously
+            deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+          }
+          if(acon1mode == 1){
+            createObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+          }
         }
         if(currentScreen == 2) { //DACON1
+          if(acon1mode == 1){ //only one member of group 1 can be active at one time.
+            deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM); 
+            acon1prevmode = acon1mode;
+            acon1mode = 0;
+          }
           if(dacon1mode > 0){
             dacon1prevmode = dacon1mode;
             dacon1mode--;
@@ -188,6 +256,12 @@ class _menu: public _device{
           else{
             dacon1prevmode = dacon1mode;
             dacon1mode = numOfDconDevs-1;
+          }
+          if(dacon1prevmode == 1){ //if there has been a handgrip configured previously
+            deleteObject(HANDGRIP_TYPE, DACON1_PORTNUM); 
+          }
+          if(dacon1mode == 1){
+            createObject(HANDGRIP_TYPE, DACON1_PORTNUM);
           }
         }
         if(currentScreen == 3) { //DCON2
@@ -199,8 +273,19 @@ class _menu: public _device{
             dcon2prevmode = dcon2mode;
             dcon2mode = numOfDconDevs-1;
           }
+          if(dcon2prevmode == 1){ //if there has been an encoder configured previously
+            deleteObject(ENCODER_TYPE, DCON2_PORTNUM);
+          }
+          if(dcon2mode == 1){
+            createObject(ENCODER_TYPE, DCON2_PORTNUM);
+          }
         }
         if(currentScreen == 4) { //ACON2
+          if(dacon2mode == 1){ //only one member of group 1 can be active at one time.
+            deleteObject(HANDGRIP_TYPE, DACON2_PORTNUM); 
+            dacon1prevmode = dacon2mode;
+            dacon2mode = 0;
+          }
           if(acon2mode > 0){
             acon2prevmode = acon2mode;
             acon2mode--;
@@ -209,8 +294,19 @@ class _menu: public _device{
             acon2prevmode = acon2mode;
             acon2mode = numOfDconDevs-1;
           }
+          if(acon2prevmode == 1){ //if there has been a handgrip configured previously
+            deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM);
+          }
+          if(acon2mode == 1){
+            createObject(HANDGRIP_TYPE, ACON2_PORTNUM);
+          }
         }
         if(currentScreen == 5) { //DACON2
+          if(acon2mode == 1){ //only one member of group 1 can be active at one time.
+            deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM); 
+            acon2prevmode = acon2mode;
+            acon2mode = 0;
+          }
           if(dacon2mode > 0){
             dacon2prevmode = dacon2mode;
             dacon2mode--;
@@ -218,6 +314,12 @@ class _menu: public _device{
           else{
             dacon2prevmode = dacon2mode;
             dacon2mode = numOfDconDevs-1;
+          }
+          if(dacon2prevmode == 1){ //if there has been a handgrip configured previously
+            deleteObject(HANDGRIP_TYPE, DACON2_PORTNUM); 
+          }
+          if(dacon2mode == 1){
+            createObject(HANDGRIP_TYPE, DACON2_PORTNUM);
           }
         }
       }
