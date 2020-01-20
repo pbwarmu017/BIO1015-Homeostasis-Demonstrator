@@ -64,7 +64,7 @@ class _device {
     int DCON2_status = 0;
     int ACON2_status = 0;
     int DACON2_status = 0;
-    // virtual ~_device(); //virtualized destructor
+    virtual ~_device(); //virtualized destructor
     // !_device(){
     //   return(0);
     // }
