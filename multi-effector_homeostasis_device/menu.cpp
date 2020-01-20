@@ -3,7 +3,7 @@
 
 #include "superclasses.cpp"
 #include "lcd.cpp"
-#include "objects.cpp"
+#include "objects.h"
 
 class _menu: public _device{
   public:
