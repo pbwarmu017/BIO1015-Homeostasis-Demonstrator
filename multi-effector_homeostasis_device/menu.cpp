@@ -91,7 +91,7 @@ class _menu: public _device{
       }
     }
 
-    void parameterChange(int index, _object *objects_ptr) {
+    void parameterChange(int index, _objects *objects_ptr) {
       if(index == 1){
         if(currentScreen == 0){ //DCON1
           if(dcon1mode < numOfDconDevs-1){

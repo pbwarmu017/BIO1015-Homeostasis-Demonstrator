@@ -84,7 +84,7 @@ class _objects {
       // }
       return(gen_ptr);
     }
-    void destroyObject(int objtype, int port){
+    void deleteObject(int port){
 
     }
 };
