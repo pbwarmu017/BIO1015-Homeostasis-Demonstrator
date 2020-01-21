@@ -223,7 +223,7 @@ class _indicatorstrip: public _device
         }
       }
 
-      if(objtype == ENCODER_TYPE)
+      if(objtype == HANDCRANK_TYPE)
       {
         for(int i = 0; i < sizeof(handcrankStatus)/sizeof(handcrankStatus[0]); i++)
         {
@@ -234,7 +234,7 @@ class _indicatorstrip: public _device
     }
     ~_indicatorstrip()
     {
-      //must define a destructor, but I have no use for it here. 
+      //must define a destructor, but I have no use for it here. `
     }
   private:
     float consumptionRate = DEFAULTCONSUMPTIONRATE/100.; //stays the same for all players

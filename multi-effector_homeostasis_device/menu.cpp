@@ -111,11 +111,11 @@ class _menu: public _device{
           }
           if(dcon1prevmode == 1)
           { //if there has been an encoder configured previously
-            deleteObject(ENCODER_TYPE, DCON1_PORTNUM);
+            deleteObject(HANDCRANK_TYPE, DCON1_PORTNUM);
           }
           if(dcon1mode == 1)
           {
-            createObject(ENCODER_TYPE, DCON1_PORTNUM);
+            createObject(HANDCRANK_TYPE, DCON1_PORTNUM);
           } 
         }
         if(currentScreen == 1)
@@ -186,11 +186,11 @@ class _menu: public _device{
           } 
           if(dcon2prevmode == 1)
           { //if there has been an encoder configured previously
-            deleteObject(ENCODER_TYPE, DCON2_PORTNUM);
+            deleteObject(HANDCRANK_TYPE, DCON2_PORTNUM);
           }
           if(dcon2mode == 1)
           {
-            createObject(ENCODER_TYPE, DCON2_PORTNUM);
+            createObject(HANDCRANK_TYPE, DCON2_PORTNUM);
           }
         }
         if(currentScreen == 4)
@@ -264,11 +264,11 @@ class _menu: public _device{
           }
           if(dcon1prevmode == 1)
           { //if there has been an encoder configured previously
-            deleteObject(ENCODER_TYPE, DCON1_PORTNUM);
+            deleteObject(HANDCRANK_TYPE, DCON1_PORTNUM);
           }
           if(dcon1mode == 1)
           {
-            createObject(ENCODER_TYPE, DCON1_PORTNUM);
+            createObject(HANDCRANK_TYPE, DCON1_PORTNUM);
           }
         }
         if(currentScreen == 1) 
@@ -339,11 +339,11 @@ class _menu: public _device{
           }
           if(dcon2prevmode == 1)
           { //if there has been an encoder configured previously
-            deleteObject(ENCODER_TYPE, DCON2_PORTNUM);
+            deleteObject(HANDCRANK_TYPE, DCON2_PORTNUM);
           }
           if(dcon2mode == 1)
           {
-            createObject(ENCODER_TYPE, DCON2_PORTNUM);
+            createObject(HANDCRANK_TYPE, DCON2_PORTNUM);
           }
         }
         if(currentScreen == 4) 

@@ -39,12 +39,16 @@ extern enum SYSTEMMODE systemMode;
 #define ACON2_PINNUM 2
 #define DACON1_PINNUM 1
 #define DACON2_PINNUM 2
-
+ //device types
 #define INDICATORSTRIP_TYPE 1
 #define LCD_TYPE 2
 #define MENU_TYPE 3
 #define HANDGRIP_TYPE 4
-#define ENCODER_TYPE 5
+#define HANDCRANK_TYPE 5
+
+//rate calculation types
+#define GENERAL_RATETYPE 0
+#define CRANKSUM_RATETYPE 1
 
 
 
@@ -58,12 +62,12 @@ extern enum SYSTEMMODE systemMode;
 
 class _device {
   public:
-    int DCON1_status = 0;
-    int ACON1_status = 0;
-    int DACON1_status = 0;
-    int DCON2_status = 0;
-    int ACON2_status = 0;
-    int DACON2_status = 0;
+    int DCON1_mode = 0;
+    int ACON1_mode = 0;
+    int DACON1_mode = 0;
+    int DCON2_mode = 0;
+    int ACON2_mode = 0;
+    int DACON2_mode = 0;
     virtual ~_device()
     { //virtualized destructor
       //must provide a body for a virtual destructor, even if its empty. 

@@ -3,21 +3,22 @@
 #define ENCODER_CPP 
 
 #include "superclasses.cpp"
-#include "lcd.cpp"
-#include "indicatorstrip.cpp"
+// #include "lcd.cpp"
+// #include "indicatorstrip.cpp"
 //encoder defines 
 #define CRANKRATECALCDELAY 250 //value is in milliseconds
 #define CRANKRATEMAX 24
 #define CRANKRATESCALER 67
 
 
-class _encoder: public _affector {
+class _encoder: public _affector
+{
   public:
     float productionRate = 0;
     int encoderpina;
     int encoderpinb;
 
-    _lcd* lcd_ptr;
+    // _lcd* lcd_ptr;
     //check https://playground.arduino.cc/Main/RotaryEncoders/#OnInterrupts
     //TO DO: Change to pin change interrupts and do software debouncing. 
     
@@ -27,8 +28,8 @@ class _encoder: public _affector {
     //http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html to see how it works
     char returnDelta(void)
     {
-      pinAVal = digitalRead(encoderpina);
-      pinBVal = digitalRead(encoderpinb);
+      pinAVal = digitalRead(encoderPinA);
+      pinBVal = digitalRead(encoderPinB);
       unsigned char lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
       prevAVal = pinAVal;
       prevBVal = prevBVal;

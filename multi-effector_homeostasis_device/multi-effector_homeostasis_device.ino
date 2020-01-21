@@ -26,8 +26,8 @@ Adafruit RGB LCD Sheild Library
   volatile int crankRateCalcDelayCounter = 50;
   volatile int gameResetCounter = 0;
   volatile int lcdRefreshCounter = 0;
-  volatile int crankSum = 0;
   volatile bool STRIPREFRESHFLAG = false;
+  volatile bool CRANKSUMFLAG = false;
   volatile bool CRANKRATECALCFLAG = false;
   volatile bool LCDREFRESHFLAG = false;
   volatile bool RESETFLAG = false;
@@ -43,6 +43,7 @@ Adafruit RGB LCD Sheild Library
   _device *indicatorstrip_ptr;
   _device *menu_ptr;
   _device *lcd_ptr;
+  _device *main_ptr = new _device;
 
 //GLOBAL FUNCTIONS-------------------------------------------
   //this function is responsible for creating a new object on the HEAP (using the new keyword), setting up the ports 
@@ -212,6 +213,12 @@ Adafruit RGB LCD Sheild Library
     pinMode(5, INPUT_PULLUP);
     pinMode(6, INPUT_PULLUP);
     pinMode(7, INPUT_PULLUP);
+    pinMode(8, INPUT_PULLUP);
+    pinMode(9, INPUT_PULLUP);
+    pinMode(10, INPUT_PULLUP);
+    pinMode(11, INPUT_PULLUP);
+    pinMode(12, INPUT_PULLUP);
+    pinMode(13, INPUT_PULLUP);
     // //set all analog ports as inputs. 
     // pinMode(A0, INPUT);
     // pinMode(A1, INPUT);
