@@ -68,10 +68,12 @@ class _device {
     int DCON2_mode = 0;
     int ACON2_mode = 0;
     int DACON2_mode = 0;
-    virtual ~_device()
-    { //virtualized destructor
-      //must provide a body for a virtual destructor, even if its empty. 
-    }
+    
+    _device(){};
+    // virtual _device(const int, _device*){}
+    virtual ~_device(){}
+    virtual void calculateRate(int modifier){}
+    virtual int returnRate(void){}
 };
 
 class _affector: public _device
@@ -82,9 +84,6 @@ class _affector: public _device
     {
       return(currentPosition);
     }
-    ~_affector()
-    {
-      //must define a destructor, but I have no use for it here. 
-    }
+    virtual ~_affector(){}
 };
 #endif

@@ -5,29 +5,30 @@
 class _handgrip: public _affector 
 {
   public:
-
-    _handgrip(const int portnum)
+    int portnum;
+    _handgrip(const int port, _device* ptr)
     { //constructor
-      switch(portnum)
+      main_ptr = ptr;
+      switch(port)
       {
         case ACON1_PORTNUM:
           handGripPin = ACON1_PINNUM;
-          ACON1_status = 1;
+          main_ptr->ACON1_mode = 1;
           break;
         case ACON2_PORTNUM:
           handGripPin = ACON2_PINNUM;
-          ACON2_status = 1;
+          main_ptr->ACON2_mode = 1;
           break;
         case DACON1_PORTNUM:
           handGripPin = DACON1_PINNUM;
-          DACON1_status = 1;
+          main_ptr->ACON1_mode = 1;
           break;
         case DACON2_PORTNUM:
           handGripPin = DACON2_PINNUM;
-          DACON2_status = 1;
+          main_ptr->ACON2_mode = 1;
           break;
       }
-      color = portnum;
+      color = portnum = port;
     }
 
     ~_handgrip()
@@ -35,16 +36,16 @@ class _handgrip: public _affector
       switch(color) 
       {//color was used to store portnum earlier. Destructors cannot take parameters. 
         case ACON1_PORTNUM:
-          ACON1_status = 0;
+          main_ptr->ACON1_mode = 0;
           break;
         case ACON2_PORTNUM:
-          ACON2_status = 0;
+          main_ptr->ACON2_mode = 0;
           break;
         case DACON1_PORTNUM:
-          DACON1_status = 0;
+          main_ptr->ACON1_mode = 0;
           break;
         case DACON2_PORTNUM:
-          DACON2_status = 0;
+          main_ptr->ACON2_mode = 0;
           break;
       }
       handGripPin = -1;
@@ -72,6 +73,7 @@ class _handgrip: public _affector
   private:
     int handGripPin = -1;
     int color = 0;
+    _device *main_ptr;
 };
 
 #endif
