@@ -3,6 +3,7 @@
 #define ENCODER_CPP 
 
 #include "superclasses.cpp"
+#include "indicatorstrip.cpp"
 // #include "lcd.cpp"
 // #include "indicatorstrip.cpp"
 //encoder defines 
@@ -51,27 +52,29 @@ class _encoder: public _affector
         movingAverage += (-movingAverage/movingAveragePeriod + crankSum*1.1);
 
         //make it pointless to spin the crank too fast
-        if(movingAverage > 60) movingAverage = 60;
+        if(movingAverage > 80) movingAverage = 80;
         //prevent excessively small carryover
-        if(movingAverage < 0.5) movingAverage = 0;
-        overallRate = (movingAverage/30 * maxProductionRate) - consumptionRate;
+        if(movingAverage < 1) movingAverage = 0;
+        overallRate = ((movingAverage/80 * maxProductionRate)*2 - consumptionRate)/100;
         //reset the sum because it has just been incorporated into a moving avg
         crankSum = 0;
-        Serial.print(overallRate);
-        Serial.print("\n");
+        //send the rate to the strip so that it can update the position of this indicator
+        ((_indicatorstrip *)indicatorstrip_ptr)->updatePosition(overallRate, portNum);
       }
       return;
     }
-    //return the current rate (a number between 100 and -100) on demand
+    //return the current rate (a number between -1 and 1) on demand
     // int calculateProductionRate(int crankSum)
     int returnRate(void){
       return(overallRate);
     }
     //upon object creation, set up the pins ands store the current values for the encoder
     //this alsoo stores pointerse to the lcd and incicatorstrup objects
-    _encoder(const int port, _device *ptr)//_indicatorstrip* indicatorstrip)
+    _encoder(const int port, _device *mainptr, _device *indptr)//_indicatorstrip* indicatorstrip)
     {
-      main_ptr = ptr;
+      main_ptr = mainptr; //pointer to the main _device object (used to store some globally needed variables)
+      indicatorstrip_ptr = indptr; //pointer for the indicatorstrip object
+
       portNum = port;
 
       switch(portNum)
@@ -118,26 +121,28 @@ class _encoder: public _affector
           encoderPinA = -1;
           encoderPinB = -1;
           main_ptr->DCON1_mode = 0;
+          ((_indicatorstrip *)indicatorstrip_ptr)->deviceIndicatorPosition[DCON1_PORTNUM] = -2;
           break;
         case DCON2_PORTNUM:
           encoderPinA = -1;
           encoderPinB = -1;
           main_ptr->DCON2_mode = 0;
+          ((_indicatorstrip *)indicatorstrip_ptr)->deviceIndicatorPosition[DCON2_PORTNUM] = -2;
           break;      
       }
-
     }
   private:
     _device *main_ptr;
-    // char quadratureLookupTable[16] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
+    _device *indicatorstrip_ptr;
+    char quadratureLookupTable[16] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
     //removed extraneous values to help prevent bouncing, and inverted the polarity
     // http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html
-    char quadratureLookupTable[16] = {0,0,0,0,0,0,0,-1,0,0,0,0,0,1,0,0};
+    // char quadratureLookupTable[16] = {0,0,0,0,0,0,0,-1,0,0,0,0,0,1,0,0};
     float overallRate = 0;
     float movingAverage = 0; //holds the moving average for the production of the hand crank. 
     float movingAveragePeriod = 1000/CRANKRATECALCDELAY; 
-    int maxProductionRate = 100; //used in the rate calculation
-    int consumptionRate = 80; ///used in the rate calculation
+    int maxProductionRate = 30; //used in the rate calculation
+    int consumptionRate = 30; ///used in the rate calculation
     int portNum = -1; //used to save the port number that this object is instantiated on.
     int crankSum = 0; //sums the number of valid pulses from the encoder
     int encoderPinA = -1; //stores object pin configuration
