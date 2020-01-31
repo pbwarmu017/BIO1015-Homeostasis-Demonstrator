@@ -34,7 +34,7 @@ class _menu: public _device{
     //LCD MENU TEXT OPTIONS
 
     //Main Menu Screens
-    String screens[numOfScreens][2] = {{"DCON1 COLOR PNK","DEV:"},
+    String screens[numOfScreens][2] = {{"DCON1 COLOR WHT","DEV:"},
       {"ACON1 COLOR ORN","DEV:"},{"DACON1 COLOR YEL","DEV:"},{"DCON2 COLOR BLU","DEV:"},{"ACON2 COLOR CYA","DEV:"},
       {"DACON2 COLOR VIO","DEV:"},{"PORT GROUPS","SHARE ANALOG CH!"}};
 

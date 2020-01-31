@@ -25,16 +25,16 @@ extern enum SYSTEMMODE systemMode;
 #define CRANKDEVNUM 1
 
 //port number defines for readability 
-#define DCON1_PORTNUM 1
-#define ACON1_PORTNUM 2
-#define DACON1_PORTNUM 3
-#define DCON2_PORTNUM 4
-#define ACON2_PORTNUM 5
-#define DACON2_PORTNUM 6
-#define INDICATORSTRIP_PORTNUM 7
+#define DCON1_PORTNUM 0
+#define ACON1_PORTNUM 1
+#define DACON1_PORTNUM 2
+#define DCON2_PORTNUM 3
+#define ACON2_PORTNUM 4
+#define DACON2_PORTNUM 5
+#define INDICATORSTRIP_PORTNUM 6
+#define HARDCODED_PORTNUM 7 //used when the port is hardcoded in the library (lcd)
 
-#define HARDCODED_PORTNUM 8 //used when the port is hardcoded in the library (lcd)
-
+//internal use. do not change
 #define ACON1_PINNUM 0
 #define ACON2_PINNUM 2
 #define DACON1_PINNUM 1

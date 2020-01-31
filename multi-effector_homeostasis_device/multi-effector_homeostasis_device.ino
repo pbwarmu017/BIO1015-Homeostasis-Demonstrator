@@ -81,9 +81,9 @@ Adafruit RGB LCD Sheild Library
 
     if(objtype == HANDCRANK_TYPE)
     {
-      if(portnum == DCON1_PORTNUM) DCON1_ptr = new _encoder(DCON1_PORTNUM, main_ptr); 
+      if(portnum == DCON1_PORTNUM) DCON1_ptr = new _encoder(DCON1_PORTNUM, main_ptr, indicatorstrip_ptr); 
 
-      if(portnum == DCON2_PORTNUM) DCON2_ptr = new _encoder(DCON2_PORTNUM, main_ptr);
+      if(portnum == DCON2_PORTNUM) DCON2_ptr = new _encoder(DCON2_PORTNUM, main_ptr, indicatorstrip_ptr);
     }
   }
 
@@ -192,11 +192,6 @@ Adafruit RGB LCD Sheild Library
     pinMode(11, INPUT_PULLUP);
     pinMode(12, INPUT_PULLUP);
     pinMode(13, INPUT_PULLUP);
-    // //set all analog ports as inputs. 
-    // pinMode(A0, INPUT);
-    // pinMode(A1, INPUT);
-    // pinMode(A2, INPUT);
-    // pinMode(A3, INPUT);
 
     //----------------------------------------------------------
     createObject(LCD_TYPE, HARDCODED_PORTNUM);
@@ -234,35 +229,18 @@ Adafruit RGB LCD Sheild Library
           CRANKRATECALCFLAG = false;
         }
       }
-    // if(STRIPREFRESHFLAG){
-    //   if(HANDGRIPACTIVE == 1){
-    //     if->Handgrip_ptrcalibrationState == true){
-    //      ->indicatorstrip_ptrsetProductionRate->Handgrip_ptrcalculateProductionRate(
-    //         analogRead(HANDGRIPPIN), Handgrip_ptr), HANDGRIPDEVNUM);
-    //       //set the indicator positions based on the production rate 
-    //      ->indicatorstrip_ptrsetIndicatorPosition(
-    //        ->Handgrip_ptrproductionRate =->indicatorstrip_ptrcalculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
-    //     } else {
-    //      ->Handgrip_ptrhandgripMaxVoltage =->Handgrip_ptrvoltageValue();
-    //      ->Handgrip_ptrcalibrationState = true;
-    //     }
-    //   }
-    //   //set the bounding box. 
-    //   if(CRANKACTIVE == 1){
-    //    ->indicatorstrip_ptrsetIndicatorPosition(
-    //      ->Handcrank_ptrproductionRate =->indicatorstrip_ptrcalculatePosition(CRANKDEVNUM), CRANKDEVNUM);
-    //   }
-    //  ->indicatorstrip_ptrsetBoundingBox(BOXSTART, BOXSIZE);
-    //  ->indicatorstrip_ptrupdate();
-    //   STRIPREFRESHFLAG = false;
-    // }
+    if(STRIPREFRESHFLAG){
+      ((_indicatorstrip *)indicatorstrip_ptr)->refreshStrip();
+      STRIPREFRESHFLAG = false;
+    }
+
     // if(RESETFLAG){
     //  ->indicatorstrip_ptrsetBoundingBox(BOXSTART, BOXSIZE);
     //   RESETFLAG = false;
     // }
+
     if(LCDREFRESHFLAG)
     {
-      // (note: line 1 is the second row, since counting begins with 0)
       uint8_t button = (((_lcd *)lcd_ptr)->lcd_obj)->readButtons();
       if(button & BUTTON_SELECT and selectTimer <= 10 and systemMode == running)
       {

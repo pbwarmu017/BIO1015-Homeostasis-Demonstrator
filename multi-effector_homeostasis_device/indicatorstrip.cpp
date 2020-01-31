@@ -5,16 +5,17 @@
 #include "superclasses.cpp"
 //LED COLOR CODE DEFINITIONS. 
 #define COLORRED strip->Color(128,0,0) //USED FOR PRE GAME INDICATION
-#define COLORPINK strip->Color(128,53,90)
-#define COLORORANGE strip->Color(128,64,0) //USED FOR SECONDINDICATORCOLOR
-#define COLORYELLOW strip->Color(128,128,0)
-#define COLORGREEN strip->Color(0,128,0) //USED FOR "GAME ON" INDICATION
-#define COLORBLUE strip->Color(0,0,128) //USED FOR SQUEEZEINDICATORCOLOR
-#define COLORCYAN strip->Color(0,128,128)
+#define COLORPINK strip->Color(64,26,45)
+#define COLORWHITE strip->Color(64,64,64)
+#define COLORORANGE strip->Color(70,32,0) //USED FOR SECONDINDICATORCOLOR
+#define COLORYELLOW strip->Color(64,64,0)
+#define COLORGREEN strip->Color(0,64,0) //USED FOR "GAME ON" INDICATION
+#define COLORBLUE strip->Color(0,0,64) //USED FOR SQUEEZEINDICATORCOLOR
+#define COLORCYAN strip->Color(0,64,64)
 #define COLORVIOLET strip->Color(25,0,51)
 
 //PORT COLOR SELECTIONS
-#define DCON1 COLORPINK
+#define DCON1COLOR COLORWHITE
 #define ACON1COLOR COLORORANGE
 #define DACON1COLOR COLORYELLOW
 #define DCON2COLOR COLORBLUE
@@ -25,7 +26,7 @@
 #define DEFAULTINDICATORPOSITION 0//BOXSTART+round((float)BOXSIZE/2)
 
 //REFRESH SPEEDS
-#define STRIPREFRESHDELAY 50 //in milliseconds
+#define STRIPREFRESHDELAY 43 //in milliseconds
 #define LEDMAXINCREMENT 5 //Max # of LEDs to jump per cycle
 
 

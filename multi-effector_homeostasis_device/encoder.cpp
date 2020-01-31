@@ -6,7 +6,7 @@
 // #include "lcd.cpp"
 // #include "indicatorstrip.cpp"
 //encoder defines 
-#define CRANKRATECALCDELAY 250 //value is in milliseconds
+#define CRANKRATECALCDELAY 50 //value is in milliseconds
 #define CRANKRATEMAX 24
 #define CRANKRATESCALER 67
 
@@ -33,6 +33,7 @@ class _encoder: public _affector
     }
 
     //this is called (through a flag checked for in main)
+    //calculates a production rate and sends it to the strip. 
     void calculateRate(int modifier)
     {
       if(modifier == CRANKSUM_RATETYPE)
