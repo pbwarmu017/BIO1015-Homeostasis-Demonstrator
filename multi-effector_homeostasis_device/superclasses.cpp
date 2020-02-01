@@ -70,20 +70,23 @@ class _device {
     int DACON2_mode = 0;
     
     _device(){};
-    // virtual _device(const int, _device*){}
-    virtual ~_device(){}
-    virtual void calculateRate(int modifier){}
-    virtual int returnRate(void){}
+    
+    virtual ~_device(){} // virtualized destructor
+
+    //these virtual functions will be overwritten by derived class objects. 
+    virtual void calculateRate(int modifier)
+    {
+      modifier |= 0; //do nothing with it. 
+      return;
+    }
+    virtual int returnRate(void){
+      return(0);
+    }
 };
 
 class _affector: public _device
 {
   public: 
-
-    float returnPosition(float currentPosition)
-    {
-      return(currentPosition);
-    }
-    virtual ~_affector(){}
+    virtual ~_affector(){} //must have a virtualized destructor
 };
 #endif

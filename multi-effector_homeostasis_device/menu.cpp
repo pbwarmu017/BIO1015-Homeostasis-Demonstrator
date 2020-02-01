@@ -46,27 +46,29 @@ class _menu: public _device{
     //Port Selections. If you add to this, increase numOfPorts to match. 
     // String portscreens[6] = {"DCON1","ACON1","DACON1","DCON2","ACON2","DACON2"};
     
-    void navigateMenu(int button, _lcd* lcd){
+    void navigateMenu(int button, _lcd* lcd_ptr, _menu* menu_ptr)
+    {
       if(button & BUTTON_UP) 
       {
         if (currentScreen == 0) 
         {
           currentScreen = numOfScreens-3;
-          printMenu(lcd);
+          printMenu(lcd_ptr);
         }
         if(currentScreen == 6)
         {
           currentScreen++;
-          printMenu(lcd);
+          printMenu(lcd_ptr);
         }
         if(currentScreen == 7)
         {
           currentScreen = 0;
-          printMenu(lcd);
+          printMenu(lcd_ptr);
         }
-        else{
+        else
+        {
           currentScreen--;
-          printMenu(lcd);
+          printMenu(lcd_ptr);
         }
       }
       if(button & BUTTON_DOWN)
@@ -74,26 +76,32 @@ class _menu: public _device{
         if (currentScreen >= numOfScreens-2) 
         {
           currentScreen = 0;
-          printMenu(lcd);
+          printMenu(lcd_ptr);
         }
-        else{
+        else
+        {
           currentScreen++;
-          printMenu(lcd);
+          printMenu(lcd_ptr);
         }
       }
       if(button & BUTTON_LEFT) 
       {
-        parameterChange(0);
-        printMenu(lcd);
+        parameterChange(0, lcd_ptr, menu_ptr);
+        //the created objects might need control of the LCD. The created objects will print the menu when they are finished 
+        //with the LCD
+        //if the parameter change does not create or destroy  an object, print the menu in parameterchange(). 
       }
       if(button & BUTTON_RIGHT) 
       {
-        parameterChange(1);
-        printMenu(lcd);
+        parameterChange(1, lcd_ptr, menu_ptr); 
+
+        //the created objects might need control of the LCD. The objects will print the menu when they are finished 
+        //with the LCD 
+        //if the parameter change does not create or destroy  an object, print the menu in parameterchange().
       }
     }
 
-    void parameterChange(int index)
+    void parameterChange(int index, _lcd* lcd_ptr, _menu* menu_ptr)
     {
       if(index == 1)
       {
