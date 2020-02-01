@@ -31,8 +31,8 @@ Adafruit RGB LCD Sheild Library
 
   volatile bool STRIPREFRESHFLAG = false;
   volatile bool CRANKSUMFLAG = false;
-  volatile bool CRANKRATECALCFLAG = false;
-  volatile bool GRIPRATECALCFLAG = false;
+  // volatile bool CRANKRATECALCFLAG = false;
+  // volatile bool GRIPRATECALCFLAG = false;
   volatile bool LCDREFRESHFLAG = false;
   volatile bool RESETFLAG = false;
 
@@ -130,19 +130,19 @@ Adafruit RGB LCD Sheild Library
       //Set Rates based on affector positions (one for each affector)
     }
     //set flags for handcrank
-    if((main_ptr->DCON1_mode == HANDCRANK_TYPE or main_ptr->DCON2_mode == HANDCRANK_TYPE) and 
-        crankRateCalcDelayCounter >= CRANKRATECALCDELAY)
-    {
-      crankRateCalcDelayCounter = 0; 
-      CRANKRATECALCFLAG = true;  
-    }
-    //set flags for handgrip
-    if((main_ptr->ACON1_mode == HANDGRIP_TYPE or main_ptr->ACON2_mode == HANDGRIP_TYPE) and 
-        gripRateCalcDelayCounter >= GRIPRATECALCDELAY)
-    {
-      crankRateCalcDelayCounter = 0;
-      GRIPRATECALCFLAG = true;
-    }
+    // if((main_ptr->DCON1_mode == HANDCRANK_TYPE or main_ptr->DCON2_mode == HANDCRANK_TYPE) and 
+    //     crankRateCalcDelayCounter >= CRANKRATECALCDELAY)
+    // {
+    //   crankRateCalcDelayCounter = 0; 
+    //   CRANKRATECALCFLAG = true;  
+    // }
+    // //set flags for handgrip
+    // if((main_ptr->ACON1_mode == HANDGRIP_TYPE or main_ptr->ACON2_mode == HANDGRIP_TYPE) and 
+    //     gripRateCalcDelayCounter >= GRIPRATECALCDELAY)
+    // {
+    //   crankRateCalcDelayCounter = 0;
+    //   GRIPRATECALCFLAG = true;
+    // }
     //set flags to reset lost game
     if(gameStatus == lost)
     {
@@ -214,46 +214,44 @@ Adafruit RGB LCD Sheild Library
 
   void loop()
   {
-    if((main_ptr->DCON1_mode == HANDCRANK_TYPE) or (main_ptr->DCON2_mode == HANDCRANK_TYPE))
+    if(CRANKSUMFLAG) //triggers calcultion of the moving average for the handcrank
     {
-      if(CRANKSUMFLAG)
+      if(main_ptr->DCON1_mode == HANDCRANK_TYPE)
       {
-        if(main_ptr->DCON1_mode == HANDCRANK_TYPE)
-        {
-          DCON1_ptr->calculateRate(CRANKSUM_RATETYPE);
-        }
-        if(main_ptr->DCON2_mode == HANDCRANK_TYPE)
-        {
-          DCON2_ptr->calculateRate(CRANKSUM_RATETYPE);
-        }
-        CRANKSUMFLAG = false;
+        DCON1_ptr->calculateRate(CRANKSUM_RATETYPE);
       }
-      if(CRANKRATECALCFLAG)
+      if(main_ptr->DCON2_mode == HANDCRANK_TYPE)
       {
-        if(main_ptr->DCON1_mode == HANDCRANK_TYPE)
-        {
-          DCON1_ptr->calculateRate(GENERAL_RATETYPE);
-        }
-        if(main_ptr->DCON2_mode == HANDCRANK_TYPE)
-        {
-          DCON2_ptr->calculateRate(GENERAL_RATETYPE);
-        }
-          //reset the delay counter for the next run
-          CRANKRATECALCFLAG = false;
+        DCON2_ptr->calculateRate(CRANKSUM_RATETYPE);
       }
-    }
-    if(STRIPREFRESHFLAG)
+      CRANKSUMFLAG = false;
+    } 
+    if(STRIPREFRESHFLAG) //triggers rate calculation for active affectros and strip refresh
     {
+      if(main_ptr->DCON1_mode == HANDCRANK_TYPE)
+      {
+        DCON1_ptr->calculateRate(GENERAL_RATETYPE);
+      }
+      if(main_ptr->DCON2_mode == HANDCRANK_TYPE)
+      {
+        DCON2_ptr->calculateRate(GENERAL_RATETYPE);
+      }
+      if(main_ptr->ACON1_mode == HANDGRIP_TYPE)
+      {
+        ACON1_ptr->calculateRate(GENERAL_RATETYPE);
+      }
+      if(main_ptr->ACON2_mode == HANDGRIP_TYPE)
+      {
+        ACON2_ptr->calculateRate(GENERAL_RATETYPE);
+      }
       indicatorstrip_ptr->refreshStrip();
       STRIPREFRESHFLAG = false;
     }
-
     if(RESETFLAG)
     {
       gameStatus = notstarted;
       RESETFLAG = false;
     }
-
     if(LCDREFRESHFLAG)
     {
       uint8_t button = (lcd_ptr->lcd_obj)->readButtons();
@@ -300,17 +298,5 @@ Adafruit RGB LCD Sheild Library
         menu_ptr->navigateMenu(button, lcd_ptr, menu_ptr);
       }
       LCDREFRESHFLAG = false;
-    }
-
-    if(GRIPRATECALCFLAG)
-    {
-      if(main_ptr->ACON1_mode == HANDGRIP_TYPE)
-      {
-        ACON1_ptr->calculateRate(GENERAL_RATETYPE);
-      }
-      if(main_ptr->ACON2_mode == HANDGRIP_TYPE)
-      {
-        ACON2_ptr->calculateRate(GENERAL_RATETYPE);
-      }
     }
   }

@@ -26,7 +26,7 @@
 #define DEFAULTINDICATORPOSITION 0//BOXSTART+round((float)BOXSIZE/2)
 
 //REFRESH SPEEDS
-#define STRIPREFRESHDELAY 40 //in milliseconds
+#define STRIPREFRESHDELAY 50 //in milliseconds
 #define LEDMAXINCREMENT 5 //Max # of LEDs to jump per cycle
 
 

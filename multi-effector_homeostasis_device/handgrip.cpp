@@ -5,8 +5,8 @@
 #include "indicatorstrip.cpp"
 #include "menu.cpp"
 
-#define GRIPRATECALCDELAY 100 //value is in milliseconds
-#define GRIPRATESCALER 5.0
+// #define GRIPRATECALCDELAY 100 //value is in milliseconds
+#define GRIPRATESCALER 25.0
 
 class _handgrip: public _affector 
 {
@@ -51,7 +51,7 @@ class _handgrip: public _affector
 
       (lcd_ptr->lcd_obj)->clear();
 
-      delay(1000);
+      delay(500);
 
       (lcd_ptr->lcd_obj)->setCursor(0,0);
       (lcd_ptr->lcd_obj)->print("Compress Grip");
@@ -68,7 +68,7 @@ class _handgrip: public _affector
 
       (lcd_ptr->lcd_obj)->clear();
 
-      delay(1000);
+      delay(500);
 
       (lcd_ptr->lcd_obj)->clear();
       menu_ptr->printMenu(lcd_ptr);
@@ -112,7 +112,7 @@ class _handgrip: public _affector
         float delta = (voltageValue() - handgripMinVoltage );
         Serial.print(delta);
         Serial.print("\n");
-        overallRate = ((delta/voltageRange*maxProductionRate)*2 - consumptionRate) * (0.00001 * GRIPRATESCALER);
+        overallRate = ((delta/voltageRange*maxProductionRate)*2 - consumptionRate) * (0.0002 * GRIPRATESCALER);
         // Serial.print(overallRate);
         indicatorstrip_ptr->updatePosition(overallRate, portNum);
       } 
@@ -141,7 +141,7 @@ class _handgrip: public _affector
     // float handgripPrescaler = 75;
 
     float maxProductionRate = 70;
-    float consumptionRate = 58;
+    float consumptionRate = 60;
 
 
     int portNum = -1; //used to save the port number that this object is instantiated on.

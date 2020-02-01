@@ -8,7 +8,7 @@
 // #include "lcd.cpp"
 // #include "indicatorstrip.cpp"
 //encoder defines 
-#define CRANKRATECALCDELAY 50 //value is in milliseconds
+// #define CRANKRATECALCDELAY 50 //value is in milliseconds
 #define CRANKRATESCALAR 3.0
 
 
@@ -145,7 +145,7 @@ class _encoder: public _affector
     // char quadratureLookupTable[16] = {0,0,0,0,0,0,0,-1,0,0,0,0,0,1,0,0};
     float overallRate = 0;
     float movingAverage = 0; //holds the moving average for the production of the hand crank. 
-    float movingAveragePeriod = 1000/CRANKRATECALCDELAY; 
+    float movingAveragePeriod = 1000/STRIPREFRESHDELAY; 
     float maxProductionRate = 60; //used in the rate calculation
     float consumptionRate = 70; ///used in the rate calculation
     int portNum = -1; //used to save the port number that this object is instantiated on.
