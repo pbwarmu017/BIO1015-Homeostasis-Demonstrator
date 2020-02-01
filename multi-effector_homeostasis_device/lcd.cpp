@@ -3,6 +3,9 @@
 
 #include "superclasses.cpp"
  //LCD background color defines
+//the LCD library doesnt do any PWM on the three different backlight channels
+//this is a hardware limitation, so only these 8 different colors are available. 
+#define OFF 0x0
 #define RED 0x1
 #define YELLOW 0x3
 #define GREEN 0x2

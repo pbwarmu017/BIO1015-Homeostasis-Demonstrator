@@ -110,24 +110,11 @@ class _handgrip: public _affector
       if(modifier == GENERAL_RATETYPE)
       {
         float delta = (voltageValue() - handgripMinVoltage );
-        Serial.print(delta);
-        Serial.print("\n");
+        if(delta < 0) delta = 0; //make sure the value can't go negative
         overallRate = ((delta/voltageRange*maxProductionRate)*2 - consumptionRate) * (0.0002 * GRIPRATESCALER);
-        // Serial.print(overallRate);
         indicatorstrip_ptr->updatePosition(overallRate, portNum);
       } 
     }
-
-
-    //calculates the productionrate to feed into _indicatorstrip.setRate()
-    //returns a value between 0 and HANDGRIPPRESCALER
-    // int calculateProductionRate(float pinADCval, _handgrip *Handgrip) 
-    // {
-    //   float voltagedelta = voltageValue()-Handgrip->handgripMinVoltage;
-    //   float delta = (voltagedelta /(Handgrip->handgripMaxVoltage-Handgrip->handgripMinVoltage)) * 
-    //     Handgrip->handgripPrescaler;
-    //   return delta;
-    // }
 
   private:
     _device *main_ptr;
