@@ -26,7 +26,7 @@
 #define DEFAULTINDICATORPOSITION 0//BOXSTART+round((float)BOXSIZE/2)
 
 //REFRESH SPEEDS
-#define STRIPREFRESHDELAY 43 //in milliseconds
+#define STRIPREFRESHDELAY 40 //in milliseconds
 #define LEDMAXINCREMENT 5 //Max # of LEDs to jump per cycle
 
 
@@ -94,35 +94,48 @@ class _indicatorstrip: public _device
       //send it to the strip
       strip->show();
     }
+    //checks to see if all active indicators are in the bounding box.
+    //returns true if all active indicators are within bounds
+    //returns false if an active indicator is out of bounds oor all indicators are inactive.
     bool indicatorsWithinBounds()
     {
 
-      bool status = false;
-      for(int i = 0; i < 6; i++)
+      int status = 3; //starting state of the state machine
+
+ 
+      for(int i = 0; i < 6; i++) //check each indicator's position
       {
+        //is it an active position? If active, will be at minimum -1. (floating point, so don't use equality)
+        if(deviceIndicatorPosition[i] + 2 > 0.5) 
+        {
+          //is it in bounds?
+          if( (deviceIndicatorPosition[i] >= boxStart) && (deviceIndicatorPosition[i] <= (boxStart + boxSize+1)))
+          {
+            /*there are two possiblilities if it arrives here. Either the previous status indication is inactive (3)
+            or active (1), either way we want to set status to 1*/
+            status = 1; 
+            
+          }
+          else //nope, its out of bounds
+          {
+            //set the proper losing color
+            if(i == 0) losingColor = DCON1COLOR;
+            if(i == 1) losingColor = ACON1COLOR;
+            if(i == 2) losingColor = DACON1COLOR;
+            if(i == 3) losingColor = DCON2COLOR;
+            if(i == 4) losingColor = ACON2COLOR;
+            if(i == 5) losingColor = DACON2COLOR; 
+            return false; 
+          }
+        }
+        // Serial.print(deviceIndicatorPosition[i]);
+        // Serial.print("\n");
         //if an indicator is inside the box, change the status to true
-        if( (deviceIndicatorPosition[i] >= boxStart) && (deviceIndicatorPosition[i] <= (boxStart + boxSize+1)))
-        {
-          status |= 1; 
-        }
-        //don't change the status if it's an uninitialized indicator
-        else if(deviceIndicatorPosition[i] + 2 < 0.1) status |= 0; 
-        else
-        {
-          status &= 0; //if it is initialized and its outside the box, change status to false. 
-          //set the indicator color to the losing player's color. The first one to go outside the box loses.
-          //the indicator box is reset on a 5 second timer with a flag once the gamestatus is set to lost
-          if(i == 0) losingColor = DCON1COLOR;
-          if(i == 1) losingColor = ACON1COLOR;
-          if(i == 2) losingColor = DACON1COLOR;
-          if(i == 3) losingColor = DCON2COLOR;
-          if(i == 4) losingColor = ACON2COLOR;
-          if(i == 5) losingColor = DACON2COLOR;
-        }
       }
-      return(status);
-      // Serial.print((int)status);
-      // Serial.print("\n");
+      if(status == 1) return true; //if all active indicators are in bounds
+      if(status == 3) return false; //will only happen if all indicators are inactive
+      // Serial.print("-\n");
+      // return(status);
     }
 
     _indicatorstrip()
@@ -142,8 +155,6 @@ class _indicatorstrip: public _device
     //this function is called by each active affector. 
     void updatePosition(float rate, int portnum)
     {
-      // Serial.print(deviceIndicatorPosition[portnum]);
-      // Serial.print("\n");
       deviceIndicatorPosition[portnum] += (rate * LEDMAXINCREMENT);
       if(deviceIndicatorPosition[portnum] < -1) deviceIndicatorPosition[portnum] = -1;
       if(deviceIndicatorPosition[portnum] > 60) deviceIndicatorPosition[portnum] = 60;

@@ -8,13 +8,14 @@ Adafruit RGB LCD Sheild Library
   int selectTimer = 0; //used for trackikng how long the select button has been depressed.
   bool configchange; //used to prompt changes in system config by user.
 
-//INCLUDES ------------------------------------------
-  #include "superclasses.cpp"
-  #include "encoder.cpp"
-  #include "handgrip.cpp"
-  #include "lcd.cpp"
-  #include "indicatorstrip.cpp"
-  #include "menu.cpp"
+//INCLUDES----------------------------------------
+#include "superclasses.cpp"
+#include "multi-effector_homeostasis_device.h"
+#include "encoder.cpp"
+#include "handgrip.cpp"
+#include "lcd.cpp"
+#include "indicatorstrip.cpp"
+#include "menu.cpp"
 
 //ENUM DEFINITIONS ------------------------------------------
   enum GAMESTATUS gameStatus = notstarted;
@@ -23,12 +24,15 @@ Adafruit RGB LCD Sheild Library
 //GLOBAl VARIABLES FOR USE IN ISRS------------------------------------------
   volatile unsigned stripDelayCounter = 0; 
   volatile int prevOut = 0;
-  volatile int crankRateCalcDelayCounter = 50;
+  volatile int crankRateCalcDelayCounter = 0;
+  volatile int gripRateCalcDelayCounter = 0;
   volatile int gameResetCounter = 0;
   volatile int lcdRefreshCounter = 0;
+
   volatile bool STRIPREFRESHFLAG = false;
   volatile bool CRANKSUMFLAG = false;
   volatile bool CRANKRATECALCFLAG = false;
+  volatile bool GRIPRATECALCFLAG = false;
   volatile bool LCDREFRESHFLAG = false;
   volatile bool RESETFLAG = false;
 
@@ -40,10 +44,10 @@ Adafruit RGB LCD Sheild Library
   _device *DCON2_ptr;
   _device *ACON2_ptr;
   _device *DACON2_ptr;
-  _device *indicatorstrip_ptr;
-  _device *menu_ptr;
-  _device *lcd_ptr;
   _device *main_ptr = new _device;
+  _indicatorstrip *indicatorstrip_ptr;
+  _menu *menu_ptr;
+  _lcd *lcd_ptr;
 
 //GLOBAL FUNCTIONS-------------------------------------------
   //this function is responsible for creating a new object on the HEAP (using the new keyword), setting up the ports 
@@ -70,20 +74,20 @@ Adafruit RGB LCD Sheild Library
     }
 
     if(objtype == HANDGRIP_TYPE){
-      if(portnum == ACON1_PORTNUM) ACON1_ptr = new _handgrip(ACON1_PORTNUM, main_ptr); 
+      if(portnum == ACON1_PORTNUM) ACON1_ptr = new _handgrip(ACON1_PORTNUM, main_ptr, indicatorstrip_ptr, lcd_ptr, menu_ptr); 
 
-      if(portnum == ACON2_PORTNUM) ACON2_ptr = new _handgrip(ACON2_PORTNUM, main_ptr);
+      if(portnum == ACON2_PORTNUM) ACON2_ptr = new _handgrip(ACON2_PORTNUM, main_ptr, indicatorstrip_ptr, lcd_ptr, menu_ptr);
 
-      if(portnum == DACON1_PORTNUM) DACON1_ptr = new _handgrip(DACON1_PORTNUM, main_ptr);
+      if(portnum == DACON1_PORTNUM) DACON1_ptr = new _handgrip(DACON1_PORTNUM, main_ptr, indicatorstrip_ptr, lcd_ptr, menu_ptr);
 
-      if(portnum == DACON2_PORTNUM) DACON2_ptr = new _handgrip(DACON2_PORTNUM, main_ptr);
+      if(portnum == DACON2_PORTNUM) DACON2_ptr = new _handgrip(DACON2_PORTNUM, main_ptr, indicatorstrip_ptr, lcd_ptr, menu_ptr);
     }
 
     if(objtype == HANDCRANK_TYPE)
     {
-      if(portnum == DCON1_PORTNUM) DCON1_ptr = new _encoder(DCON1_PORTNUM, main_ptr, indicatorstrip_ptr); 
+      if(portnum == DCON1_PORTNUM) DCON1_ptr = new _encoder(DCON1_PORTNUM, main_ptr, indicatorstrip_ptr, lcd_ptr, menu_ptr); 
 
-      if(portnum == DCON2_PORTNUM) DCON2_ptr = new _encoder(DCON2_PORTNUM, main_ptr, indicatorstrip_ptr);
+      if(portnum == DCON2_PORTNUM) DCON2_ptr = new _encoder(DCON2_PORTNUM, main_ptr, indicatorstrip_ptr, lcd_ptr, menu_ptr);
     }
   }
 
@@ -116,33 +120,41 @@ Adafruit RGB LCD Sheild Library
   {
     stripDelayCounter++;
     crankRateCalcDelayCounter++;
+    gripRateCalcDelayCounter++;
     lcdRefreshCounter++;
+    //set flags for strip
     if(stripDelayCounter >= STRIPREFRESHDELAY)
     { 
       stripDelayCounter = 0; //reset the timer counter for the next run.
       STRIPREFRESHFLAG = true;
       //Set Rates based on affector positions (one for each affector)
     }
+    //set flags for handcrank
     if((main_ptr->DCON1_mode == HANDCRANK_TYPE or main_ptr->DCON2_mode == HANDCRANK_TYPE) and 
         crankRateCalcDelayCounter >= CRANKRATECALCDELAY)
     {
       crankRateCalcDelayCounter = 0; 
-      CRANKRATECALCFLAG = true;
-      
+      CRANKRATECALCFLAG = true;  
     }
-
+    //set flags for handgrip
+    if((main_ptr->ACON1_mode == HANDGRIP_TYPE or main_ptr->ACON2_mode == HANDGRIP_TYPE) and 
+        gripRateCalcDelayCounter >= GRIPRATECALCDELAY)
+    {
+      crankRateCalcDelayCounter = 0;
+      GRIPRATECALCFLAG = true;
+    }
+    //set flags to reset lost game
     if(gameStatus == lost)
     {
       gameResetCounter++;
       if(gameResetCounter >= GAMERESETDELAY)
       {
         gameResetCounter = 0;
-        gameStatus = notstarted;
         RESETFLAG = true;
 
       }
     }
-
+    //set flags to refresh LCD
     if(lcdRefreshCounter >= LCDREFRESHDELAY)
     {
       LCDREFRESHFLAG = true;  
@@ -157,6 +169,7 @@ Adafruit RGB LCD Sheild Library
   { // handle pin change interrupt for D0 to D7 here
     if(main_ptr->DCON1_mode == HANDCRANK_TYPE or main_ptr->DCON2_mode == HANDCRANK_TYPE) CRANKSUMFLAG = true;
   }
+
   //Interrupt service routine for pin change interrupt on D8 to D13. DO NOT call functions/methods from within
   //an ISR. Set flags that are checked for within the main loop. You want to spend as little time inside of an ISR as
   //possible to prevent undefined program behavior.
@@ -227,21 +240,23 @@ Adafruit RGB LCD Sheild Library
         }
           //reset the delay counter for the next run
           CRANKRATECALCFLAG = false;
-        }
       }
-    if(STRIPREFRESHFLAG){
-      ((_indicatorstrip *)indicatorstrip_ptr)->refreshStrip();
+    }
+    if(STRIPREFRESHFLAG)
+    {
+      indicatorstrip_ptr->refreshStrip();
       STRIPREFRESHFLAG = false;
     }
 
-    // if(RESETFLAG){
-    //  ->indicatorstrip_ptrsetBoundingBox(BOXSTART, BOXSIZE);
-    //   RESETFLAG = false;
-    // }
+    if(RESETFLAG)
+    {
+      gameStatus = notstarted;
+      RESETFLAG = false;
+    }
 
     if(LCDREFRESHFLAG)
     {
-      uint8_t button = (((_lcd *)lcd_ptr)->lcd_obj)->readButtons();
+      uint8_t button = (lcd_ptr->lcd_obj)->readButtons();
       if(button & BUTTON_SELECT and selectTimer <= 10 and systemMode == running)
       {
         selectTimer++;
@@ -250,11 +265,11 @@ Adafruit RGB LCD Sheild Library
       if(button & BUTTON_SELECT and selectTimer > 10 and systemMode == running)
       {
         systemMode = config;
-        (((_lcd *)lcd_ptr)->lcd_obj)->clear();
-        ((_menu *)menu_ptr)->currentScreen = 6;
-        ((_menu *)menu_ptr)->printMenu( (_lcd*)lcd_ptr );
+        (lcd_ptr->lcd_obj)->clear();
+        menu_ptr->currentScreen = 6;
+        menu_ptr->printMenu( lcd_ptr );
 
-        (((_lcd *)lcd_ptr)->lcd_obj)->setBacklight(RED);
+        (lcd_ptr->lcd_obj)->setBacklight(RED);
         selectTimer = 0;
       }
 
@@ -266,19 +281,36 @@ Adafruit RGB LCD Sheild Library
       if(button & BUTTON_SELECT and selectTimer > 10 and systemMode == config)
       {
         systemMode = running;
-        (((_lcd *)lcd_ptr)->lcd_obj)->setBacklight(WHITE);
+        (lcd_ptr->lcd_obj)->setBacklight(WHITE);
         selectTimer = 0;
+      }
+
+      if( !(button & BUTTON_SELECT) and selectTimer > 0)
+      {
+        selectTimer = 0; //reset the amount of time the button has been held down if it is released. 
       }
 
       if(systemMode == running)
       {
-        (((_lcd *)lcd_ptr)->lcd_obj)->clear();
+        (lcd_ptr->lcd_obj)->clear();
       }
 
       if(systemMode == config)
       {
-        ((_menu *)menu_ptr)->navigateMenu(button, (_lcd*)lcd_ptr);
+        menu_ptr->navigateMenu(button, lcd_ptr, menu_ptr);
       }
       LCDREFRESHFLAG = false;
+    }
+
+    if(GRIPRATECALCFLAG)
+    {
+      if(main_ptr->ACON1_mode == HANDGRIP_TYPE)
+      {
+        ACON1_ptr->calculateRate(GENERAL_RATETYPE);
+      }
+      if(main_ptr->ACON2_mode == HANDGRIP_TYPE)
+      {
+        ACON2_ptr->calculateRate(GENERAL_RATETYPE);
+      }
     }
   }
