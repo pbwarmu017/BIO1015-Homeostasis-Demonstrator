@@ -29,6 +29,9 @@ Adafruit RGB LCD Sheild Library
   volatile int gameResetCounter = 0;
   volatile int lcdRefreshCounter = 0;
 
+  volatile bool selectState = false; 
+  volatile bool selectPrevState = false; 
+
   volatile bool STRIPREFRESHFLAG = false;
   volatile bool CRANKSUMFLAG = false;
   // volatile bool CRANKRATECALCFLAG = false;
@@ -74,20 +77,26 @@ Adafruit RGB LCD Sheild Library
     }
 
     if(objtype == HANDGRIP_TYPE){
-      if(portnum == ACON1_PORTNUM) ACON1_ptr = new _handgrip(ACON1_PORTNUM, main_ptr, indicatorstrip_ptr, lcd_ptr, menu_ptr); 
+      if(portnum == ACON1_PORTNUM) ACON1_ptr = new _handgrip(ACON1_PORTNUM, main_ptr, 
+        indicatorstrip_ptr, lcd_ptr, menu_ptr); 
 
-      if(portnum == ACON2_PORTNUM) ACON2_ptr = new _handgrip(ACON2_PORTNUM, main_ptr, indicatorstrip_ptr, lcd_ptr, menu_ptr);
+      if(portnum == ACON2_PORTNUM) ACON2_ptr = new _handgrip(ACON2_PORTNUM, main_ptr, 
+        indicatorstrip_ptr, lcd_ptr, menu_ptr);
 
-      if(portnum == DACON1_PORTNUM) DACON1_ptr = new _handgrip(DACON1_PORTNUM, main_ptr, indicatorstrip_ptr, lcd_ptr, menu_ptr);
+      if(portnum == DACON1_PORTNUM) DACON1_ptr = new _handgrip(DACON1_PORTNUM, main_ptr, 
+        indicatorstrip_ptr, lcd_ptr, menu_ptr);
 
-      if(portnum == DACON2_PORTNUM) DACON2_ptr = new _handgrip(DACON2_PORTNUM, main_ptr, indicatorstrip_ptr, lcd_ptr, menu_ptr);
+      if(portnum == DACON2_PORTNUM) DACON2_ptr = new _handgrip(DACON2_PORTNUM, main_ptr, 
+        indicatorstrip_ptr, lcd_ptr, menu_ptr);
     }
 
     if(objtype == HANDCRANK_TYPE)
     {
-      if(portnum == DCON1_PORTNUM) DCON1_ptr = new _encoder(DCON1_PORTNUM, main_ptr, indicatorstrip_ptr, lcd_ptr, menu_ptr); 
+      if(portnum == DCON1_PORTNUM) DCON1_ptr = new _encoder(DCON1_PORTNUM, main_ptr, 
+        indicatorstrip_ptr, lcd_ptr, menu_ptr); 
 
-      if(portnum == DCON2_PORTNUM) DCON2_ptr = new _encoder(DCON2_PORTNUM, main_ptr, indicatorstrip_ptr, lcd_ptr, menu_ptr);
+      if(portnum == DCON2_PORTNUM) DCON2_ptr = new _encoder(DCON2_PORTNUM, main_ptr, 
+        indicatorstrip_ptr, lcd_ptr, menu_ptr);
     }
   }
 
@@ -129,20 +138,6 @@ Adafruit RGB LCD Sheild Library
       STRIPREFRESHFLAG = true;
       //Set Rates based on affector positions (one for each affector)
     }
-    //set flags for handcrank
-    // if((main_ptr->DCON1_mode == HANDCRANK_TYPE or main_ptr->DCON2_mode == HANDCRANK_TYPE) and 
-    //     crankRateCalcDelayCounter >= CRANKRATECALCDELAY)
-    // {
-    //   crankRateCalcDelayCounter = 0; 
-    //   CRANKRATECALCFLAG = true;  
-    // }
-    // //set flags for handgrip
-    // if((main_ptr->ACON1_mode == HANDGRIP_TYPE or main_ptr->ACON2_mode == HANDGRIP_TYPE) and 
-    //     gripRateCalcDelayCounter >= GRIPRATECALCDELAY)
-    // {
-    //   crankRateCalcDelayCounter = 0;
-    //   GRIPRATECALCFLAG = true;
-    // }
     //set flags to reset lost game
     if(gameStatus == lost)
     {
@@ -254,49 +249,63 @@ Adafruit RGB LCD Sheild Library
     }
     if(LCDREFRESHFLAG)
     {
-      uint8_t button = (lcd_ptr->lcd_obj)->readButtons();
-      if(button & BUTTON_SELECT and selectTimer <= 10 and systemMode == running)
+    uint8_t button = (lcd_ptr->lcd_obj)->readButtons();
+     //track the states of the button
+      selectPrevState = selectState;
+      //if the select button is pressed down
+      if(button & BUTTON_SELECT)
       {
-        selectTimer++;
+        selectState = true;
+      }
+      else //if its not pressed down
+      {
+        selectState = false;
       }
 
-      if(button & BUTTON_SELECT and selectTimer > 10 and systemMode == running)
+      //if the state of the select button is true
+      if(selectState == true)
+      {
+        if(selectPrevState == true)
+        {
+          selectTimer++;
+        }
+      }
+      else
+      {
+        selectTimer = 0;
+      }
+
+      if(selectState == false && selectPrevState == true)
+      {
+        if(systemMode == config)
+        {
+          menu_ptr->navigateMenu(BUTTON_SELECT, lcd_ptr);
+        }
+      }
+
+      if(selectTimer == 10 && systemMode == running)
       {
         systemMode = config;
         (lcd_ptr->lcd_obj)->clear();
-        menu_ptr->currentScreen = 6;
-        menu_ptr->printMenu( lcd_ptr );
-
-        (lcd_ptr->lcd_obj)->setBacklight(RED);
-        selectTimer = 0;
-      }
-
-      if(button & BUTTON_SELECT and selectTimer <= 10 and systemMode == config)
-      {
+        menu_ptr->printMenu(lcd_ptr);
         selectTimer++;
+
+        // (lcd_ptr->lcd_obj)->setBacklight(RED);
       }
 
-      if(button & BUTTON_SELECT and selectTimer > 10 and systemMode == config)
+      if(selectTimer == 10 && systemMode == config)
       {
         systemMode = running;
-        (lcd_ptr->lcd_obj)->setBacklight(WHITE);
-        selectTimer = 0;
-      }
-
-      if( !(button & BUTTON_SELECT) and selectTimer > 0)
-      {
-        selectTimer = 0; //reset the amount of time the button has been held down if it is released. 
-      }
-
-      if(systemMode == running)
-      {
         (lcd_ptr->lcd_obj)->clear();
+        selectTimer++;
+        // (lcd_ptr->lcd_obj)->setBacklight(WHITE);
       }
 
-      if(systemMode == config)
-      {
-        menu_ptr->navigateMenu(button, lcd_ptr, menu_ptr);
-      }
-      LCDREFRESHFLAG = false;
+    if(button && !(button & BUTTON_SELECT) && systemMode == config)
+    {
+      menu_ptr->navigateMenu(button, lcd_ptr);
     }
+
+    LCDREFRESHFLAG = false;
   }
+}
