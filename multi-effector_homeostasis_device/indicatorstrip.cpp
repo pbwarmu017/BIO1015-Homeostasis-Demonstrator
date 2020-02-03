@@ -66,10 +66,6 @@ class _indicatorstrip: public _device
       {
         if(boundingBoxDirection == 1)
         {
-      // Serial.print(boxStart);
-      // Serial.print("\n");
-      // Serial.print(boxEnd);
-      // Serial.print("\n");
           if(boxEnd < 59)
           {
             boxStart += 0.2 * menu_ptr->boundingboxmode;
@@ -207,11 +203,11 @@ class _indicatorstrip: public _device
     
   private:
     _menu *menu_ptr;
-    unsigned long losingColor;
+    char boundingBoxDirection = 1;
+    unsigned long losingColor; //I think this has to be a long. 
     float boxSize ; //the size of the box centered around boxposition (must be at least 3)
     float boxStart = 30;  //the position of the bounding box as an LED number the box is centered around. 
     float boxEnd;// = boxStart + boxSize + 1.;
-    int boundingBoxDirection = 1;
 };
 
 #endif

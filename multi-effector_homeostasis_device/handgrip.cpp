@@ -119,8 +119,8 @@ class _handgrip: public _affector
     float consumptionRate = 60;
 
 
-    int portNum = -1; //used to save the port number that this object is instantiated on.
-    int handGripPin = -1;
+    char portNum = -1; //used to save the port number that this object is instantiated on.
+    char handGripPin = -1;
 };
 
 #endif

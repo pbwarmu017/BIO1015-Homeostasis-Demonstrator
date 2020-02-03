@@ -22,12 +22,11 @@ Adafruit RGB LCD Sheild Library
   enum SYSTEMMODE systemMode = running;
 
 //GLOBAl VARIABLES FOR USE IN ISRS------------------------------------------
-  volatile unsigned stripDelayCounter = 0; 
-  volatile int prevOut = 0;
-  volatile int crankRateCalcDelayCounter = 0;
-  volatile int gripRateCalcDelayCounter = 0;
-  volatile int gameResetCounter = 0;
-  volatile int lcdRefreshCounter = 0;
+  volatile byte stripDelayCounter = 0; 
+  volatile byte crankRateCalcDelayCounter = 0;
+  volatile byte gripRateCalcDelayCounter = 0;
+  volatile byte gameResetCounter = 0;
+  volatile byte lcdRefreshCounter = 0;
 
   volatile bool selectState = false; 
   volatile bool selectPrevState = false; 

@@ -14,28 +14,28 @@
 
 class _menu: public _device{
   public:
-    static const byte numOfScreens = 8;  //number of options in screens[]
-    static const byte numOfDconDevs = 2; //number of options in dconscreens[]
-    static const byte numOfAconDevs = 2; //number of options in aconscreens[]
-    static const byte numOfDaconDevs = 2; //number of options in daconscreens[]
-    static const byte numOfBoundingBoxModes = 5; //number of options in boundingBoxModeScreens
-    byte currentScreen = 0;
+    static const char numOfScreens = 8;  //number of options in screens[]
+    static const char numOfDconDevs = 2; //number of options in dconscreens[]
+    static const char numOfAconDevs = 2; //number of options in aconscreens[]
+    static const char numOfDaconDevs = 2; //number of options in daconscreens[]
+    static const char numOfBoundingBoxModes = 5; //number of options in boundingBoxModeScreens
+    char currentScreen = 0;
     //The following are selection tracking variables. As the user uses the
     //menu the contents of these values will change.
-    byte dcon1prevmode = -1;
-    byte dcon2prevmode = -1;
-    byte acon1prevmode = -1;
-    byte acon2prevmode = -1;
-    byte dacon1prevmode = -1;
-    byte dacon2prevmode = -1;
-    byte dcon1mode = 0;
-    byte dcon2mode = 0;
-    byte acon1mode = 0;
-    byte acon2mode = 0;
-    byte dacon1mode = 0;
-    byte dacon2mode = 0;
-    byte boundingboxmode = 0;
-    byte boundingboxsize = 10;
+    char dcon1prevmode = -1;
+    char dcon2prevmode = -1;
+    char acon1prevmode = -1;
+    char acon2prevmode = -1;
+    char dacon1prevmode = -1;
+    char dacon2prevmode = -1;
+    char dcon1mode = 0;
+    char dcon2mode = 0;
+    char acon1mode = 0;
+    char acon2mode = 0;
+    char dacon1mode = 0;
+    char dacon2mode = 0;
+    char boundingboxmode = 0;
+    char boundingboxsize = 10;
     
     
     
@@ -44,7 +44,7 @@ class _menu: public _device{
 
     //Main Menu Screens
     const String screens[numOfScreens][2] = {{"DCON1","DEV:"},{"ACON1","DEV:"},{"DACON1","DEV:"},
-    {"DCON2","DEV:"},{"ACON2","DEV:"},{"DACON2","DEV:"},{"BOUND","MODE:"}};
+    {"DCON2","DEV:"},{"ACON2","DEV:"},{"DACON2","DEV:"},{"BOUND BOX","MODE:"},{"BOUND BOX", "SIZE:"}};
 
     //Valid selections for each port type
     const String dconscreens[numOfDconDevs] = {"OFF","CRANK"};
@@ -297,7 +297,11 @@ class _menu: public _device{
             boundingboxmode = 0;
           }
         }
-        if(currentScreen != 6) (lcd_ptr->lcd_obj)->setBacklight(TEAL);
+        if(currentScreen == 7)
+        {
+          if(boundingboxsize < 25) boundingboxsize++;
+        }
+        if(currentScreen != 6 && currentScreen != 7) (lcd_ptr->lcd_obj)->setBacklight(TEAL);
       }
 
       if(index == 0)
@@ -391,7 +395,11 @@ class _menu: public _device{
             boundingboxmode = numOfBoundingBoxModes-1;
           }
         }
-        if(currentScreen != 6) (lcd_ptr->lcd_obj)->setBacklight(TEAL);
+        if(currentScreen == 7)
+        {
+          if(boundingboxsize > 3) boundingboxsize--;
+        }
+        if(currentScreen != 6 && currentScreen != 7) (lcd_ptr->lcd_obj)->setBacklight(TEAL);
       }
     }
     void printMenu(_lcd* lcd) 
@@ -429,6 +437,10 @@ class _menu: public _device{
       if(currentScreen == 6)
       {
         (lcd->lcd_obj)->print(boundingBoxModeScreens[boundingboxmode]);
+      }
+      if(currentScreen == 7)
+      {
+        (lcd->lcd_obj)->print(boundingboxsize);
       }
     }
     // void issueDuplicationWarning(_lcd* lcd_ptr)
