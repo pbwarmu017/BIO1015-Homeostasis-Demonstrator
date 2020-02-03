@@ -35,6 +35,7 @@ class _menu: public _device{
     int dacon1mode = 0;
     int dacon2mode = 0;
     int boundingboxmode = 0;
+    int boundingboxsize = 10;
     
     
     

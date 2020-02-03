@@ -61,6 +61,7 @@ class _indicatorstrip: public _device
       strip->setPixelColor(deviceIndicatorPosition[DACON2_PORTNUM], DACON2COLOR); 
 
       //draw out the current bounding box. Needs to be the last thing done before sending it to the strip
+      boxEnd = boxStart + menu_ptr->boundingboxsize + 1;
       if(menu_ptr->boundingboxmode > 0)
       {
         if(boundingBoxDirection == 1)
@@ -69,10 +70,10 @@ class _indicatorstrip: public _device
       // Serial.print("\n");
       // Serial.print(boxEnd);
       // Serial.print("\n");
-          if(boxEnd < 60.)
+          if(boxEnd < 59)
           {
-            boxStart += 0.1*menu_ptr->boundingboxmode;
-            boxEnd += 0.1*menu_ptr->boundingboxmode;
+            boxStart += 0.1 * menu_ptr->boundingboxmode;
+            boxEnd = boxStart + menu_ptr->boundingboxsize + 1;
           }
           else
           {
@@ -84,7 +85,7 @@ class _indicatorstrip: public _device
           if(boxStart > 1)
           {
             boxStart -= 0.1*menu_ptr->boundingboxmode;
-            boxEnd -= 0.1*menu_ptr->boundingboxmode;
+            boxEnd = boxStart + menu_ptr->boundingboxsize + 1;
           }
           else
           {
@@ -205,12 +206,12 @@ class _indicatorstrip: public _device
     // }
     
   private:
-    unsigned long losingColor;
-    float boxSize = 5; //the size of the box centered around boxposition (must be at least 3)
-    float boxStart = 30;  //the position of the bounding box as an LED number the box is centered around. 
-    float boxEnd = boxStart + boxSize + 1.;
-    int boundingBoxDirection = 1;
     _menu *menu_ptr;
+    unsigned long losingColor;
+    float boxSize ; //the size of the box centered around boxposition (must be at least 3)
+    float boxStart = 30;  //the position of the bounding box as an LED number the box is centered around. 
+    float boxEnd;// = boxStart + boxSize + 1.;
+    int boundingBoxDirection = 1;
 };
 
 #endif
