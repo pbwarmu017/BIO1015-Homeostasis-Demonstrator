@@ -9,7 +9,7 @@
 // #include "indicatorstrip.cpp"
 //encoder defines 
 // #define CRANKRATECALCDELAY 50 //value is in milliseconds
-#define CRANKRATESCALAR 3.0
+#define CRANKRATESCALAR 80.0
 
 
 class _encoder: public _affector
@@ -55,7 +55,7 @@ class _encoder: public _affector
         if(movingAverage > 80) movingAverage = 80;
         //prevent excessively small carryover
         if(movingAverage < 1) movingAverage = 0;
-        overallRate = ((movingAverage/80 * maxProductionRate)*2.0 - consumptionRate) * 0.001 * CRANKRATESCALAR;// * CRANKRATESCALAR;
+        overallRate = ((movingAverage/80 * maxProductionRate)*2.0 - consumptionRate) * 0.0001 * CRANKRATESCALAR;// * CRANKRATESCALAR;
         //reset the sum because it has just been incorporated into a moving avg
         crankSum = 0;
         //send the rate to the strip so that it can update the position of this indicator
@@ -81,13 +81,13 @@ class _encoder: public _affector
       switch(portNum)
       {
         case DCON1_PORTNUM:
-          encoderPinA = 3;
-          encoderPinB = 5;
+          encoderPinA = DCON1_PIND1;
+          encoderPinB = DCON1_PIND2;
           main_ptr->DCON1_mode = HANDCRANK_TYPE;
           break;
         case DCON2_PORTNUM:
-          encoderPinA = 9;
-          encoderPinB = 10;
+          encoderPinA = DCON2_PIND1;
+          encoderPinB = DCON2_PIND2;
           main_ptr->DCON2_mode = HANDCRANK_TYPE;
 
           break;      

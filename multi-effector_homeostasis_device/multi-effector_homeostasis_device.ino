@@ -73,7 +73,7 @@ Adafruit RGB LCD Sheild Library
     if(objtype == INDICATORSTRIP_TYPE)
     {
 
-      indicatorstrip_ptr = new _indicatorstrip; 
+      indicatorstrip_ptr = new _indicatorstrip(menu_ptr); 
     }
 
     if(objtype == HANDGRIP_TYPE){

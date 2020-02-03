@@ -6,7 +6,7 @@
 #include "menu.cpp"
 
 // #define GRIPRATECALCDELAY 100 //value is in milliseconds
-#define GRIPRATESCALER 25.0
+#define GRIPRATESCALER 110.0
 
 class _handgrip: public _affector 
 {
@@ -21,19 +21,11 @@ class _handgrip: public _affector
       switch(portNum)
       {
         case ACON1_PORTNUM:
-          handGripPin = ACON1_PINNUM;
+          handGripPin = ACON1_PINA1;
           main_ptr->ACON1_mode = HANDGRIP_TYPE;
           break;
         case ACON2_PORTNUM:
-          handGripPin = ACON2_PINNUM;
-          main_ptr->ACON2_mode = HANDGRIP_TYPE;
-          break;
-        case DACON1_PORTNUM:
-          handGripPin = DACON1_PINNUM;
-          main_ptr->ACON1_mode = HANDGRIP_TYPE;
-          break;
-        case DACON2_PORTNUM:
-          handGripPin = DACON2_PINNUM;
+          handGripPin = ACON2_PINA1;
           main_ptr->ACON2_mode = HANDGRIP_TYPE;
           break;
       }
@@ -61,11 +53,7 @@ class _handgrip: public _affector
       while( !((lcd_ptr->lcd_obj)->readButtons() & BUTTON_SELECT) ); //wait for select
 
       handgripMaxVoltage = voltageValue();
-
-
       voltageRange = handgripMaxVoltage - handgripMinVoltage;
-
-
       (lcd_ptr->lcd_obj)->clear();
 
       delay(500);
@@ -110,8 +98,8 @@ class _handgrip: public _affector
       if(modifier == GENERAL_RATETYPE)
       {
         float delta = (voltageValue() - handgripMinVoltage );
-        if(delta < 0) delta = 0; //make sure the value can't go negative
-        overallRate = ((delta/voltageRange*maxProductionRate)*2 - consumptionRate) * (0.0002 * GRIPRATESCALER);
+        if(delta < 0) delta *= -1; //make sure the value can't go negative
+        overallRate = ((delta/voltageRange*maxProductionRate)*2 - consumptionRate) * (0.00005 * GRIPRATESCALER);
         indicatorstrip_ptr->updatePosition(overallRate, portNum);
       } 
     }

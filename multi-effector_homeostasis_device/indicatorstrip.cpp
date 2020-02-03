@@ -3,6 +3,7 @@
 #define INDICATORSTRIP_CPP
 
 #include "superclasses.cpp"
+#include "menu.cpp"
 //LED COLOR CODE DEFINITIONS. 
 #define COLORRED strip->Color(128,0,0) //USED FOR PRE GAME INDICATION
 #define COLORPINK strip->Color(64,26,45)
@@ -60,35 +61,66 @@ class _indicatorstrip: public _device
       strip->setPixelColor(deviceIndicatorPosition[DACON2_PORTNUM], DACON2COLOR); 
 
       //draw out the current bounding box. Needs to be the last thing done before sending it to the strip
+      if(menu_ptr->boundingboxmode > 0)
+      {
+        if(boundingBoxDirection == 1)
+        {
+      // Serial.print(boxStart);
+      // Serial.print("\n");
+      // Serial.print(boxEnd);
+      // Serial.print("\n");
+          if(boxEnd < 60.)
+          {
+            boxStart += 0.1*menu_ptr->boundingboxmode;
+            boxEnd += 0.1*menu_ptr->boundingboxmode;
+          }
+          else
+          {
+            boundingBoxDirection = -1; //change direction
+          }
+        }
+        if(boundingBoxDirection == -1)
+        {
+          if(boxStart > 0)
+          {
+            boxStart -= 0.1*menu_ptr->boundingboxmode;
+            boxEnd -= 0.1*menu_ptr->boundingboxmode;
+          }
+          else
+          {
+            boundingBoxDirection = 1; //change direction
+          }
+        }
+      }
 
       if(gameStatus == started && indicatorsWithinBounds())
       {
         strip->setPixelColor(boxStart, COLORGREEN);
-        strip->setPixelColor(boxStart+boxSize+1, COLORGREEN);
+        strip->setPixelColor(boxEnd, COLORGREEN);
       }
       if(gameStatus == started && !indicatorsWithinBounds())
       {
         gameStatus = lost;
         strip->setPixelColor(boxStart, losingColor);
-        strip->setPixelColor(boxStart+boxSize+1, losingColor);
+        strip->setPixelColor(boxEnd, losingColor);
       }
 
       if(gameStatus == notstarted && indicatorsWithinBounds())
       {
         gameStatus = started;
         strip->setPixelColor(boxStart, COLORGREEN);
-        strip->setPixelColor(boxStart+boxSize+1, COLORGREEN);
+        strip->setPixelColor(boxEnd, COLORGREEN);
       }
       if(gameStatus == notstarted && !indicatorsWithinBounds())
       {
         strip->setPixelColor(boxStart, COLORRED);
-        strip->setPixelColor(boxStart+boxSize+1, COLORRED);
+        strip->setPixelColor(boxEnd, COLORRED);
       }
 
       if(gameStatus == lost)
       {
         strip->setPixelColor(boxStart, losingColor);
-        strip->setPixelColor(boxStart+boxSize+1, losingColor);
+        strip->setPixelColor(boxEnd, losingColor);
       }
 
       //send it to the strip
@@ -138,8 +170,9 @@ class _indicatorstrip: public _device
       // return(status);
     }
 
-    _indicatorstrip()
+    _indicatorstrip(_menu *ptr)
     {
+      menu_ptr = ptr;
       strip = new Adafruit_NeoPixel(LED_COUNTa, LED_PIN, NEO_GRB + NEO_KHZ800);
       strip->begin();
       strip->clear();
@@ -162,17 +195,22 @@ class _indicatorstrip: public _device
     }
     //this function is responsble for setting up where and how large the bounding box is. 
     //this can be changed on the fly. 
-    void setBoundingBox(int start, int size) 
-    {
-      boxStart = start;
-      boxSize = start+size+1;
-      return;
-    }
+
+    // void setBoundingBox(int start, int size) 
+    // {
+    //   boxStart = start;
+    //   boxSize = start+size+1;
+    //   boxEnd = start+size+1;
+    //   return;
+    // }
     
   private:
     unsigned long losingColor;
-    int boxSize = 5; //the size of the box centered around boxposition (must be at least 3)
-    int boxStart = 10;  //the position of the bounding box as an LED number the box is centered around. 
+    float boxSize = 5; //the size of the box centered around boxposition (must be at least 3)
+    float boxStart = 30;  //the position of the bounding box as an LED number the box is centered around. 
+    float boxEnd = boxStart + boxSize + 1.;
+    int boundingBoxDirection = 1;
+    _menu *menu_ptr;
 };
 
 #endif

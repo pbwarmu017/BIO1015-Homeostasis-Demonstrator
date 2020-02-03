@@ -8,14 +8,17 @@
 #define DCONHANDCRANK 1
 #define ACONHANDGRIP 1
 #define DACONHANDGRIP 1
+#define BOUNDINGBOXSTATIONARY 0
+#define BOUNDINGBOXMOVING 1
 // #include "objects.h"
 
 class _menu: public _device{
   public:
-    static const int numOfScreens = 6;  //number of options in screens[]
+    static const int numOfScreens = 7;  //number of options in screens[]
     static const int numOfDconDevs = 2; //number of options in dconscreens[]
     static const int numOfAconDevs = 2; //number of options in aconscreens[]
     static const int numOfDaconDevs = 2; //number of options in daconscreens[]
+    static const int numOfBoundingBoxModes = 9; //number of options in boundingBoxModeScreens
     int currentScreen = 0;
     //The following are selection tracking variables. As the user uses the
     //menu the contents of these values will change.
@@ -31,6 +34,7 @@ class _menu: public _device{
     int acon2mode = 0;
     int dacon1mode = 0;
     int dacon2mode = 0;
+    int boundingboxmode = 0;
     
     
     
@@ -39,12 +43,14 @@ class _menu: public _device{
 
     //Main Menu Screens
     String screens[numOfScreens][2] = {{"DCON1 COLOR WHT","DEV:"},{"ACON1 COLOR ORN","DEV:"},{"DACON1 COLOR YEL","DEV:"},
-    {"DCON2 COLOR BLU","DEV:"},{"ACON2 COLOR CYA","DEV:"},{"DACON2 COLOR VIO","DEV:"}};
+    {"DCON2 COLOR BLU","DEV:"},{"ACON2 COLOR CYA","DEV:"},{"DACON2 COLOR VIO","DEV:"},{"BOUNDING BOX","MODE:"}};
 
     //Valid selections for each port type
-    String dconscreens[2] = {"OFF","HANDCRANK"};
-    String aconscreens[2] = {"OFF","HANDGRIP"};
-    String daconscreens[2] = {"OFF","HANDGRIP"};
+    String dconscreens[numOfDconDevs] = {"OFF","HANDCRANK"};
+    String aconscreens[numOfAconDevs] = {"OFF","HANDGRIP"};
+    String daconscreens[numOfDaconDevs] = {"NONE AVAIL."};
+    String boundingBoxModeScreens[numOfBoundingBoxModes] = {{"Stationary"},{"Moving x1"},{"Moving x2"},{"Moving x3"},{"Moving x4"},{"Moving x5"},
+                                        {"Moving x6"},{"Moving x7"},{"Moving x8"}};
 
     //Port Selections. If you add to this, increase numOfPorts to match. 
     // String portscreens[6] = {"DCON1","ACON1","DACON1","DCON2","ACON2","DACON2"};
@@ -115,13 +121,13 @@ class _menu: public _device{
       }
       if(currentScreen == 1)
       { //ACON1
-        if(dacon1mode == ACONHANDGRIP)
-        { //only one member of group 1 can be active at one time.
-          deleteObject(HANDGRIP_TYPE, DACON1_PORTNUM); 
-          dacon1prevmode = dacon1mode;
-          dacon1mode = 0;
-          issueDuplicationWarning(lcd_ptr);
-        }
+        // if(dacon1mode == ACONHANDGRIP)
+        // { //only one member of group 1 can be active at one time.
+        //   deleteObject(HANDGRIP_TYPE, DACON1_PORTNUM); 
+        //   dacon1prevmode = dacon1mode;
+        //   dacon1mode = 0;
+        //   issueDuplicationWarning(lcd_ptr);
+        // }
         if(acon1prevmode == ACONHANDGRIP)
         { //if there has been a handgrip configured previously
           deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM);
@@ -133,21 +139,21 @@ class _menu: public _device{
       }
       if(currentScreen == 2)
       { //DACON1
-        if(acon1mode == ACONHANDGRIP)
-        { //only one member of group 1 can be active at one time.
-          deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM); 
-          acon1prevmode = acon1mode;
-          acon1mode = 0;
-          issueDuplicationWarning(lcd_ptr);
-        }
-        if(dacon1prevmode == DACONHANDGRIP)
-        { //if there has been a handgrip configured previously
-          deleteObject(HANDGRIP_TYPE, DACON1_PORTNUM); 
-        }
-        if(dacon1mode == DACONHANDGRIP)
-        {
-          createObject(HANDGRIP_TYPE, DACON1_PORTNUM);
-        }
+        // if(acon1mode == ACONHANDGRIP)
+        // { //only one member of group 1 can be active at one time.
+        //   deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM); 
+        //   acon1prevmode = acon1mode;
+        //   acon1mode = 0;
+        //   issueDuplicationWarning(lcd_ptr);
+        // }
+        // if(dacon1prevmode == DACONHANDGRIP)
+        // { //if there has been a handgrip configured previously
+        //   deleteObject(HANDGRIP_TYPE, DACON1_PORTNUM); 
+        // }
+        // if(dacon1mode == DACONHANDGRIP)
+        // {
+        //   createObject(HANDGRIP_TYPE, DACON1_PORTNUM);
+        // }
       }
       if(currentScreen == 3) 
       {//DCON2
@@ -162,13 +168,13 @@ class _menu: public _device{
       }
       if(currentScreen == 4) 
       {//ACON2
-        if(dacon2mode == ACONHANDGRIP)
-        { //only one member of group 1 can be active at one time.
-          deleteObject(HANDGRIP_TYPE, DACON2_PORTNUM); 
-          dacon1prevmode = dacon2mode;
-          dacon2mode = 0;
-          issueDuplicationWarning(lcd_ptr);
-        }
+        // if(dacon2mode == ACONHANDGRIP)
+        // { //only one member of group 1 can be active at one time.
+        //   deleteObject(HANDGRIP_TYPE, DACON2_PORTNUM); 
+        //   dacon1prevmode = dacon2mode;
+        //   dacon2mode = 0;
+        //   issueDuplicationWarning(lcd_ptr);
+        // }
         if(acon2prevmode == ACONHANDGRIP)
         { //if there has been a handgrip configured previously
           deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM);
@@ -180,28 +186,27 @@ class _menu: public _device{
       }
       if(currentScreen == 5)
       {//DACON2
-        if(acon2mode == ACONHANDGRIP)
-        { //only one member of group 1 can be active at one time.
-          deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM); 
-          acon2prevmode = acon2mode;
-          acon2mode = 0;
-          issueDuplicationWarning(lcd_ptr);
-        }
-        if(dacon2prevmode == DACONHANDGRIP)
-        { //if there has been a handgrip configured previously
-          deleteObject(HANDGRIP_TYPE, DACON2_PORTNUM); 
-        }
-        if(dacon2mode == DACONHANDGRIP)
-        {
-          createObject(HANDGRIP_TYPE, DACON2_PORTNUM);
-        }
+        // if(acon2mode == ACONHANDGRIP)
+        // { //only one member of group 1 can be active at one time.
+        //   deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM); 
+        //   acon2prevmode = acon2mode;
+        //   acon2mode = 0;
+        //   issueDuplicationWarning(lcd_ptr);
+        // }
+        // if(dacon2prevmode == DACONHANDGRIP)
+        // { //if there has been a handgrip configured previously
+        //   deleteObject(HANDGRIP_TYPE, DACON2_PORTNUM); 
+        // }
+        // if(dacon2mode == DACONHANDGRIP)
+        // {
+        //   createObject(HANDGRIP_TYPE, DACON2_PORTNUM);
+        // }
       }
       (lcd_ptr->lcd_obj)->setBacklight(WHITE);
     }
 
     void parameterChange(int index, _lcd* lcd_ptr)
     {
-      (lcd_ptr->lcd_obj)->setBacklight(TEAL);
       if(index == 1)
       {
         if(currentScreen == 0)
@@ -282,6 +287,17 @@ class _menu: public _device{
             dacon2mode = 0;
           }
         }
+        if(currentScreen == 6)
+        { //Bounding Box Modes
+          if(boundingboxmode < numOfBoundingBoxModes-1)
+          {
+            boundingboxmode++; 
+          }
+          else{
+            boundingboxmode = 0;
+          }
+        }
+        if(currentScreen != 6) (lcd_ptr->lcd_obj)->setBacklight(TEAL);
       }
 
       if(index == 0)
@@ -364,6 +380,18 @@ class _menu: public _device{
             dacon2mode = numOfDconDevs-1;
           }
         }
+        if(currentScreen == 6) 
+        { //bounding bnox mode screen
+          if(boundingboxmode > 0)
+          {
+            boundingboxmode--;
+          }
+          else
+          {
+            boundingboxmode = numOfBoundingBoxModes-1;
+          }
+        }
+        if(currentScreen != 6) (lcd_ptr->lcd_obj)->setBacklight(TEAL);
       }
     }
     void printMenu(_lcd* lcd) 

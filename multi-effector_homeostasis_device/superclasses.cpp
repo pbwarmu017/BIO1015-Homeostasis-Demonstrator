@@ -34,12 +34,22 @@ extern enum SYSTEMMODE systemMode;
 #define INDICATORSTRIP_PORTNUM 6
 #define HARDCODED_PORTNUM 7 //used when the port is hardcoded in the library (lcd)
 
-//internal use. do not change
-#define ACON1_PINNUM 0
-#define ACON2_PINNUM 2
-#define DACON1_PINNUM 1
-#define DACON2_PINNUM 2
- //device types
+//pin defines
+#define ACON1_PINA1 A0
+#define ACON1_PINA2 A1
+#define DCON1_PIND1 3
+#define DCON1_PIND2 5
+#define DACON1_PIND1 4
+#define DACON1_PINA1 ACON1_PINA1 //DACON channels share analog channels the ACON ports
+
+#define ACON2_PINA1 A2
+#define ACON2_PINA2 A3
+#define DCON2_PIND1 9
+#define DCON2_PIND2 10
+#define DACON2_PIND1 11
+#define DACON2_PINA1 ACON2_PINA2
+
+ //device types for readability
 #define INDICATORSTRIP_TYPE 1
 #define LCD_TYPE 2
 #define MENU_TYPE 3
@@ -52,13 +62,9 @@ extern enum SYSTEMMODE systemMode;
 
 
 
-#define STRIPTESTMODE 0 //used for internal testing
-
 #define GAMERESETDELAY 5000 //in milliseconds
 
 #define LCDREFRESHDELAY 205 //in milliseconds
-
-#define SELECTTIMERROLLOVER 5
 
 class _device {
   public:
