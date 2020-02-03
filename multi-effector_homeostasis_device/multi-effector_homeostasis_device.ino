@@ -4,196 +4,308 @@ Adafruit_Neopixel
 Adafruit RGB LCD Sheild Library
 */
 
-//main pin defines
-#include <Arduino.h>
-//neopixels
-#include <Adafruit_NeoPixel.h>
-//RGB LCD Display
-#include <Wire.h>
-#include <Adafruit_RGBLCDShield.h>
-#include <utility/Adafruit_MCP23017.h>
-//custom libaries
+//GLOBAL VARIABLES------------------------------------------
+  int selectTimer = 0; //used for trackikng how long the select button has been depressed.
+  bool configchange; //used to prompt changes in system config by user.
+
+//INCLUDES----------------------------------------
+#include "superclasses.cpp"
 #include "multi-effector_homeostasis_device.h"
-#include "ledstrip.h"
-#include "handgrip.h"
-#include "encoder.h"
+#include "encoder.cpp"
+#include "handgrip.cpp"
+#include "lcd.cpp"
+#include "indicatorstrip.cpp"
+#include "menu.cpp"
 
-//used to track timer overflows for refreshing the strip
-volatile unsigned int stripDelayCounter = 0; 
-volatile int prevOut = 0;
-volatile int crankRateCalcDelayCounter = 50;
-volatile int gameResetCounter = 0;
-volatile int lcdRefreshCounter = 0;
-volatile int crankSum = 0;
-volatile bool STRIPREFRESHDELAYFLAG = false;
-volatile bool CRANKRATECALCDELAYFLAG = false;
-volatile bool LCDREFRESHFLAG = false;
-volatile bool RESETFLAG = false;
+//ENUM DEFINITIONS ------------------------------------------
+  enum GAMESTATUS gameStatus = notstarted;
+  enum SYSTEMMODE systemMode = running;
 
-enum GAMESTATUS gameStatus = notstarted;
-enum SYSTEMMODE systemMode = NONE;
+//GLOBAl VARIABLES FOR USE IN ISRS------------------------------------------
+  volatile unsigned stripDelayCounter = 0; 
+  volatile int prevOut = 0;
+  volatile int crankRateCalcDelayCounter = 0;
+  volatile int gripRateCalcDelayCounter = 0;
+  volatile int gameResetCounter = 0;
+  volatile int lcdRefreshCounter = 0;
 
-_indicatorstrip Indicatorstrip; //object for the indicatorstrip
-_handgrip Handgrip; //object for the handgrip
-_encoder Handcrank; //object for the encoder
-Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield(); //opbject for the LCD
+  volatile bool selectState = false; 
+  volatile bool selectPrevState = false; 
 
-//this is the interrupt handler for Timer0 output conpare match. 
-ISR(TIMER0_COMPA_vect) { //this executes every 1 millisecond
-  stripDelayCounter++;
-  crankRateCalcDelayCounter++;
-  lcdRefreshCounter++;
-  if(stripDelayCounter >= STRIPREFRESHDELAY) {  
-    stripDelayCounter = 0; //reset the timer counter for the next run.
-    STRIPREFRESHDELAYFLAG = true;
-    //Set Rates based on affector positions (one for each affector)
-  }
-  if(crankRateCalcDelayCounter >= CRANKRATECALCDELAY){
-    crankRateCalcDelayCounter = 0; 
-    CRANKRATECALCDELAYFLAG = true;
-    
-  }
-  if(gameStatus == lost){
-    gameResetCounter++;
-    if(gameResetCounter >= GAMERESETDELAY){
-      gameResetCounter = 0;
-      gameStatus = notstarted;
-      RESETFLAG = true;
+  volatile bool STRIPREFRESHFLAG = false;
+  volatile bool CRANKSUMFLAG = false;
+  // volatile bool CRANKRATECALCFLAG = false;
+  // volatile bool GRIPRATECALCFLAG = false;
+  volatile bool LCDREFRESHFLAG = false;
+  volatile bool RESETFLAG = false;
 
+//GLOBAL OBJECTS------------------------------------------
+  //generic pointer declarations. Specific device pointers will be assigned to these as needed by the system. 
+  _device *DCON1_ptr;
+  _device *ACON1_ptr;
+  _device *DACON1_ptr;
+  _device *DCON2_ptr;
+  _device *ACON2_ptr;
+  _device *DACON2_ptr;
+  _device *main_ptr = new _device;
+  _indicatorstrip *indicatorstrip_ptr;
+  _menu *menu_ptr;
+  _lcd *lcd_ptr;
+
+//GLOBAL FUNCTIONS-------------------------------------------
+  //this function is responsible for creating a new object on the HEAP (using the new keyword), setting up the ports 
+  //for that object and then assigning it to the correct global object. 
+  //types and portnums are definded in superclasses.cpp
+  void createObject(int objtype, int portnum)
+  {
+    if(objtype == LCD_TYPE)
+    {
+
+      lcd_ptr = new _lcd;
+    }
+
+    if(objtype == MENU_TYPE)
+    {
+
+      menu_ptr = new _menu;
+    }
+
+    if(objtype == INDICATORSTRIP_TYPE)
+    {
+
+      indicatorstrip_ptr = new _indicatorstrip(menu_ptr); 
+    }
+
+    if(objtype == HANDGRIP_TYPE){
+      if(portnum == ACON1_PORTNUM) ACON1_ptr = new _handgrip(ACON1_PORTNUM, main_ptr, 
+        indicatorstrip_ptr, lcd_ptr, menu_ptr); 
+
+      if(portnum == ACON2_PORTNUM) ACON2_ptr = new _handgrip(ACON2_PORTNUM, main_ptr, 
+        indicatorstrip_ptr, lcd_ptr, menu_ptr);
+
+      if(portnum == DACON1_PORTNUM) DACON1_ptr = new _handgrip(DACON1_PORTNUM, main_ptr, 
+        indicatorstrip_ptr, lcd_ptr, menu_ptr);
+
+      if(portnum == DACON2_PORTNUM) DACON2_ptr = new _handgrip(DACON2_PORTNUM, main_ptr, 
+        indicatorstrip_ptr, lcd_ptr, menu_ptr);
+    }
+
+    if(objtype == HANDCRANK_TYPE)
+    {
+      if(portnum == DCON1_PORTNUM) DCON1_ptr = new _encoder(DCON1_PORTNUM, main_ptr, 
+        indicatorstrip_ptr, lcd_ptr, menu_ptr); 
+
+      if(portnum == DCON2_PORTNUM) DCON2_ptr = new _encoder(DCON2_PORTNUM, main_ptr, 
+        indicatorstrip_ptr, lcd_ptr, menu_ptr);
     }
   }
 
-  if(lcdRefreshCounter >= LCDREFRESHDELAY){
-    LCDREFRESHFLAG = true;  
-    lcdRefreshCounter = 0;  
-  }
-}
+  void deleteObject(int objtype, int portnum)
+  {
+    if(objtype == HANDGRIP_TYPE)
+    {
+      if(portnum == ACON1_PORTNUM) delete ACON1_ptr;
 
-ISR(PCINT2_vect) { // handle pin change interrupt for D0 to D7 here
-  if(CRANKACTIVE == 1){
-    int currentOut = Handcrank.returnDelta();
-      //make sure it's not an invalid state change
-      if(currentOut){ 
-        //two or more matching values. Helps with logical debounce
-        if(currentOut == prevOut){ 
-          crankSum += currentOut;
-        }
-        prevOut = currentOut; //update the previous value
+      if(portnum == ACON2_PORTNUM) delete ACON2_ptr;
+
+      if(portnum == DACON1_PORTNUM) delete DACON1_ptr;
+
+      if(portnum == DACON2_PORTNUM) delete DACON2_ptr;
+    }
+
+    if(objtype == HANDCRANK_TYPE)
+    {
+      if(portnum == DCON1_PORTNUM) delete DCON1_ptr;
+
+      if(portnum == DCON2_PORTNUM) delete DCON2_ptr;
     }
   }
-}
 
-void navigateMenu(uint8_t button){
-  if (button) {
-    lcd.clear();
-    lcd.setCursor(0,1);
-    // lcd.print(button);
-    if (button & BUTTON_UP) {
-      lcd.print("UP ");
-      lcd.setBacklight(RED);
+//INTERRUPT SERVICE ROUTINES------------------------------------------
+  //Interrupt service routine for a timer that exectures every millisecond. DO NOT call functions/methods from within
+  //an ISR. Set flags that are checked for within the main loop. You want to spend as little time inside of an ISR as
+  //possible to prevent undefined program behavior.  
+  ISR(TIMER0_COMPA_vect)
+  {
+    stripDelayCounter++;
+    crankRateCalcDelayCounter++;
+    gripRateCalcDelayCounter++;
+    lcdRefreshCounter++;
+    //set flags for strip
+    if(stripDelayCounter >= STRIPREFRESHDELAY)
+    { 
+      stripDelayCounter = 0; //reset the timer counter for the next run.
+      STRIPREFRESHFLAG = true;
+      //Set Rates based on affector positions (one for each affector)
     }
-    if (button & BUTTON_DOWN) {
-      lcd.print("DOWN ");
-      lcd.setBacklight(YELLOW);
-    }
-    if (button & BUTTON_LEFT) {
-      lcd.print("LEFT ");
-      lcd.setBacklight(GREEN);
-    }
-    if (button & BUTTON_RIGHT) {
-      lcd.print("RIGHT ");
-      lcd.setBacklight(TEAL);
-    }
-    if (button & BUTTON_SELECT) {
-      lcd.print("SELECT ");
-      lcd.setBacklight(VIOLET);
-    }
-  }
-}
+    //set flags to reset lost game
+    if(gameStatus == lost)
+    {
+      gameResetCounter++;
+      if(gameResetCounter >= GAMERESETDELAY)
+      {
+        gameResetCounter = 0;
+        RESETFLAG = true;
 
-void setup() {
-  //setup timer0 to call interrupt OCR0A every REFRESHTIMEVAL
-  OCR0A = 0xFA; //set to trigger TIMER0_COMPA_vect every millisecond
-  TIMSK0 |= _BV(OCIE0A); //enable the output compare interrupt on timer0
-
-  //setup interrupt on pin change for the ender pins.
-  //This interrupt is enabled per group (digital pins 1-7, digtial pins 8-13)
-  // enable pin change interrupt for encoder pin A
-  *digitalPinToPCMSK(ENCODERPINA) |= bit (digitalPinToPCMSKbit(ENCODERPINA)); 
-  // enable ping change interrupt for encoder pin B
-  *digitalPinToPCMSK(ENCODERPINB) |= bit (digitalPinToPCMSKbit(ENCODERPINB)); 
-  // clear any outstanding interrupt flag
-
-  PCIFR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
-  // enable interrupt for the GROUP 
-  PCICR  |= bit (digitalPinToPCICRbit(ENCODERPINA)); 
-  systemMode = NONE;
-  Indicatorstrip.initialize();
-  Handcrank.initialize();
-
-  //init serial for debugging  
-  Serial.begin(2000000); 
-
-  //init LCD
-  lcd.begin(16, 2);
-
-  //make unused pins float high to interrupting on stray voltages
-  pinMode(0, INPUT_PULLUP);
-  pinMode(1, INPUT_PULLUP);
-  pinMode(4, INPUT_PULLUP);
-  pinMode(5, INPUT_PULLUP);
-  // pinMode(6, INPUT_PULLUP); //this pin is used for the LED strip
-  pinMode(7, INPUT_PULLUP);
-}
-
-void loop() {
-  if(STRIPREFRESHDELAYFLAG){
-    if(HANDGRIPACTIVE == 1){
-      if(Handgrip.calibrationState == true){
-        Indicatorstrip.setProductionRate(Handgrip.calculateProductionRate(
-          analogRead(HANDGRIPPIN)), HANDGRIPDEVNUM);
-        //set the indicator positions based on the production rate 
-        Indicatorstrip.setIndicatorPosition(
-          Handgrip.productionRate = Indicatorstrip.calculatePosition(HANDGRIPDEVNUM), HANDGRIPDEVNUM);
-      } else {
-        Handgrip.handgripMaxVoltage = Handgrip.voltageValue();
-        Handgrip.calibrationState = true;
       }
     }
-    //set the bounding box. 
-    if(CRANKACTIVE == 1){
-      Indicatorstrip.setIndicatorPosition(
-        Handcrank.productionRate = Indicatorstrip.calculatePosition(CRANKDEVNUM), CRANKDEVNUM);
-    }
-    Indicatorstrip.setBoundingBox(BOXSTART, BOXSIZE);
-    Indicatorstrip.update();
-    STRIPREFRESHDELAYFLAG = false;
-  }
-  if(CRANKRATECALCDELAYFLAG){
-    if(CRANKACTIVE == 1){
-      Indicatorstrip.setProductionRate(Handcrank.calculateProductionRate(
-        crankSum), CRANKDEVNUM);
-      //reset the sum because it has just been incorporated into a moving avg
-      crankSum = 0; 
-      //reset the delay counter for the next run
-      CRANKRATECALCDELAYFLAG = false;
+    //set flags to refresh LCD
+    if(lcdRefreshCounter >= LCDREFRESHDELAY)
+    {
+      LCDREFRESHFLAG = true;  
+      lcdRefreshCounter = 0;  
     }
   }
-  if(RESETFLAG){
-    Indicatorstrip.setBoundingBox(BOXSTART, BOXSIZE);
-    RESETFLAG = false;
+
+  //Interrupt service routine for pin change interrupt on D0 to D7. DO NOT call functions/methods from within
+  //an ISR. Set flags that are checked for within the main loop. You want to spend as little time inside of an ISR as
+  //possible to prevent undefined program behavior.
+  ISR(PCINT2_vect)
+  { // handle pin change interrupt for D0 to D7 here
+    if(main_ptr->DCON1_mode == HANDCRANK_TYPE or main_ptr->DCON2_mode == HANDCRANK_TYPE) CRANKSUMFLAG = true;
   }
-  if(LCDREFRESHFLAG){
-    // (note: line 1 is the second row, since counting begins with 0)
-    // uint8_t button = lcd.readButtons();
-    // navigateMenu(button);
-    // lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Crank Rate: ");
-    lcd.print(Handcrank.productionRate);
-    lcd.setCursor(0,1);
-    lcd.print("Sqze. Rate: ");
-    lcd.print(Handgrip.productionRate);
+
+  //Interrupt service routine for pin change interrupt on D8 to D13. DO NOT call functions/methods from within
+  //an ISR. Set flags that are checked for within the main loop. You want to spend as little time inside of an ISR as
+  //possible to prevent undefined program behavior.
+  ISR(PCINT0_vect)
+  {
+    if(main_ptr->DCON1_mode == HANDCRANK_TYPE or main_ptr->DCON2_mode == HANDCRANK_TYPE) CRANKSUMFLAG = true;
+  }
+
+//MAIN ARDINO FUNCTIONS------------------------------------------
+  void setup()
+  {
+
+    //init serial for debugging  
+    Serial.begin(2000000); 
+
+    //setup timer0 to call interrupt OCR0A every millisecond
+    OCR0A = 0xFA; //set to trigger TIMER0_COMPA_vect every millisecond
+    TIMSK0 |= _BV(OCIE0A); //enable the output compare interrupt on timer0
+
+    //make all digital pins float high to prevent pin change interrupt on stray voltages
+    //these will be individually modified as needed by objects. 
+    pinMode(0, INPUT_PULLUP);
+    pinMode(1, INPUT_PULLUP);
+    pinMode(2, INPUT_PULLUP);
+    pinMode(3, INPUT_PULLUP);
+    pinMode(4, INPUT_PULLUP);
+    pinMode(5, INPUT_PULLUP);
+    pinMode(6, INPUT_PULLUP);
+    pinMode(7, INPUT_PULLUP);
+    pinMode(8, INPUT_PULLUP);
+    pinMode(9, INPUT_PULLUP);
+    pinMode(10, INPUT_PULLUP);
+    pinMode(11, INPUT_PULLUP);
+    pinMode(12, INPUT_PULLUP);
+    pinMode(13, INPUT_PULLUP);
+
+    //----------------------------------------------------------
+    createObject(LCD_TYPE, HARDCODED_PORTNUM);
+    createObject(MENU_TYPE, HARDCODED_PORTNUM);
+    createObject(INDICATORSTRIP_TYPE, HARDCODED_PORTNUM);
+  }
+
+  void loop()
+  {
+    if(CRANKSUMFLAG) //triggers calcultion of the moving average for the handcrank
+    {
+      if(main_ptr->DCON1_mode == HANDCRANK_TYPE)
+      {
+        DCON1_ptr->calculateRate(CRANKSUM_RATETYPE);
+      }
+      if(main_ptr->DCON2_mode == HANDCRANK_TYPE)
+      {
+        DCON2_ptr->calculateRate(CRANKSUM_RATETYPE);
+      }
+      CRANKSUMFLAG = false;
+    } 
+    if(STRIPREFRESHFLAG) //triggers rate calculation for active affectros and strip refresh
+    {
+      if(main_ptr->DCON1_mode == HANDCRANK_TYPE)
+      {
+        DCON1_ptr->calculateRate(GENERAL_RATETYPE);
+      }
+      if(main_ptr->DCON2_mode == HANDCRANK_TYPE)
+      {
+        DCON2_ptr->calculateRate(GENERAL_RATETYPE);
+      }
+      if(main_ptr->ACON1_mode == HANDGRIP_TYPE)
+      {
+        ACON1_ptr->calculateRate(GENERAL_RATETYPE);
+      }
+      if(main_ptr->ACON2_mode == HANDGRIP_TYPE)
+      {
+        ACON2_ptr->calculateRate(GENERAL_RATETYPE);
+      }
+      indicatorstrip_ptr->refreshStrip();
+      STRIPREFRESHFLAG = false;
+    }
+    if(RESETFLAG)
+    {
+      gameStatus = notstarted;
+      RESETFLAG = false;
+    }
+    if(LCDREFRESHFLAG)
+    {
+    uint8_t button = (lcd_ptr->lcd_obj)->readButtons();
+     //track the states of the button
+      selectPrevState = selectState;
+      //if the select button is pressed down
+      if(button & BUTTON_SELECT)
+      {
+        selectState = true;
+      }
+      else //if its not pressed down
+      {
+        selectState = false;
+      }
+
+      //if the state of the select button is true
+      if(selectState == true)
+      {
+        if(selectPrevState == true)
+        {
+          selectTimer++;
+        }
+      }
+      else
+      {
+        selectTimer = 0;
+      }
+
+      if(selectState == false && selectPrevState == true)
+      {
+        if(systemMode == config)
+        {
+          menu_ptr->navigateMenu(BUTTON_SELECT, lcd_ptr);
+        }
+      }
+
+      if(selectTimer == 10 && systemMode == running)
+      {
+        systemMode = config;
+        (lcd_ptr->lcd_obj)->clear();
+        menu_ptr->printMenu(lcd_ptr);
+        selectTimer++;
+
+        // (lcd_ptr->lcd_obj)->setBacklight(RED);
+      }
+
+      if(selectTimer == 10 && systemMode == config)
+      {
+        systemMode = running;
+        (lcd_ptr->lcd_obj)->clear();
+        selectTimer++;
+        // (lcd_ptr->lcd_obj)->setBacklight(WHITE);
+      }
+
+    if(button && !(button & BUTTON_SELECT) && systemMode == config)
+    {
+      menu_ptr->navigateMenu(button, lcd_ptr);
+    }
+
     LCDREFRESHFLAG = false;
   }
 }
