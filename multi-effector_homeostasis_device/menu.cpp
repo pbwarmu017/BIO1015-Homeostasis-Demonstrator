@@ -426,6 +426,10 @@ class _menu: public _device{
       { //DACON2 SCREEN
         (lcd->lcd_obj)->print(daconscreens[dacon2mode]);
       }
+      if(currentScreen == 6)
+      {
+        (lcd->lcd_obj)->print(boundingBoxModeScreens[boundingboxmode]);
+      }
     }
     void issueDuplicationWarning(_lcd* lcd_ptr)
     {

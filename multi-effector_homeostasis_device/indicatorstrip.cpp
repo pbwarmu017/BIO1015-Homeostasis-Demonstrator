@@ -81,7 +81,7 @@ class _indicatorstrip: public _device
         }
         if(boundingBoxDirection == -1)
         {
-          if(boxStart > 0)
+          if(boxStart > 1)
           {
             boxStart -= 0.1*menu_ptr->boundingboxmode;
             boxEnd -= 0.1*menu_ptr->boundingboxmode;
