@@ -139,7 +139,7 @@ class _encoder: public _affector
     _lcd *lcd_ptr;
     _menu *menu_ptr;
 
-    char quadratureLookupTable[16] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0};
+    char quadratureLookupTable[16] = {0,/*-1*/0,1,0,1,0,0,/*-1*/0,/*-1*/0,0,0,1,0,1,/*-1*/0,0};
     //removed extraneous values to help prevent bouncing, and inverted the polarity
     // http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html
     // char quadratureLookupTable[16] = {0,0,0,0,0,0,0,-1,0,0,0,0,0,1,0,0};
@@ -149,7 +149,7 @@ class _encoder: public _affector
     float maxProductionRate = 60; //used in the rate calculation
     float consumptionRate = 70; ///used in the rate calculation
     char portNum = -1; //used to save the port number that this object is instantiated on.
-    byte crankSum = 0; //sums the number of valid pulses from the encoder
+    char crankSum = 0; //sums the number of valid pulses from the encoder
     char encoderPinA = -1; //stores object pin configuration
     char encoderPinB = -1; //stores object pin configuration
     bool prevAVal;
