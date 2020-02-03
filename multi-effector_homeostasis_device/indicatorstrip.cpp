@@ -142,7 +142,7 @@ class _indicatorstrip: public _device
         if(deviceIndicatorPosition[i] + 2 > 0.5) 
         {
           //is it in bounds?
-          if( (deviceIndicatorPosition[i] >= boxStart) && (deviceIndicatorPosition[i] <= (boxStart + boxSize+1)))
+          if( (deviceIndicatorPosition[i] >= boxStart) && (deviceIndicatorPosition[i] <= (boxStart + menu_ptr->boundingboxsize + 1)))
           {
             /*there are two possiblilities if it arrives here. Either the previous status indication is inactive (3)
             or active (1), either way we want to set status to 1*/
