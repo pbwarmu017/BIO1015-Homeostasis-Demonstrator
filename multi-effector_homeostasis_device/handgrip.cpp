@@ -32,9 +32,9 @@ class _handgrip: public _affector
       //calibrate handgrip
       (lcd_ptr->lcd_obj)->clear();
       (lcd_ptr->lcd_obj)->setCursor(0,0);
-      (lcd_ptr->lcd_obj)->print("Release Grip And");
+      (lcd_ptr->lcd_obj)->print("Rel Grip And");
       (lcd_ptr->lcd_obj)->setCursor(0,1);
-      (lcd_ptr->lcd_obj)->print("Press Select");
+      (lcd_ptr->lcd_obj)->print("Press Sel");
 
       while( !((lcd_ptr->lcd_obj)->readButtons() & BUTTON_SELECT) ); //wait for select
 
@@ -46,9 +46,9 @@ class _handgrip: public _affector
       delay(500);
 
       (lcd_ptr->lcd_obj)->setCursor(0,0);
-      (lcd_ptr->lcd_obj)->print("Compress Grip");
+      (lcd_ptr->lcd_obj)->print("Comp Grip And");
       (lcd_ptr->lcd_obj)->setCursor(0,1);
-      (lcd_ptr->lcd_obj)->print("And Press Select");
+      (lcd_ptr->lcd_obj)->print("Press Sel");
 
       while( !((lcd_ptr->lcd_obj)->readButtons() & BUTTON_SELECT) ); //wait for select
 

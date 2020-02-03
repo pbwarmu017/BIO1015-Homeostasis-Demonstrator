@@ -14,28 +14,28 @@
 
 class _menu: public _device{
   public:
-    static const int numOfScreens = 7;  //number of options in screens[]
-    static const int numOfDconDevs = 2; //number of options in dconscreens[]
-    static const int numOfAconDevs = 2; //number of options in aconscreens[]
-    static const int numOfDaconDevs = 2; //number of options in daconscreens[]
-    static const int numOfBoundingBoxModes = 9; //number of options in boundingBoxModeScreens
-    int currentScreen = 0;
+    static const byte numOfScreens = 8;  //number of options in screens[]
+    static const byte numOfDconDevs = 2; //number of options in dconscreens[]
+    static const byte numOfAconDevs = 2; //number of options in aconscreens[]
+    static const byte numOfDaconDevs = 2; //number of options in daconscreens[]
+    static const byte numOfBoundingBoxModes = 5; //number of options in boundingBoxModeScreens
+    byte currentScreen = 0;
     //The following are selection tracking variables. As the user uses the
     //menu the contents of these values will change.
-    int dcon1prevmode = -1;
-    int dcon2prevmode = -1;
-    int acon1prevmode = -1;
-    int acon2prevmode = -1;
-    int dacon1prevmode = -1;
-    int dacon2prevmode = -1;
-    int dcon1mode = 0;
-    int dcon2mode = 0;
-    int acon1mode = 0;
-    int acon2mode = 0;
-    int dacon1mode = 0;
-    int dacon2mode = 0;
-    int boundingboxmode = 0;
-    int boundingboxsize = 10;
+    byte dcon1prevmode = -1;
+    byte dcon2prevmode = -1;
+    byte acon1prevmode = -1;
+    byte acon2prevmode = -1;
+    byte dacon1prevmode = -1;
+    byte dacon2prevmode = -1;
+    byte dcon1mode = 0;
+    byte dcon2mode = 0;
+    byte acon1mode = 0;
+    byte acon2mode = 0;
+    byte dacon1mode = 0;
+    byte dacon2mode = 0;
+    byte boundingboxmode = 0;
+    byte boundingboxsize = 10;
     
     
     
@@ -43,15 +43,14 @@ class _menu: public _device{
     //LCD MENU TEXT OPTIONS
 
     //Main Menu Screens
-    String screens[numOfScreens][2] = {{"DCON1 COLOR WHT","DEV:"},{"ACON1 COLOR ORN","DEV:"},{"DACON1 COLOR YEL","DEV:"},
-    {"DCON2 COLOR BLU","DEV:"},{"ACON2 COLOR CYA","DEV:"},{"DACON2 COLOR VIO","DEV:"},{"BOUNDING BOX","MODE:"}};
+    const String screens[numOfScreens][2] = {{"DCON1","DEV:"},{"ACON1","DEV:"},{"DACON1","DEV:"},
+    {"DCON2","DEV:"},{"ACON2","DEV:"},{"DACON2","DEV:"},{"BOUND","MODE:"},{"TEST","TESTING"}};
 
     //Valid selections for each port type
-    String dconscreens[numOfDconDevs] = {"OFF","HANDCRANK"};
-    String aconscreens[numOfAconDevs] = {"OFF","HANDGRIP"};
-    String daconscreens[numOfDaconDevs] = {"NONE AVAIL."};
-    String boundingBoxModeScreens[numOfBoundingBoxModes] = {{"Stationary"},{"Moving x1"},{"Moving x2"},{"Moving x3"},{"Moving x4"},{"Moving x5"},
-                                        {"Moving x6"},{"Moving x7"},{"Moving x8"}};
+    const String dconscreens[numOfDconDevs] = {"OFF","CRANK"};
+    const String aconscreens[numOfAconDevs] = {"OFF","GRIP"};
+    const String daconscreens[numOfDaconDevs] = {"NONE AVAIL."};
+    const String boundingBoxModeScreens[numOfBoundingBoxModes] = {{"Stat."},{"Mov 1"},{"Mov 2"},{"Mov 3"},{"Mov 4"}};
 
     //Port Selections. If you add to this, increase numOfPorts to match. 
     // String portscreens[6] = {"DCON1","ACON1","DACON1","DCON2","ACON2","DACON2"};
@@ -432,22 +431,22 @@ class _menu: public _device{
         (lcd->lcd_obj)->print(boundingBoxModeScreens[boundingboxmode]);
       }
     }
-    void issueDuplicationWarning(_lcd* lcd_ptr)
-    {
-      (lcd_ptr->lcd_obj)->clear();
-      (lcd_ptr->lcd_obj)->setCursor(0,0);
-      (lcd_ptr->lcd_obj)->print("One 1 Member Of");
-      (lcd_ptr->lcd_obj)->setCursor(0,1);
-      (lcd_ptr->lcd_obj)->print("A Group Can Be");
-      delay(2000);
-      (lcd_ptr->lcd_obj)->clear();
-      (lcd_ptr->lcd_obj)->setCursor(0,0);
-      (lcd_ptr->lcd_obj)->print("Active At The");
-      (lcd_ptr->lcd_obj)->setCursor(0,1);
-      (lcd_ptr->lcd_obj)->print("Same time");
-      delay(2000);
-      printMenu(lcd_ptr);
-    }
+    // void issueDuplicationWarning(_lcd* lcd_ptr)
+    // {
+    //   (lcd_ptr->lcd_obj)->clear();
+    //   (lcd_ptr->lcd_obj)->setCursor(0,0);
+    //   (lcd_ptr->lcd_obj)->print("One 1 Member Of");
+    //   (lcd_ptr->lcd_obj)->setCursor(0,1);
+    //   (lcd_ptr->lcd_obj)->print("A Group Can Be");
+    //   delay(2000);
+    //   (lcd_ptr->lcd_obj)->clear();
+    //   (lcd_ptr->lcd_obj)->setCursor(0,0);
+    //   (lcd_ptr->lcd_obj)->print("Active At The");
+    //   (lcd_ptr->lcd_obj)->setCursor(0,1);
+    //   (lcd_ptr->lcd_obj)->print("Same time");
+    //   delay(2000);
+    //   printMenu(lcd_ptr);
+    // }
     ~_menu()
     {
       //must define a destructor, but I have no use for it here. 

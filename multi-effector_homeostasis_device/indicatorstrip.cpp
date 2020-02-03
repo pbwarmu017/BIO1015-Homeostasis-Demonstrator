@@ -72,7 +72,7 @@ class _indicatorstrip: public _device
       // Serial.print("\n");
           if(boxEnd < 59)
           {
-            boxStart += 0.1 * menu_ptr->boundingboxmode;
+            boxStart += 0.2 * menu_ptr->boundingboxmode;
             boxEnd = boxStart + menu_ptr->boundingboxsize + 1;
           }
           else
@@ -84,7 +84,7 @@ class _indicatorstrip: public _device
         {
           if(boxStart > 1)
           {
-            boxStart -= 0.1*menu_ptr->boundingboxmode;
+            boxStart -= 0.2 * menu_ptr->boundingboxmode;
             boxEnd = boxStart + menu_ptr->boundingboxsize + 1;
           }
           else
