@@ -25,7 +25,7 @@ Adafruit RGB LCD Sheild Library
   volatile byte stripDelayCounter = 0; 
   volatile byte crankRateCalcDelayCounter = 0;
   volatile byte gripRateCalcDelayCounter = 0;
-  volatile byte gameResetCounter = 0;
+  volatile int gameResetCounter = 0;
   volatile byte lcdRefreshCounter = 0;
 
   volatile bool selectState = false; 
