@@ -44,7 +44,7 @@ class _menu: public _device{
 
     //Main Menu Screens
     const String screens[numOfScreens][2] = {{"DCON1","DEV:"},{"ACON1","DEV:"},{"DACON1","DEV:"},
-    {"DCON2","DEV:"},{"ACON2","DEV:"},{"DACON2","DEV:"},{"BOUND","MODE:"},{"TEST","TESTING"}};
+    {"DCON2","DEV:"},{"ACON2","DEV:"},{"DACON2","DEV:"},{"BOUND","MODE:"}};
 
     //Valid selections for each port type
     const String dconscreens[numOfDconDevs] = {"OFF","CRANK"};
