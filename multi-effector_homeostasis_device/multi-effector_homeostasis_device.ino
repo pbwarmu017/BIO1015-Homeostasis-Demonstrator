@@ -7,6 +7,7 @@ Adafruit RGB LCD Sheild Library
 //GLOBAL VARIABLES------------------------------------------
   int selectTimer = 0; //used for trackikng how long the select button has been depressed.
   bool configchange; //used to prompt changes in system config by user.
+  uint8_t lastButton = 0;
 
 //INCLUDES----------------------------------------
 #include "superclasses.cpp"
@@ -19,7 +20,7 @@ Adafruit RGB LCD Sheild Library
 
 //ENUM DEFINITIONS ------------------------------------------
   enum GAMESTATUS gameStatus = notstarted;
-  enum SYSTEMMODE systemMode = running;
+  enum SYSTEMMODE systemMode = config;
 
 //GLOBAl VARIABLES FOR USE IN ISRS------------------------------------------
   volatile byte stripDelayCounter = 0; 
@@ -204,6 +205,8 @@ Adafruit RGB LCD Sheild Library
     createObject(LCD_TYPE, HARDCODED_PORTNUM);
     createObject(MENU_TYPE, HARDCODED_PORTNUM);
     createObject(INDICATORSTRIP_TYPE, HARDCODED_PORTNUM);
+    //here to catch when the sytem mode goes to config by default. 
+    if(systemMode == config) menu_ptr->printMenu(lcd_ptr);
   }
 
   void loop()
@@ -300,11 +303,12 @@ Adafruit RGB LCD Sheild Library
         // (lcd_ptr->lcd_obj)->setBacklight(WHITE);
       }
 
-    if(button && !(button & BUTTON_SELECT) && systemMode == config)
+    if(button && !(button & BUTTON_SELECT) && systemMode == config && lastButton != button)
     {
       menu_ptr->navigateMenu(button, lcd_ptr);
     }
 
     LCDREFRESHFLAG = false;
+    lastButton = button;
   }
 }

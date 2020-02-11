@@ -4,6 +4,7 @@
 #include "superclasses.cpp"
 #include "lcd.cpp"
 #include "multi-effector_homeostasis_device.h"
+#define VERSIONNUMBER "2.0.2"
 
 #define DCONHANDCRANK 1
 #define ACONHANDGRIP 1
@@ -14,7 +15,7 @@
 
 class _menu: public _device{
   public:
-    static const char numOfScreens = 8;  //number of options in screens[]
+    static const char numOfScreens = 9;  //number of options in screens[]
     static const char numOfDconDevs = 2; //number of options in dconscreens[]
     static const char numOfAconDevs = 2; //number of options in aconscreens[]
     static const char numOfDaconDevs = 2; //number of options in daconscreens[]
@@ -44,7 +45,7 @@ class _menu: public _device{
 
     //Main Menu Screens
     const String screens[numOfScreens][2] = {{"DCON1","DEV:"},{"ACON1","DEV:"},{"DACON1","DEV:"},
-    {"DCON2","DEV:"},{"ACON2","DEV:"},{"DACON2","DEV:"},{"BOUND BOX","MODE:"},{"BOUND BOX", "SIZE:"}};
+    {"DCON2","DEV:"},{"ACON2","DEV:"},{"DACON2","DEV:"},{"BOUND BOX","MODE:"},{"BOUND BOX", "SIZE:"},{"VERSION",""}};
 
     //Valid selections for each port type
     const String dconscreens[numOfDconDevs] = {"OFF","CRANK"};
@@ -435,12 +436,16 @@ class _menu: public _device{
         (lcd->lcd_obj)->print(daconscreens[dacon2mode]);
       }
       if(currentScreen == 6)
-      {
+      {//BOUJND BOX MODE
         (lcd->lcd_obj)->print(boundingBoxModeScreens[boundingboxmode]);
       }
       if(currentScreen == 7)
-      {
+      { //BOUND BOX SIZE
         (lcd->lcd_obj)->print(boundingboxsize);
+      }
+      if(currentScreen == 8)
+      { //VERSION
+        (lcd->lcd_obj)->print(VERSIONNUMBER);
       }
     }
     // void issueDuplicationWarning(_lcd* lcd_ptr)

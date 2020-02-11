@@ -89,7 +89,11 @@ class _indicatorstrip: public _device
           }
         }
       }
-
+      if(boxEnd > 60) //here to catch events where the user tries to make the box grow beyond the strip
+      {
+        boxEnd--;
+        boxStart--;
+      }
       if(gameStatus == started && indicatorsWithinBounds())
       {
         strip->setPixelColor(boxStart, COLORGREEN);
