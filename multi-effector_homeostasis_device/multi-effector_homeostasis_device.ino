@@ -77,6 +77,7 @@ Adafruit RGB LCD Sheild Library
     }
 
     if(objtype == HANDGRIP_TYPE){
+      menu_ptr->objectCount++;
       if(portnum == ACON1_PORTNUM) ACON1_ptr = new _handgrip(ACON1_PORTNUM, main_ptr, 
         indicatorstrip_ptr, lcd_ptr, menu_ptr); 
 
@@ -92,6 +93,7 @@ Adafruit RGB LCD Sheild Library
 
     if(objtype == HANDCRANK_TYPE)
     {
+      menu_ptr->objectCount++;
       if(portnum == DCON1_PORTNUM) DCON1_ptr = new _encoder(DCON1_PORTNUM, main_ptr, 
         indicatorstrip_ptr, lcd_ptr, menu_ptr); 
 
@@ -104,6 +106,7 @@ Adafruit RGB LCD Sheild Library
   {
     if(objtype == HANDGRIP_TYPE)
     {
+      menu_ptr->objectCount--;
       if(portnum == ACON1_PORTNUM) delete ACON1_ptr;
 
       if(portnum == ACON2_PORTNUM) delete ACON2_ptr;
@@ -115,6 +118,7 @@ Adafruit RGB LCD Sheild Library
 
     if(objtype == HANDCRANK_TYPE)
     {
+      menu_ptr->objectCount--;
       if(portnum == DCON1_PORTNUM) delete DCON1_ptr;
 
       if(portnum == DCON2_PORTNUM) delete DCON2_ptr;

@@ -4,7 +4,8 @@
 #include "superclasses.cpp"
 #include "lcd.cpp"
 #include "multi-effector_homeostasis_device.h"
-#define VERSIONNUMBER "2.0.2"
+
+#define MAXIMUMDEVICES 2 //defines the max number of devices the system will allow to connect. 
 
 #define DCONHANDCRANK 1
 #define ACONHANDGRIP 1
@@ -20,6 +21,7 @@ class _menu: public _device{
     static const char numOfAconDevs = 2; //number of options in aconscreens[]
     static const char numOfDaconDevs = 2; //number of options in daconscreens[]
     static const char numOfBoundingBoxModes = 5; //number of options in boundingBoxModeScreens
+    uint8_t objectCount = 0;
     char currentScreen = 0;
     //The following are selection tracking variables. As the user uses the
     //menu the contents of these values will change.
@@ -111,97 +113,161 @@ class _menu: public _device{
     {
       if(currentScreen == 0) 
       {//DCON1
-        if(dcon1prevmode == DCONHANDCRANK)
+        if(objectCount == MAXIMUMDEVICES) //only allow so many devices
+        {
+          dcon1mode = 0; //reset the menu selection
+          printMenu(lcd_ptr);
+          if(dcon1prevmode == DCONHANDCRANK)
           { //if there has been an encoder configured previously
             deleteObject(HANDCRANK_TYPE, DCON1_PORTNUM);
           }
-        if(dcon1mode == DCONHANDCRANK)
+        }
+        else
         {
-          createObject(HANDCRANK_TYPE, DCON1_PORTNUM);
-        } 
+          if(dcon1prevmode == DCONHANDCRANK)
+          { //if there has been an encoder configured previously
+            deleteObject(HANDCRANK_TYPE, DCON1_PORTNUM);
+          }
+          if(dcon1mode == DCONHANDCRANK)
+          {
+            createObject(HANDCRANK_TYPE, DCON1_PORTNUM);
+          } 
+        }
       }
       if(currentScreen == 1)
       { //ACON1
-        // if(dacon1mode == ACONHANDGRIP)
-        // { //only one member of group 1 can be active at one time.
-        //   deleteObject(HANDGRIP_TYPE, DACON1_PORTNUM); 
-        //   dacon1prevmode = dacon1mode;
-        //   dacon1mode = 0;
-        //   issueDuplicationWarning(lcd_ptr);
-        // }
-        if(acon1prevmode == ACONHANDGRIP)
-        { //if there has been a handgrip configured previously
-          deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM);
-        }
-        if(acon1mode == ACONHANDGRIP)
+        if(objectCount == MAXIMUMDEVICES) //only allow so many devices
         {
-          createObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+          acon1mode = 0; //reset the menu selection
+          printMenu(lcd_ptr);
+          if(acon1prevmode == ACONHANDGRIP)
+          { //if there has been a handgrip configured previously
+            deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+          }
+        }
+        else
+        {
+          // if(dacon1mode == ACONHANDGRIP)
+          // { //only one member of group 1 can be active at one time.
+          //   deleteObject(HANDGRIP_TYPE, DACON1_PORTNUM); 
+          //   dacon1prevmode = dacon1mode;
+          //   dacon1mode = 0;
+          //   issueDuplicationWarning(lcd_ptr);
+          // }
+          if(acon1prevmode == ACONHANDGRIP)
+          { //if there has been a handgrip configured previously
+            deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+          }
+          if(acon1mode == ACONHANDGRIP)
+          {
+            createObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+          }
         }
       }
       if(currentScreen == 2)
       { //DACON1
-        // if(acon1mode == ACONHANDGRIP)
-        // { //only one member of group 1 can be active at one time.
-        //   deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM); 
-        //   acon1prevmode = acon1mode;
-        //   acon1mode = 0;
-        //   issueDuplicationWarning(lcd_ptr);
-        // }
-        // if(dacon1prevmode == DACONHANDGRIP)
-        // { //if there has been a handgrip configured previously
-        //   deleteObject(HANDGRIP_TYPE, DACON1_PORTNUM); 
-        // }
-        // if(dacon1mode == DACONHANDGRIP)
-        // {
-        //   createObject(HANDGRIP_TYPE, DACON1_PORTNUM);
-        // }
-      }
+        if(objectCount == MAXIMUMDEVICES) //only allow so many devices
+        {
+            dacon1mode = 0;
+            printMenu(lcd_ptr);
+        }
+        else
+        {
+          // if(acon1mode == ACONHANDGRIP)
+          // { //only one member of group 1 can be active at one time.
+          //   deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM); 
+          //   acon1prevmode = acon1mode;
+          //   acon1mode = 0;
+          //   issueDuplicationWarning(lcd_ptr);
+          // }
+          // if(dacon1prevmode == DACONHANDGRIP)
+          // { //if there has been a handgrip configured previously
+          //   deleteObject(HANDGRIP_TYPE, DACON1_PORTNUM); 
+          // }
+          // if(dacon1mode == DACONHANDGRIP)
+          // {
+          //   createObject(HANDGRIP_TYPE, DACON1_PORTNUM);
+          // }
+        }
+      } 
       if(currentScreen == 3) 
       {//DCON2
-        if(dcon2prevmode == DCONHANDCRANK)
-        { //if there has been an encoder configured previously
-          deleteObject(HANDCRANK_TYPE, DCON2_PORTNUM);
-        }
-        if(dcon2mode == DCONHANDCRANK)
+        if(objectCount == MAXIMUMDEVICES) //only allow so many devices
         {
-          createObject(HANDCRANK_TYPE, DCON2_PORTNUM);
+          dcon2mode = 0;
+          printMenu(lcd_ptr);
+          if(dcon2prevmode == DCONHANDCRANK)
+          { //if there has been an encoder configured previously
+            deleteObject(HANDCRANK_TYPE, DCON2_PORTNUM);
+          }
+        }
+        else
+        {
+          if(dcon2prevmode == DCONHANDCRANK)
+          { //if there has been an encoder configured previously
+            deleteObject(HANDCRANK_TYPE, DCON2_PORTNUM);
+          }
+          if(dcon2mode == DCONHANDCRANK)
+          {
+            createObject(HANDCRANK_TYPE, DCON2_PORTNUM);
+          } 
         }
       }
       if(currentScreen == 4) 
       {//ACON2
-        // if(dacon2mode == ACONHANDGRIP)
-        // { //only one member of group 1 can be active at one time.
-        //   deleteObject(HANDGRIP_TYPE, DACON2_PORTNUM); 
-        //   dacon1prevmode = dacon2mode;
-        //   dacon2mode = 0;
-        //   issueDuplicationWarning(lcd_ptr);
-        // }
-        if(acon2prevmode == ACONHANDGRIP)
-        { //if there has been a handgrip configured previously
-          deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM);
-        }
-        if(acon2mode == ACONHANDGRIP)
+        if(objectCount == MAXIMUMDEVICES) //only allow so many devices
         {
-          createObject(HANDGRIP_TYPE, ACON2_PORTNUM);
+          acon2mode = 0; //reset the menu selection
+          printMenu(lcd_ptr);
+          if(acon2prevmode == ACONHANDGRIP)
+          { //if there has been a handgrip configured previously
+            deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM);
+          }
+        }
+        else
+        {
+          // if(dacon2mode == ACONHANDGRIP)
+          // { //only one member of group 1 can be active at one time.
+          //   deleteObject(HANDGRIP_TYPE, DACON2_PORTNUM); 
+          //   dacon1prevmode = dacon2mode;
+          //   dacon2mode = 0;
+          //   issueDuplicationWarning(lcd_ptr);
+          // }
+          if(acon2prevmode == ACONHANDGRIP)
+          { //if there has been a handgrip configured previously
+            deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM);
+          }
+          if(acon2mode == ACONHANDGRIP)
+          {
+            createObject(HANDGRIP_TYPE, ACON2_PORTNUM);
+          }
         }
       }
       if(currentScreen == 5)
       {//DACON2
-        // if(acon2mode == ACONHANDGRIP)
-        // { //only one member of group 1 can be active at one time.
-        //   deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM); 
-        //   acon2prevmode = acon2mode;
-        //   acon2mode = 0;
-        //   issueDuplicationWarning(lcd_ptr);
-        // }
-        // if(dacon2prevmode == DACONHANDGRIP)
-        // { //if there has been a handgrip configured previously
-        //   deleteObject(HANDGRIP_TYPE, DACON2_PORTNUM); 
-        // }
-        // if(dacon2mode == DACONHANDGRIP)
-        // {
-        //   createObject(HANDGRIP_TYPE, DACON2_PORTNUM);
-        // }
+        if(objectCount == MAXIMUMDEVICES) //only allow so many devices
+        {
+          dacon2mode = 0; //reset the menu selection
+          printMenu(lcd_ptr);
+        }
+        else
+        {
+          // if(acon2mode == ACONHANDGRIP)
+          // { //only one member of group 1 can be active at one time.
+          //   deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM); 
+          //   acon2prevmode = acon2mode;
+          //   acon2mode = 0;
+          //   issueDuplicationWarning(lcd_ptr);
+          // }
+          // if(dacon2prevmode == DACONHANDGRIP)
+          // { //if there has been a handgrip configured previously
+          //   deleteObject(HANDGRIP_TYPE, DACON2_PORTNUM); 
+          // }
+          // if(dacon2mode == DACONHANDGRIP)
+          // {
+          //   createObject(HANDGRIP_TYPE, DACON2_PORTNUM);
+          // }
+        }
       }
       (lcd_ptr->lcd_obj)->setBacklight(WHITE);
     }
