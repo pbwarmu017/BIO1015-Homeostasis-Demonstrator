@@ -21,7 +21,7 @@ enum SYSTEMMODE {
 extern enum GAMESTATUS gameStatus;
 extern enum SYSTEMMODE systemMode;
 
-#define VERSIONNUMBER "2.0.2"
+#define VERSIONNUMBER "2.0.3"
 
 #define HANDGRIPDEVNUM 0 //device number for handgrip
 #define CRANKDEVNUM 1
