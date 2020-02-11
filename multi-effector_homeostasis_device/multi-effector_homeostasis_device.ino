@@ -7,6 +7,7 @@ Adafruit RGB LCD Sheild Library
 //GLOBAL VARIABLES------------------------------------------
   int selectTimer = 0; //used for trackikng how long the select button has been depressed.
   bool configchange; //used to prompt changes in system config by user.
+  uint8_t lastButton = 0;
 
 //INCLUDES----------------------------------------
 #include "superclasses.cpp"
@@ -300,11 +301,12 @@ Adafruit RGB LCD Sheild Library
         // (lcd_ptr->lcd_obj)->setBacklight(WHITE);
       }
 
-    if(button && !(button & BUTTON_SELECT) && systemMode == config)
+    if(button && !(button & BUTTON_SELECT) && systemMode == config && lastButton != button)
     {
       menu_ptr->navigateMenu(button, lcd_ptr);
     }
 
     LCDREFRESHFLAG = false;
+    lastButton = button;
   }
 }

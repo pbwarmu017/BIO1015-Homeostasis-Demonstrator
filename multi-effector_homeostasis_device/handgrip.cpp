@@ -37,6 +37,7 @@ class _handgrip: public _affector
       (lcd_ptr->lcd_obj)->print("Press Sel");
 
       while( !((lcd_ptr->lcd_obj)->readButtons() & BUTTON_SELECT) ); //wait for select
+      while( ((lcd_ptr->lcd_obj)->readButtons() & BUTTON_SELECT) ); //wait for select release
 
       handgripMinVoltage = voltageValue();
 
