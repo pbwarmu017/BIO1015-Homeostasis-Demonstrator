@@ -4,7 +4,6 @@
 #include "superclasses.cpp"
 #include "lcd.cpp"
 #include "multi-effector_homeostasis_device.h"
-#define VERSIONNUMBER "2.0.2"
 
 #define DCONHANDCRANK 1
 #define ACONHANDGRIP 1
