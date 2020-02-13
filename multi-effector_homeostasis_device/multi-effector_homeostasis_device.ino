@@ -77,6 +77,9 @@ Adafruit RGB LCD Sheild Library
     }
 
     if(objtype == HANDGRIP_TYPE){
+      //make sure that the port isnt active already
+      if((portnum == ACON1_PORTNUM && !main_ptr->ACON1_mode) || (portnum == ACON2_PORTNUM && !main_ptr->ACON2_mode))
+      {
         menu_ptr->objectCount++;
         if(portnum == ACON1_PORTNUM) ACON1_ptr = new _handgrip(ACON1_PORTNUM, main_ptr, 
           indicatorstrip_ptr, lcd_ptr, menu_ptr); 
@@ -88,6 +91,9 @@ Adafruit RGB LCD Sheild Library
 
     if(objtype == HANDCRANK_TYPE)
     {
+      //make sure that the port isnt active already
+      if((portnum == DCON1_PORTNUM && !main_ptr->DCON1_mode) || (portnum == DCON2_PORTNUM && !main_ptr->DCON2_mode))
+      {
         menu_ptr->objectCount++;
         if(portnum == DCON1_PORTNUM) DCON1_ptr = new _encoder(DCON1_PORTNUM, main_ptr, 
           indicatorstrip_ptr, lcd_ptr, menu_ptr); 
@@ -96,10 +102,12 @@ Adafruit RGB LCD Sheild Library
           indicatorstrip_ptr, lcd_ptr, menu_ptr);
       }
     }
+  }
 
   void deleteObject(int objtype, int portnum)
   {
-    if(objtype == HANDGRIP_TYPE)
+    //make sure the port hasnt already been deactivated
+    if(objtype == HANDGRIP_TYPE && (main_ptr->ACON1_mode || main_ptr->ACON2_mode))
     {
       menu_ptr->objectCount--;
       if(portnum == ACON1_PORTNUM) delete ACON1_ptr;
@@ -110,8 +118,8 @@ Adafruit RGB LCD Sheild Library
 
       if(portnum == DACON2_PORTNUM) delete DACON2_ptr;
     }
-
-    if(objtype == HANDCRANK_TYPE)
+    //make sure the port hasnt already been deactivated
+    if(objtype == HANDCRANK_TYPE && (main_ptr->DCON1_mode || main_ptr->DCON2_mode))
     {
       menu_ptr->objectCount--;
       if(portnum == DCON1_PORTNUM) delete DCON1_ptr;
