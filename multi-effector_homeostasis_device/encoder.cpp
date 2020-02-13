@@ -35,7 +35,7 @@ class _encoder: public _affector
 
     //this is called (through a flag checked for in main)
     //calculates a production rate and sends it to the strip. 
-    void calculateRate(int modifier)
+    void calculateRate(int8_t modifier)
     {
       if(modifier == CRANKSUM_RATETYPE)
       {

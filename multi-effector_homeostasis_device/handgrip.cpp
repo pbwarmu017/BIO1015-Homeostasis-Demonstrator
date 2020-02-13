@@ -32,9 +32,9 @@ class _handgrip: public _affector
       //calibrate handgrip
       (lcd_ptr->lcd_obj)->clear();
       (lcd_ptr->lcd_obj)->setCursor(0,0);
-      (lcd_ptr->lcd_obj)->print("Rel Grip And");
+      (lcd_ptr->lcd_obj)->print(F("Rel Grip And")); // F those strings. google it. This macro places the string in PROGMEM
       (lcd_ptr->lcd_obj)->setCursor(0,1);
-      (lcd_ptr->lcd_obj)->print("Press Sel");
+      (lcd_ptr->lcd_obj)->print(F("Press Sel"));
 
       while( !((lcd_ptr->lcd_obj)->readButtons() & BUTTON_SELECT) ); //wait for select
       while( ((lcd_ptr->lcd_obj)->readButtons() & BUTTON_SELECT) ); //wait for select release
@@ -47,9 +47,9 @@ class _handgrip: public _affector
       delay(500);
 
       (lcd_ptr->lcd_obj)->setCursor(0,0);
-      (lcd_ptr->lcd_obj)->print("Comp Grip And");
+      (lcd_ptr->lcd_obj)->print(F("Comp Grip And"));
       (lcd_ptr->lcd_obj)->setCursor(0,1);
-      (lcd_ptr->lcd_obj)->print("Press Sel");
+      (lcd_ptr->lcd_obj)->print(F("Press Sel"));
 
       while( !((lcd_ptr->lcd_obj)->readButtons() & BUTTON_SELECT) ); //wait for select
 
@@ -94,7 +94,7 @@ class _handgrip: public _affector
       return 5*analogRead(handGripPin)/1023.; //simply returns the voltage read off the handgrip
     }
 
-    void calculateRate(int modifier)
+    void calculateRate(int8_t modifier)
     {
       if(modifier == GENERAL_RATETYPE)
       {
