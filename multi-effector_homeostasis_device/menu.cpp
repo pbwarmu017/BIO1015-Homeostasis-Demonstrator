@@ -150,70 +150,6 @@ class _menu: public _device{
     int8_t boundingboxmode = 0;
     uint8_t boundingboxsize = 10;
 
-    // void setPrevMode(const uint8_t flag, uint8_t val)
-    // {
-    //   switch(flag)
-    //   {
-    //     case DCON1FLAG:
-    //     dconprevmode &= 0b00001111; //clear the first four bits
-    //     dconprevmode |= (val << 4); //set the first four bits to val
-    //     break;
-
-    //     case DCON2FLAG:
-    //     dconprevmode &= 0b11110000; //clear the last four bits
-    //     dconprevmode |= (val); //set the last four bits to val
-    //     break;
-    //     case ACON1FLAG:
-    //     aconprevmode &= 0b00001111; //clear the first four bits
-    //     aconprevmode |= (val << 4); //set the first four bits to val
-    //     break;
-
-    //     case ACON2FLAG:
-    //     aconprevmode &= 0b11110000; //clear the first four bits
-    //     aconprevmode |= (val); //set the first four bits to val
-    //     break;
-    //     case DACON1FLAG:
-    //     daconprevmode &= 0b00001111; //clear the first four bits
-    //     daconprevmode |= (val << 4);//set the first four bits to val
-    //     break;
-
-    //     case DACON2FLAG:
-    //     daconprevmode &= 0b11110000; //clear the first four bits
-    //     daconprevmode |= (val); //set the first four bits to val
-    //     break;
-    //   }
-    // }
-
-    // uint8_t getPrevMode(const uint8_t flag)
-    // {
-    //   switch(flag)
-    //   {
-    //     case DCON1FLAG:
-    //     return((dconprevmode >> 4) & 0b00001111);
-    //     break;
-
-    //     case DCON2FLAG:
-    //     return((dconprevmode) & 0b00001111);
-    //     break;
-
-    //     case ACON1FLAG:
-    //     return((aconprevmode >> 4) & 0b00001111);
-    //     break;
-
-    //     case ACON2FLAG:
-    //     return((aconprevmode) & 0b00001111);
-    //     break;
-
-    //     case DACON1FLAG:
-    //     return((daconprevmode >> 4) & 0b00001111);
-    //     break;
-
-    //     case DACON2FLAG:
-    //     return((daconprevmode) & 0b00001111);
-    //     break;
-    //   }
-    // }
-
     uint8_t getSelectedMode(const uint8_t flag)
     {
       switch(flag)
@@ -354,7 +290,6 @@ class _menu: public _device{
         setSelectedMode(DCON2FLAG, getActiveMode(DCON2FLAG));
         setSelectedMode(ACON2FLAG, getActiveMode(ACON2FLAG));
         setSelectedMode(DACON2FLAG, getActiveMode(DACON2FLAG));
-        printMenu(lcd_ptr);
         if (currentScreen == 0) 
         {
           currentScreen = NUMOFSCREENS-1;
