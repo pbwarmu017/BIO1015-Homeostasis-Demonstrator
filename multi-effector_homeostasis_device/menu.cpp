@@ -6,7 +6,6 @@
 #include "multi-effector_homeostasis_device.h"
 
 //DEFINES
-  #define MAXIMUMDEVICES 2 //defines the max number of devices the system will allow to connect. 
 
   //DEVICE STATES (used to track port status. As you add affectors and use these states, add descriptions here)
   //note: there can only be 16 port states, as I am using only 4 bits to track it. 
@@ -138,82 +137,18 @@ class _menu: public _device{
     //This means that you can have up to 16 different states per each port. 
     uint8_t dconselectedmode = 0;
     uint8_t dconactivemode = 0;
-    uint8_t dconprevmode = 0b11111111;
+    // uint8_t dconprevmode = 0b11111111;
 
     uint8_t aconselectedmode = 0;
     uint8_t aconactivemode = 0;
-    uint8_t aconprevmode = 0b11111111;
+    // uint8_t aconprevmode = 0b11111111;
 
     uint8_t daconselectedmode = 0;
     uint8_t daconactivemode = 0;
-    uint8_t daconprevmode = 0b11111111;
+    // uint8_t daconprevmode = 0b11111111;
 
     int8_t boundingboxmode = 0;
     uint8_t boundingboxsize = 10;
-
-    void setPrevMode(const uint8_t flag, uint8_t val)
-    {
-      switch(flag)
-      {
-        case DCON1FLAG:
-        dconprevmode &= 0b00001111; //clear the first four bits
-        dconprevmode |= (val << 4); //set the first four bits to val
-        break;
-
-        case DCON2FLAG:
-        dconprevmode &= 0b11110000; //clear the last four bits
-        dconprevmode |= (val); //set the last four bits to val
-        break;
-        case ACON1FLAG:
-        aconprevmode &= 0b00001111; //clear the first four bits
-        aconprevmode |= (val << 4); //set the first four bits to val
-        break;
-
-        case ACON2FLAG:
-        aconprevmode &= 0b11110000; //clear the first four bits
-        aconprevmode |= (val); //set the first four bits to val
-        break;
-        case DACON1FLAG:
-        daconprevmode &= 0b00001111; //clear the first four bits
-        daconprevmode |= (val << 4);//set the first four bits to val
-        break;
-
-        case DACON2FLAG:
-        daconprevmode &= 0b11110000; //clear the first four bits
-        daconprevmode |= (val); //set the first four bits to val
-        break;
-      }
-    }
-
-    uint8_t getPrevMode(const uint8_t flag)
-    {
-      switch(flag)
-      {
-        case DCON1FLAG:
-        return((dconprevmode >> 4) & 0b00001111);
-        break;
-
-        case DCON2FLAG:
-        return((dconprevmode) & 0b00001111);
-        break;
-
-        case ACON1FLAG:
-        return((aconprevmode >> 4) & 0b00001111);
-        break;
-
-        case ACON2FLAG:
-        return((aconprevmode) & 0b00001111);
-        break;
-
-        case DACON1FLAG:
-        return((daconprevmode >> 4) & 0b00001111);
-        break;
-
-        case DACON2FLAG:
-        return((daconprevmode) & 0b00001111);
-        break;
-      }
-    }
 
     uint8_t getSelectedMode(const uint8_t flag)
     {
@@ -355,10 +290,10 @@ class _menu: public _device{
         setSelectedMode(DCON2FLAG, getActiveMode(DCON2FLAG));
         setSelectedMode(ACON2FLAG, getActiveMode(ACON2FLAG));
         setSelectedMode(DACON2FLAG, getActiveMode(DACON2FLAG));
-        printMenu(lcd_ptr);
         if (currentScreen == 0) 
         {
           currentScreen = NUMOFSCREENS-1;
+          printMenu(lcd_ptr);
         }
         else
         {
