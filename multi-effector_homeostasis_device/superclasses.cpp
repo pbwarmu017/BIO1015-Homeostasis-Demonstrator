@@ -71,12 +71,12 @@ extern enum SYSTEMMODE systemMode;
 
 class _device {
   public:
-    char DCON1_mode = 0;
-    char ACON1_mode = 0;
-    char DACON1_mode = 0;
-    char DCON2_mode = 0;
-    char ACON2_mode = 0;
-    char DACON2_mode = 0;
+    uint8_t DCON1_mode = 0;
+    uint8_t ACON1_mode = 0;
+    uint8_t DACON1_mode = 0;
+    uint8_t DCON2_mode = 0;
+    uint8_t ACON2_mode = 0;
+    uint8_t DACON2_mode = 0;
     
     _device(){};
     

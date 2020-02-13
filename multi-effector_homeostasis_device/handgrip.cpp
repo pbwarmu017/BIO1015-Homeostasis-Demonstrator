@@ -11,7 +11,7 @@
 class _handgrip: public _affector 
 {
   public:
-    _handgrip(const int port, _device* ptr, _indicatorstrip *indptr, _lcd *lcdptr, _menu * menuptr)
+    _handgrip(const uint8_t port, _device* ptr, _indicatorstrip *indptr, _lcd *lcdptr, _menu * menuptr)
     { //constructor
       main_ptr = ptr;
       indicatorstrip_ptr = indptr;
@@ -116,12 +116,12 @@ class _handgrip: public _affector
     float handgripMaxVoltage;
     // float handgripPrescaler = 75;
 
-    float maxProductionRate = 70;
-    float consumptionRate = 60;
+    uint8_t maxProductionRate = 70;
+    uint8_t consumptionRate = 60;
 
 
-    char portNum = -1; //used to save the port number that this object is instantiated on.
-    char handGripPin = -1;
+    int8_t portNum = -1; //used to save the port number that this object is instantiated on.
+    int8_t handGripPin = -1;
 };
 
 #endif
