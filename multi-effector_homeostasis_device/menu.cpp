@@ -197,7 +197,7 @@ class _menu: public _device{
       }
     }
 
-    uint8_t getCurrentMode(const uint8_t flag)
+    uint8_t getMode(const uint8_t flag)
     {
       switch(flag)
       {
@@ -257,7 +257,7 @@ class _menu: public _device{
       }
     }
 
-    void setCurrentMode(const uint8_t flag, uint8_t val)
+    void setMode(const uint8_t flag, uint8_t val)
     {
       switch(flag)
       {
