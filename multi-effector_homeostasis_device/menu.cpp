@@ -111,7 +111,7 @@
   //ACON device options
   #define NUMOFACONDEVS 2 //number of options in aconscreens[]
   constexpr const char aconscreen_1[17] PROGMEM = {"OFF"};
-  constexpr const char aconscreen_2[17] PROGMEM = {"SQUEEZE GRIP"};
+  constexpr const char aconscreen_2[17] PROGMEM = {"SQZE GRIP"};
   constexpr const char* aconscreentable[] PROGMEM = {aconscreen_1, aconscreen_2};
 
   //DACON device options
