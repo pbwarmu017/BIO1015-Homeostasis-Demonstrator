@@ -23,11 +23,11 @@ class _encoder: public _affector
     //returns 0 if no change, 1 if a CW movement was detected, -1 if a CCW movement was detected. 
     //using this in conjuction with a low pass filter helps clean up switch bounce
     //http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html to see how it works
-    char returnDelta(void)
+    int8_t returnDelta(void)
     {
       pinAVal = digitalRead(encoderPinA);
       pinBVal = digitalRead(encoderPinB);
-      unsigned char lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
+      uint8_t lookupVal = (prevAVal << 3) | (prevBVal << 2) | (pinAVal << 1) | pinBVal;
       prevAVal = pinAVal;
       prevBVal = prevBVal;
       return quadratureLookupTable[lookupVal];
@@ -35,11 +35,11 @@ class _encoder: public _affector
 
     //this is called (through a flag checked for in main)
     //calculates a production rate and sends it to the strip. 
-    void calculateRate(int modifier)
+    void calculateRate(int8_t modifier)
     {
       if(modifier == CRANKSUM_RATETYPE)
       {
-        int currentOut = returnDelta();
+        int8_t currentOut = returnDelta();
         //make sure it's not an invalid state change
         if(currentOut)
         { 
@@ -55,20 +55,18 @@ class _encoder: public _affector
         if(movingAverage > 80) movingAverage = 80;
         //prevent excessively small carryover
         if(movingAverage < 1) movingAverage = 0;
-        overallRate = ((movingAverage/80 * maxProductionRate)*2.0 - consumptionRate) * 0.0001 * CRANKRATESCALAR;// * CRANKRATESCALAR;
+        overallRate = ((movingAverage/80. * maxProductionRate)*2.0 - consumptionRate) * 0.0001 * CRANKRATESCALAR;// * CRANKRATESCALAR;
         //reset the sum because it has just been incorporated into a moving avg
         crankSum = 0;
         //send the rate to the strip so that it can update the position of this indicator
         indicatorstrip_ptr->updatePosition(overallRate, portNum);
-        // Serial.print(overallRate);
-        // Serial.print("\n");
       }
       return;
     }
 
     //upon object creation, set up the pins ands store the current values for the encoder
     //this alsoo stores pointerse to the lcd and incicatorstrup objects
-    _encoder(const int port, _device *mainptr, _indicatorstrip *indptr, _lcd *lcdptr, _menu *menuptr)//_indicatorstrip* indicatorstrip)
+    _encoder(const uint8_t port, _device *mainptr, _indicatorstrip *indptr, _lcd *lcdptr, _menu *menuptr)//_indicatorstrip* indicatorstrip)
     {
       //these pointers are stored in the object so that they can be used outside of the constructor
       main_ptr = mainptr; //pointer to the main _device object (used to store some globally needed variables)
@@ -139,19 +137,19 @@ class _encoder: public _affector
     _lcd *lcd_ptr;
     _menu *menu_ptr;
 
-    char quadratureLookupTable[16] = {0,/*-1*/0,1,0,1,0,0,/*-1*/0,/*-1*/0,0,0,1,0,1,/*-1*/0,0};
+    int8_t quadratureLookupTable[16] = {0,/*-1*/0,1,0,1,0,0,/*-1*/0,/*-1*/0,0,0,1,0,1,/*-1*/0,0};
     //removed extraneous values to help prevent bouncing, and inverted the polarity
     // http://makeatronics.blogspot.com/2013/02/efficiently-reading-quadrature-with.html
     // char quadratureLookupTable[16] = {0,0,0,0,0,0,0,-1,0,0,0,0,0,1,0,0};
     float overallRate = 0;
     float movingAverage = 0; //holds the moving average for the production of the hand crank. 
-    float movingAveragePeriod = 1000/STRIPREFRESHDELAY; 
-    float maxProductionRate = 60; //used in the rate calculation
-    float consumptionRate = 70; ///used in the rate calculation
-    char portNum = -1; //used to save the port number that this object is instantiated on.
-    char crankSum = 0; //sums the number of valid pulses from the encoder
-    char encoderPinA = -1; //stores object pin configuration
-    char encoderPinB = -1; //stores object pin configuration
+    uint8_t movingAveragePeriod = 1000/STRIPREFRESHDELAY; 
+    uint8_t maxProductionRate = 60; //used in the rate calculation
+    uint8_t consumptionRate = 70; ///used in the rate calculation
+    int8_t portNum = -1; //used to save the port number that this object is instantiated on.
+    int8_t crankSum = 0; //sums the number of valid pulses from the encoder
+    int8_t encoderPinA = -1; //stores object pin configuration
+    int8_t encoderPinB = -1; //stores object pin configuration
     bool prevAVal;
     bool prevBVal;
     bool pinAVal;

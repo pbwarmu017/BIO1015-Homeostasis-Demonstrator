@@ -11,7 +11,7 @@
 class _handgrip: public _affector 
 {
   public:
-    _handgrip(const int port, _device* ptr, _indicatorstrip *indptr, _lcd *lcdptr, _menu * menuptr)
+    _handgrip(const uint8_t port, _device* ptr, _indicatorstrip *indptr, _lcd *lcdptr, _menu * menuptr)
     { //constructor
       main_ptr = ptr;
       indicatorstrip_ptr = indptr;
@@ -32,9 +32,9 @@ class _handgrip: public _affector
       //calibrate handgrip
       (lcd_ptr->lcd_obj)->clear();
       (lcd_ptr->lcd_obj)->setCursor(0,0);
-      (lcd_ptr->lcd_obj)->print("Rel Grip And");
+      (lcd_ptr->lcd_obj)->print(F("Rel Grip And")); // F those strings. google it. This macro places the string in PROGMEM
       (lcd_ptr->lcd_obj)->setCursor(0,1);
-      (lcd_ptr->lcd_obj)->print("Press Sel");
+      (lcd_ptr->lcd_obj)->print(F("Press Sel"));
 
       while( !((lcd_ptr->lcd_obj)->readButtons() & BUTTON_SELECT) ); //wait for select
       while( ((lcd_ptr->lcd_obj)->readButtons() & BUTTON_SELECT) ); //wait for select release
@@ -47,9 +47,9 @@ class _handgrip: public _affector
       delay(500);
 
       (lcd_ptr->lcd_obj)->setCursor(0,0);
-      (lcd_ptr->lcd_obj)->print("Comp Grip And");
+      (lcd_ptr->lcd_obj)->print(F("Comp Grip And"));
       (lcd_ptr->lcd_obj)->setCursor(0,1);
-      (lcd_ptr->lcd_obj)->print("Press Sel");
+      (lcd_ptr->lcd_obj)->print(F("Press Sel"));
 
       while( !((lcd_ptr->lcd_obj)->readButtons() & BUTTON_SELECT) ); //wait for select
 
@@ -94,7 +94,7 @@ class _handgrip: public _affector
       return 5*analogRead(handGripPin)/1023.; //simply returns the voltage read off the handgrip
     }
 
-    void calculateRate(int modifier)
+    void calculateRate(int8_t modifier)
     {
       if(modifier == GENERAL_RATETYPE)
       {
@@ -116,12 +116,12 @@ class _handgrip: public _affector
     float handgripMaxVoltage;
     // float handgripPrescaler = 75;
 
-    float maxProductionRate = 70;
-    float consumptionRate = 60;
+    uint8_t maxProductionRate = 70;
+    uint8_t consumptionRate = 60;
 
 
-    char portNum = -1; //used to save the port number that this object is instantiated on.
-    char handGripPin = -1;
+    int8_t portNum = -1; //used to save the port number that this object is instantiated on.
+    int8_t handGripPin = -1;
 };
 
 #endif

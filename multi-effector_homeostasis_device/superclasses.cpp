@@ -2,6 +2,7 @@
 #define SUPERCLASSES_CPP
 
 #include <Arduino.h>
+#include <avr/pgmspace.h> //needed for PROGMEM access. 
 #include <Adafruit_NeoPixel.h>
 #include <Wire.h>
 #include <Adafruit_RGBLCDShield.h>
@@ -21,7 +22,7 @@ enum SYSTEMMODE {
 extern enum GAMESTATUS gameStatus;
 extern enum SYSTEMMODE systemMode;
 
-#define VERSIONNUMBER "2.0.3"
+#define VERSIONNUMBER F("2.1.0")
 
 #define HANDGRIPDEVNUM 0 //device number for handgrip
 #define CRANKDEVNUM 1
@@ -70,26 +71,20 @@ extern enum SYSTEMMODE systemMode;
 
 class _device {
   public:
-    char DCON1_mode = 0;
-    char ACON1_mode = 0;
-    char DACON1_mode = 0;
-    char DCON2_mode = 0;
-    char ACON2_mode = 0;
-    char DACON2_mode = 0;
+    uint8_t DCON1_mode = 0;
+    uint8_t ACON1_mode = 0;
+    uint8_t DACON1_mode = 0;
+    uint8_t DCON2_mode = 0;
+    uint8_t ACON2_mode = 0;
+    uint8_t DACON2_mode = 0;
     
     _device(){};
     
-    virtual ~_device(){} // virtualized destructor
+    virtual ~_device(){} // must have a virtualized destructor
 
     //these virtual functions will be overwritten by derived class objects. 
-    virtual void calculateRate(int modifier)
-    {
-      modifier |= 0; //do nothing with it. 
-      return;
-    }
-    virtual int returnRate(void){
-      return(0);
-    }
+    virtual void calculateRate(int8_t modifier){}
+
 };
 
 class _affector: public _device
