@@ -76,12 +76,12 @@
 
   //Main Menu Screens (line 1)
   #define NUMOFSCREENS 9 //number of options in screens[]
-  constexpr const char screen_1_1[17] PROGMEM = "PORT DCON1";
-  constexpr const char screen_2_1[17] PROGMEM = "PORT ACON1";
-  constexpr const char screen_3_1[17] PROGMEM = "PORT DACON1";
-  constexpr const char screen_4_1[17] PROGMEM = "PORT DCON2";
-  constexpr const char screen_5_1[17] PROGMEM = "PORT ACON2";
-  constexpr const char screen_6_1[17] PROGMEM = "PORT DACON2";
+  constexpr const char screen_1_1[17] PROGMEM = "PORT DCON1- WHTE";
+  constexpr const char screen_2_1[17] PROGMEM = "PORT ACON1- ORNG";
+  constexpr const char screen_3_1[17] PROGMEM = "PORT DACON1- YEL";
+  constexpr const char screen_4_1[17] PROGMEM = "PORT DCON2- BLUE";
+  constexpr const char screen_5_1[17] PROGMEM = "PORT ACON2- CYAN";
+  constexpr const char screen_6_1[17] PROGMEM = "PORT DACON2-VIOL";
   constexpr const char screen_7_1[17] PROGMEM = "BOUNDING BOX";
   constexpr const char screen_8_1[17] PROGMEM = "BOUNDING BOX";
   constexpr const char screen_9_1[17] PROGMEM = "SOFTWARE VERSION";
@@ -130,163 +130,171 @@
 
 class _menu: public _device{
   public:
-    uint8_t objectCount = 0;
-    uint8_t currentScreen = 0;
 
-    //each of these are being split into two 4-bit numbers for tracking status info to save SRAM. 
-    //This means that you can have up to 16 different states per each port. 
-    uint8_t dconselectedmode = 0;
-    uint8_t dconactivemode = 0;
+    //mode tracking variables. Being as I have limited the number of available modes to 16 per port, 
+    //that meeant that I could fit two different 4 bit values into an 8 bit unsigned integer. 
+    //these values are modified and read by the modeselection functions below
+      uint8_t objectCount = 0;
+      uint8_t currentScreen = 0;
 
-    uint8_t aconselectedmode = 0;
-    uint8_t aconactivemode = 0;
+      //each of these are being split into two 4-bit numbers for tracking status info to save SRAM. 
+      //This means that you can have up to 16 different states per each port. 
+      //the selectedmode variables track the menu selection and the activemode variables track the 
+      //current configuration of the ports. 
+      uint8_t dconselectedmode = 0;
+      uint8_t dconactivemode = 0;
 
-    uint8_t daconselectedmode = 0;
-    uint8_t daconactivemode = 0;
+      uint8_t aconselectedmode = 0;
+      uint8_t aconactivemode = 0;
 
-    int8_t boundingboxmode = 0;
-    uint8_t boundingboxsize = 10;
+      uint8_t daconselectedmode = 0;
+      uint8_t daconactivemode = 0;
 
-    uint8_t getSelectedMode(const uint8_t flag)
+      int8_t boundingboxmode = 0;
+      uint8_t boundingboxsize = 10;
+
+  //MODE SELECTION FUNCTIONS
+    //returns a 4 bit value from one of the "selectedmode" variables above depending on the port specificed
+    uint8_t getSelectedMode(const uint8_t port)
     {
-      switch(flag)
+      switch(port)
       {
-        case DCON1FLAG:
+        case DCON1_PORTNUM:
         return((dconselectedmode >> 4) & 0b00001111);
         break;
 
-        case DCON2FLAG:
+        case DCON2_PORTNUM:
         return((dconselectedmode) & 0b00001111);
         break;
 
-        case ACON1FLAG:
+        case ACON1_PORTNUM:
         return((aconselectedmode >> 4) & 0b00001111);
         break;
 
-        case ACON2FLAG:
+        case ACON2_PORTNUM:
         return((aconselectedmode) & 0b00001111);
         break;
 
-        case DACON1FLAG:
+        case DACON1_PORTNUM:
         return((daconselectedmode >> 4) & 0b00001111);
         break;
 
-        case DACON2FLAG:
+        case DACON2_PORTNUM:
         return((daconselectedmode) & 0b00001111);
         break;
       }
     }
-
-    void setSelectedMode(const uint8_t flag, uint8_t val)
+    //sets a 4 bit value in one of the "selectedmode" variables above depending on the port specificed
+    void setSelectedMode(const uint8_t port, uint8_t val)
     {
-      switch(flag)
+      switch(port)
       {
-        case DCON1FLAG:
+        case DCON1_PORTNUM:
         dconselectedmode &= 0b00001111; //clear the first four bits
         dconselectedmode |= (val << 4); //set the first four bits to val
         break;
 
-        case DCON2FLAG:
+        case DCON2_PORTNUM:
         dconselectedmode &= 0b11110000; //clear the last four bits
         dconselectedmode |= (val); //set the last four bits to val
         break;
-        case ACON1FLAG:
+        case ACON1_PORTNUM:
         aconselectedmode &= 0b00001111; //clear the first four bits
         aconselectedmode |= (val << 4); //set the first four bits to val
         break;
 
-        case ACON2FLAG:
+        case ACON2_PORTNUM:
         aconselectedmode &= 0b11110000; //clear the first four bits
         aconselectedmode |= (val); //set the first four bits to val
         break;
-        case DACON1FLAG:
+        case DACON1_PORTNUM:
         daconselectedmode &= 0b00001111; //clear the first four bits
         daconselectedmode |= (val << 4);//set the first four bits to val
         break;
 
-        case DACON2FLAG:
+        case DACON2_PORTNUM:
         daconselectedmode &= 0b11110000; //clear the first four bits
         daconselectedmode |= (val); //set the first four bits to val
         break;
       }
     }
-
-    uint8_t getActiveMode(const uint8_t flag)
+    //returns a 4 bit value from one of the "activemode" variables above depending on the port specificed
+    uint8_t getActiveMode(const uint8_t port)
     {
-      switch(flag)
+      switch(port)
       {
-        case DCON1FLAG:
+        case DCON1_PORTNUM:
         return((dconactivemode >> 4) & 0b00001111);
         break;
 
-        case DCON2FLAG:
+        case DCON2_PORTNUM:
         return((dconactivemode) & 0b00001111);
         break;
 
-        case ACON1FLAG:
+        case ACON1_PORTNUM:
         return((aconactivemode >> 4) & 0b00001111);
         break;
 
-        case ACON2FLAG:
+        case ACON2_PORTNUM:
         return((aconactivemode) & 0b00001111);
         break;
 
-        case DACON1FLAG:
+        case DACON1_PORTNUM:
         return((daconactivemode >> 4) & 0b00001111);
         break;
 
-        case DACON2FLAG:
+        case DACON2_PORTNUM:
         return(daconactivemode & 0b00001111);
         break;
       }
     }
-
-    void setActiveMode(const uint8_t flag, uint8_t val)
+    //sets a 4 bit value in one of the "activemode" variables above depending on the port specificed
+    void setActiveMode(const uint8_t port, uint8_t val)
     {
 
-      switch(flag)
+      switch(port)
       {
-        case DCON1FLAG:
+        case DCON1_PORTNUM:
         dconactivemode &= 0b00001111; //clear the first four bits
         dconactivemode |= (val << 4); //set the first four bits to val
 
         break;
 
-        case DCON2FLAG:
+        case DCON2_PORTNUM:
         dconactivemode &= 0b11110000; //clear the last four bits
         dconactivemode |= (val); //set the last four bits to val
         break;
-        case ACON1FLAG:
+        case ACON1_PORTNUM:
         aconactivemode &= 0b00001111; //clear the first four bits
         aconactivemode |= (val << 4); //set the first four bits to val
         break;
 
-        case ACON2FLAG:
+        case ACON2_PORTNUM:
         aconactivemode &= 0b11110000; //clear the first four bits
         aconactivemode |= (val); //set the first four bits to val
         break;
-        case DACON1FLAG:
+        case DACON1_PORTNUM:
         daconactivemode &= 0b00001111; //clear the first four bits
         daconactivemode |= (val << 4);//set the first four bits to val
         break;
 
-        case DACON2FLAG:
+        case DACON2_PORTNUM:
         daconactivemode &= 0b11110000; //clear the first four bits
         daconactivemode |= (val); //set the first four bits to val
         break;
       }
     }
-    
-    void navigateMenu(int button, _lcd* lcd_ptr)
+    //Handles what to do with a button press. 
+    void navigateMenu(uint8_t button, _lcd* lcd_ptr)
     {
       if(button & BUTTON_UP) 
       {
-        setSelectedMode(DCON1FLAG, getActiveMode(DCON1FLAG));
-        setSelectedMode(ACON1FLAG, getActiveMode(ACON1FLAG));
-        setSelectedMode(DACON1FLAG, getActiveMode(DACON1FLAG));
-        setSelectedMode(DCON2FLAG, getActiveMode(DCON2FLAG));
-        setSelectedMode(ACON2FLAG, getActiveMode(ACON2FLAG));
-        setSelectedMode(DACON2FLAG, getActiveMode(DACON2FLAG));
+        setSelectedMode(DCON1_PORTNUM, getActiveMode(DCON1_PORTNUM));
+        setSelectedMode(ACON1_PORTNUM, getActiveMode(ACON1_PORTNUM));
+        setSelectedMode(DACON1_PORTNUM, getActiveMode(DACON1_PORTNUM));
+        setSelectedMode(DCON2_PORTNUM, getActiveMode(DCON2_PORTNUM));
+        setSelectedMode(ACON2_PORTNUM, getActiveMode(ACON2_PORTNUM));
+        setSelectedMode(DACON2_PORTNUM, getActiveMode(DACON2_PORTNUM));
         if (currentScreen == 0) 
         {
           currentScreen = NUMOFSCREENS-1;
@@ -301,12 +309,12 @@ class _menu: public _device{
 
       if(button & BUTTON_DOWN)
       {
-        setSelectedMode(DCON1FLAG, getActiveMode(DCON1FLAG));
-        setSelectedMode(ACON1FLAG, getActiveMode(ACON1FLAG));
-        setSelectedMode(DACON1FLAG, getActiveMode(DACON1FLAG));
-        setSelectedMode(DCON2FLAG, getActiveMode(DCON2FLAG));
-        setSelectedMode(ACON2FLAG, getActiveMode(ACON2FLAG));
-        setSelectedMode(DACON2FLAG, getActiveMode(DACON2FLAG));
+        setSelectedMode(DCON1_PORTNUM, getActiveMode(DCON1_PORTNUM));
+        setSelectedMode(ACON1_PORTNUM, getActiveMode(ACON1_PORTNUM));
+        setSelectedMode(DACON1_PORTNUM, getActiveMode(DACON1_PORTNUM));
+        setSelectedMode(DCON2_PORTNUM, getActiveMode(DCON2_PORTNUM));
+        setSelectedMode(ACON2_PORTNUM, getActiveMode(ACON2_PORTNUM));
+        setSelectedMode(DACON2_PORTNUM, getActiveMode(DACON2_PORTNUM));
         if (currentScreen >= NUMOFSCREENS-1) 
         {
           currentScreen = 0;
@@ -327,13 +335,16 @@ class _menu: public _device{
 
       if(button & BUTTON_SELECT)
       {
+        //checks each ports modes to see if selecttedmode is different than activemode
+        //calls applyparameter() if there is a mismatch. 
         for(int i = 0; i < 6; i++)
         {
           if(getSelectedMode(i) != getActiveMode(i)) applyParameter(lcd_ptr);
         }
       }
     }
-
+    //sets the activemode variable to the selected mode variable depending on the active menu screen, 
+    //and calls for the creation or destruction of objects as needed. 
     void applyParameter(_lcd * lcd_ptr)
     {
       if(currentScreen == 0) 
@@ -419,16 +430,17 @@ class _menu: public _device{
       {//DCON2
         if(objectCount == MAXIMUMDEVICES) //only allow so many devices
         {
-          if(getSelectedMode(DCON2FLAG) == DCONSTATEOFF)
+          if(getSelectedMode(DCON2_PORTNUM) == DCONSTATEOFF)
           {
-            setActiveMode(DCON2FLAG, DCONSTATEOFF);
+            setActiveMode(DCON2_PORTNUM, DCONSTATEOFF);
+            deleteObject(HANDCRANK_TYPE, DCON2_PORTNUM);
             printMenu(lcd_ptr);
 
           }
           else
           {
-            setSelectedMode(DCON2FLAG, getActiveMode(DCON2FLAG)); //reset the menu selection
-            issueSizeWarning(lcd_ptr);
+            setSelectedMode(DCON2_PORTNUM, getActiveMode(DCON2_PORTNUM)); //reset the menu selection
+            issueWarning(lcd_ptr, WARNINGTYPE_NUMDEVS);
             printMenu(lcd_ptr);
           }
         }
@@ -496,84 +508,82 @@ class _menu: public _device{
       }
     }
 
-    void parameterChange(int index, _lcd* lcd_ptr)
+    //used to change the selectedmode variable for the selcted port when the left or right arrow button is pressed. 
+    void parameterChange(uint8_t button, _lcd* lcd_ptr)
     {
-      if(index == 1)
+      if(button & BUTTON_RIGHT)
       {
         if(currentScreen == 0)
         { //DCON1
-          if(getSelectedMode(DCON1FLAG) < NUMOFDCONDEVS-1)
+          if(getSelectedMode(DCON1_PORTNUM) < NUMOFDCONDEVS-1)
           {
-            uint8_t mode = getSelectedMode(DCON1FLAG);
-            setSelectedMode(DCON1FLAG, ++mode);
-            Serial.print("Selected: ");
-            Serial.print(getSelectedMode(DCON1FLAG));
-            Serial.print("\n");
+            uint8_t mode = getSelectedMode(DCON1_PORTNUM);
+            setSelectedMode(DCON1_PORTNUM, ++mode);
 
           }
           else
           {
-            setSelectedMode(DCON1FLAG, DCONSTATEOFF);
+            setSelectedMode(DCON1_PORTNUM, DCONSTATEOFF);
           }
         }
         if(currentScreen == 1)
         { //ACON1
-          if(getSelectedMode(ACON1FLAG) < NUMOFACONDEVS-1)
+          if(getSelectedMode(ACON1_PORTNUM) < NUMOFACONDEVS-1)
           {
-            uint8_t mode = getSelectedMode(ACON1FLAG);
-            setSelectedMode(ACON1FLAG, ++mode);
+            uint8_t mode = getSelectedMode(ACON1_PORTNUM);
+            setSelectedMode(ACON1_PORTNUM, ++mode);
           }
           else
           {
-            setSelectedMode(ACON1FLAG, ACONSTATEOFF);
+            setSelectedMode(ACON1_PORTNUM, ACONSTATEOFF);
           }
         }
         if(currentScreen == 2)
         { //DACON1
-          if(getSelectedMode(DACON1FLAG) < NUMOFDACONDEVS-1)
+          if(getSelectedMode(DACON1_PORTNUM) < NUMOFDACONDEVS-1)
           {
-            uint8_t mode = getSelectedMode(DACON1FLAG);
-            setSelectedMode(DACON1FLAG, ++mode);
+            uint8_t mode = getSelectedMode(DACON1_PORTNUM);
+            setSelectedMode(DACON1_PORTNUM, ++mode);
           }
           else
           {
-            setSelectedMode(DACON1FLAG, DACONSTATEOFF);
+            setSelectedMode(DACON1_PORTNUM, DACONSTATEOFF);
           }
         }
         if(currentScreen == 3)
         { //DCON2
-          if(getSelectedMode(DCON2FLAG) < NUMOFDCONDEVS-1)
+          if(getSelectedMode(DCON2_PORTNUM) < NUMOFDCONDEVS-1)
           {
-            uint8_t mode = getSelectedMode(DCON2FLAG);
-            setSelectedMode(DCON2FLAG, ++mode);
+            uint8_t mode = getSelectedMode(DCON2_PORTNUM);
+            setSelectedMode(DCON2_PORTNUM, ++mode);
           }
           else
           {
-            setSelectedMode(DCON2FLAG, DCONSTATEOFF);
+            setSelectedMode(DCON2_PORTNUM, DCONSTATEOFF);
           } 
         }
         if(currentScreen == 4)
         { //ACON2
           
-          if(getSelectedMode(ACON2FLAG) < NUMOFACONDEVS-1)
+          if(getSelectedMode(ACON2_PORTNUM) < NUMOFACONDEVS-1)
           {
-            uint8_t mode = getSelectedMode(ACON2FLAG);
-            setSelectedMode(ACON2FLAG, ++mode);
+            uint8_t mode = getSelectedMode(ACON2_PORTNUM);
+            setSelectedMode(ACON2_PORTNUM, ++mode);
           }
           else
           {
-            setSelectedMode(ACON2FLAG, ACONSTATEOFF);
+            setSelectedMode(ACON2_PORTNUM, ACONSTATEOFF);
           }
         }
         if(currentScreen == 5)
         { //DACON2
-          if(getSelectedMode(DACON2FLAG) < NUMOFDACONDEVS-1)
+          if(getSelectedMode(DACON2_PORTNUM) < NUMOFDACONDEVS-1)
           {
-            uint8_t mode = getSelectedMode(DACON2FLAG);
-            setSelectedMode(DACON2FLAG, ++mode);
+            uint8_t mode = getSelectedMode(DACON2_PORTNUM);
+            setSelectedMode(DACON2_PORTNUM, ++mode);
           }
           else{
-            setSelectedMode(DACON2FLAG, DACONSTATEOFF);
+            setSelectedMode(DACON2_PORTNUM, DACONSTATEOFF);
           }
         }
         if(currentScreen == 6)
@@ -593,78 +603,78 @@ class _menu: public _device{
         }
       }
 
-      if(index == 0)
+      if(button & BUTTON_LEFT)
       {
         if(currentScreen == 0)
         { //DCON1
-          if(getSelectedMode(DCON1FLAG) > 0)
+          if(getSelectedMode(DCON1_PORTNUM) > 0)
           {
-            uint8_t mode = getSelectedMode(DCON1FLAG);
-            setSelectedMode(DCON1FLAG, --mode);
+            uint8_t mode = getSelectedMode(DCON1_PORTNUM);
+            setSelectedMode(DCON1_PORTNUM, --mode);
           }
           else
           {
-            setSelectedMode(DCON1FLAG, NUMOFDCONDEVS-1);
+            setSelectedMode(DCON1_PORTNUM, NUMOFDCONDEVS-1);
           }
         }
         if(currentScreen == 1) 
         { //ACON1
-          if(getSelectedMode(ACON1FLAG) > 0)
+          if(getSelectedMode(ACON1_PORTNUM) > 0)
           {
-            uint8_t mode = getSelectedMode(ACON1FLAG);
-            setSelectedMode(ACON1FLAG, --mode);
+            uint8_t mode = getSelectedMode(ACON1_PORTNUM);
+            setSelectedMode(ACON1_PORTNUM, --mode);
           }
           else
           {
-            setSelectedMode(ACON1FLAG, NUMOFACONDEVS-1);
+            setSelectedMode(ACON1_PORTNUM, NUMOFACONDEVS-1);
           }
         }
         if(currentScreen == 2) 
         { //DACON1
-          if(getSelectedMode(DACON1FLAG) > 0)
+          if(getSelectedMode(DACON1_PORTNUM) > 0)
           {
-            uint8_t mode = getSelectedMode(DACON1FLAG);
-            setSelectedMode(DACON1FLAG, --mode);
+            uint8_t mode = getSelectedMode(DACON1_PORTNUM);
+            setSelectedMode(DACON1_PORTNUM, --mode);
           }
           else
           {
-            setSelectedMode(DACON1FLAG, NUMOFDACONDEVS-1);
+            setSelectedMode(DACON1_PORTNUM, NUMOFDACONDEVS-1);
           }
         }
         if(currentScreen == 3) 
         { //DCON2
-          if(getSelectedMode(DCON2FLAG) > 0)
+          if(getSelectedMode(DCON2_PORTNUM) > 0)
           {
-            uint8_t mode = getSelectedMode(DCON2FLAG);
-            setSelectedMode(DCON2FLAG, --mode);
+            uint8_t mode = getSelectedMode(DCON2_PORTNUM);
+            setSelectedMode(DCON2_PORTNUM, --mode);
           }
           else
           {
-            setSelectedMode(DCON2FLAG, NUMOFDCONDEVS-1);
+            setSelectedMode(DCON2_PORTNUM, NUMOFDCONDEVS-1);
           }
         }
         if(currentScreen == 4) 
         { //ACON2
-          if(getSelectedMode(ACON2FLAG) > 0)
+          if(getSelectedMode(ACON2_PORTNUM) > 0)
           {
-            uint8_t mode = getSelectedMode(ACON2FLAG);
-            setSelectedMode(ACON2FLAG, --mode);
+            uint8_t mode = getSelectedMode(ACON2_PORTNUM);
+            setSelectedMode(ACON2_PORTNUM, --mode);
           }
           else
           {
-            setSelectedMode(ACON2FLAG, NUMOFACONDEVS-1);
+            setSelectedMode(ACON2_PORTNUM, NUMOFACONDEVS-1);
           }
         }
         if(currentScreen == 5) 
         { //DACON2
-          if(getSelectedMode(DACON2FLAG) > 0)
+          if(getSelectedMode(DACON2_PORTNUM) > 0)
           {
-            uint8_t mode = getSelectedMode(DACON2FLAG);
-            setSelectedMode(DACON2FLAG, --mode);
+            uint8_t mode = getSelectedMode(DACON2_PORTNUM);
+            setSelectedMode(DACON2_PORTNUM, --mode);
           }
           else
           {
-            setSelectedMode(DACON2FLAG, NUMOFDACONDEVS-1);
+            setSelectedMode(DACON2_PORTNUM, NUMOFDACONDEVS-1);
           }
         }
         if(currentScreen == 6) 
@@ -684,8 +694,16 @@ class _menu: public _device{
         }
       }
     }
+
+    //handes printing the menu, depending on what screen is active. 
+    //because I have stored the strings in program memory (PROGMEM) we have to use special functions to retreive them
+    //from the flash and load them into the stack as needed. This saves precious memory which we can use for other things like 
+    //more affectors. Being as we are using dynamic object creation, the heap can become fragmented, so it is very important 
+    //that we save as much space as possible to avoid heap collisions which will lead to a system crash. 
+    // check out https://learn.adafruit.com/memories-of-an-arduino/optimizing-sram for more information. 
     void printMenu(_lcd* lcd) 
     {
+      //the screen is 16 characters lone, but we need room for the null byte at the end of a character array
       char buffer[17]; 
       (lcd->lcd_obj)->clear();
       (lcd->lcd_obj)->setCursor(0,0);
@@ -697,44 +715,44 @@ class _menu: public _device{
 
       if(currentScreen == 0)
       { //DCON1 SCREEN
-      strcpy_P(buffer, (char *)pgm_read_word(&(dconscreentable[getSelectedMode(DCON1FLAG)])));
+      strcpy_P(buffer, (char *)pgm_read_word(&(dconscreentable[getSelectedMode(DCON1_PORTNUM)])));
       (lcd->lcd_obj)->print(buffer);
-      if(getSelectedMode(DCON1FLAG) != getActiveMode(DCON1FLAG)) (lcd->lcd_obj)->setBacklight(TEAL);
+      if(getSelectedMode(DCON1_PORTNUM) != getActiveMode(DCON1_PORTNUM)) (lcd->lcd_obj)->setBacklight(TEAL);
       else (lcd->lcd_obj)->setBacklight(WHITE);
       }
       if(currentScreen == 1)
       { //ACON1 SCREEN
-        strcpy_P(buffer, (char *)pgm_read_word(&(aconscreentable[getSelectedMode(ACON1FLAG)])));
+        strcpy_P(buffer, (char *)pgm_read_word(&(aconscreentable[getSelectedMode(ACON1_PORTNUM)])));
         (lcd->lcd_obj)->print(buffer);
-        if(getSelectedMode(ACON1FLAG) != getActiveMode(ACON1FLAG)) (lcd->lcd_obj)->setBacklight(TEAL);
+        if(getSelectedMode(ACON1_PORTNUM) != getActiveMode(ACON1_PORTNUM)) (lcd->lcd_obj)->setBacklight(TEAL);
         else (lcd->lcd_obj)->setBacklight(WHITE);
       }
       if(currentScreen == 2)
       { //DACON1 SCREEN
-        strcpy_P(buffer, (char *)pgm_read_word(&(daconscreentable[getSelectedMode(DACON1FLAG)])));
+        strcpy_P(buffer, (char *)pgm_read_word(&(daconscreentable[getSelectedMode(DACON1_PORTNUM)])));
         (lcd->lcd_obj)->print(buffer);
-        if(getSelectedMode(DACON1FLAG) != getActiveMode(DACON1FLAG)) (lcd->lcd_obj)->setBacklight(TEAL);
+        if(getSelectedMode(DACON1_PORTNUM) != getActiveMode(DACON1_PORTNUM)) (lcd->lcd_obj)->setBacklight(TEAL);
         else (lcd->lcd_obj)->setBacklight(WHITE);
       }
       if(currentScreen == 3)
       { //DCON2 SCREEN
-        strcpy_P(buffer, (char *)pgm_read_word(&(dconscreentable[getSelectedMode(DCON2FLAG)])));
+        strcpy_P(buffer, (char *)pgm_read_word(&(dconscreentable[getSelectedMode(DCON2_PORTNUM)])));
         (lcd->lcd_obj)->print(buffer);
-        if(getSelectedMode(DCON2FLAG) != getActiveMode(DCON2FLAG)) (lcd->lcd_obj)->setBacklight(TEAL);
+        if(getSelectedMode(DCON2_PORTNUM) != getActiveMode(DCON2_PORTNUM)) (lcd->lcd_obj)->setBacklight(TEAL);
         else (lcd->lcd_obj)->setBacklight(WHITE);
       }
       if(currentScreen == 4)
       { //ACON2 SCREEN
-        strcpy_P(buffer, (char *)pgm_read_word(&(aconscreentable[getSelectedMode(ACON2FLAG)])));
+        strcpy_P(buffer, (char *)pgm_read_word(&(aconscreentable[getSelectedMode(ACON2_PORTNUM)])));
         (lcd->lcd_obj)->print(buffer);
-        if(getSelectedMode(ACON2FLAG) != getActiveMode(ACON2FLAG)) (lcd->lcd_obj)->setBacklight(TEAL);
+        if(getSelectedMode(ACON2_PORTNUM) != getActiveMode(ACON2_PORTNUM)) (lcd->lcd_obj)->setBacklight(TEAL);
         else (lcd->lcd_obj)->setBacklight(WHITE);
       }
       if(currentScreen == 5)
       { //DACON2 SCREEN
-        strcpy_P(buffer, (char *)pgm_read_word(&(daconscreentable[getSelectedMode(DACON2FLAG)])));
+        strcpy_P(buffer, (char *)pgm_read_word(&(daconscreentable[getSelectedMode(DACON2_PORTNUM)])));
         (lcd->lcd_obj)->print(buffer);
-        if(getSelectedMode(DACON2FLAG) != getActiveMode(DACON2FLAG)) (lcd->lcd_obj)->setBacklight(TEAL);
+        if(getSelectedMode(DACON2_PORTNUM) != getActiveMode(DACON2_PORTNUM)) (lcd->lcd_obj)->setBacklight(TEAL);
         else (lcd->lcd_obj)->setBacklight(WHITE);
       }
       if(currentScreen == 6)
@@ -751,16 +769,35 @@ class _menu: public _device{
         (lcd->lcd_obj)->print(VERSIONNUMBER);
       }
     }
-
-    void issueSizeWarning(_lcd* lcd_ptr)
+    //issues a warning to the LCD that too many affectors are active. 
+    void issueWarning(_lcd* lcd_ptr, uint8_t type)
     {
-      (lcd_ptr->lcd_obj)->clear();
-      (lcd_ptr->lcd_obj)->setBacklight(RED);
-      (lcd_ptr->lcd_obj)->setCursor(0,0);
-      (lcd_ptr->lcd_obj)->print(F("TOO MANY ACTIVE"));
-      (lcd_ptr->lcd_obj)->setCursor(0,1);
-      (lcd_ptr->lcd_obj)->print(F("AFFECTORS"));
-      delay(2000);
+      if(type == WARNINGTYPE_NUMDEVS)
+      {
+        (lcd_ptr->lcd_obj)->setBacklight(RED);
+        (lcd_ptr->lcd_obj)->clear();
+        (lcd_ptr->lcd_obj)->setCursor(0,0);
+        (lcd_ptr->lcd_obj)->print(F("TOO MANY ACTIVE"));
+        (lcd_ptr->lcd_obj)->setCursor(0,1);
+        (lcd_ptr->lcd_obj)->print(F("AFFECTORS"));
+        delay(2000); 
+      }
+      if(type == WARNINGTYPE_GROUP)
+      {
+        (lcd_ptr->lcd_obj)->setBacklight(RED);
+        (lcd_ptr->lcd_obj)->clear();
+        (lcd_ptr->lcd_obj)->setCursor(0,0);
+        (lcd_ptr->lcd_obj)->print(F("ONLY ONE PORT"));
+        (lcd_ptr->lcd_obj)->setCursor(0,1);
+        (lcd_ptr->lcd_obj)->print(F("PER GROUP MAY"));
+        delay(2000);
+        (lcd_ptr->lcd_obj)->clear();
+        (lcd_ptr->lcd_obj)->setCursor(0,0);
+        (lcd_ptr->lcd_obj)->print(F("BE ACTIVE"));
+        (lcd_ptr->lcd_obj)->setCursor(0,1);
+        (lcd_ptr->lcd_obj)->print(F("SIMULTANIOUSLY"));
+        delay(2000);
+      }
     }
     ~_menu(){}
 };
