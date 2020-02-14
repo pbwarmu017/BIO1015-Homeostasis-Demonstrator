@@ -4,16 +4,15 @@
 
 #include "superclasses.cpp"
 #include "menu.cpp"
-//LED COLOR CODE DEFINITIONS. 
-#define COLORRED strip->Color(128,0,0) //USED FOR PRE GAME INDICATION
-#define COLORPINK strip->Color(64,26,45)
-#define COLORWHITE strip->Color(64,64,64)
-#define COLORORANGE strip->Color(70,32,0) //USED FOR SECONDINDICATORCOLOR
-#define COLORYELLOW strip->Color(64,64,0)
+//LED COLOR CODE DEFINITIONS. RGB
+#define COLORRED strip->Color(128,0,0) //USED FOR PRE-GAME INDICATION
+#define COLORWHITE strip->Color(64,64,64) //USED FOR DCON1COLOR
+#define COLORORANGE strip->Color(95,32,0) //USED FOR ACON1COLOR
+#define COLORYELLOW strip->Color(75,64,0) //USED FOR DACON1COLOR
 #define COLORGREEN strip->Color(0,64,0) //USED FOR "GAME ON" INDICATION
-#define COLORBLUE strip->Color(0,0,64) //USED FOR SQUEEZEINDICATORCOLOR
-#define COLORCYAN strip->Color(0,64,64)
-#define COLORVIOLET strip->Color(25,0,51)
+#define COLORBLUE strip->Color(0,0,64) //USED FOR DCON2COLOR
+#define COLORCYAN strip->Color(0,64,64) //USED FOR ACON2COLOR
+#define COLORVIOLET strip->Color(25,0,51) //USED FOR DACON2COLOR
 
 //PORT COLOR SELECTIONS
 #define DCON1COLOR COLORWHITE
@@ -23,21 +22,15 @@
 #define ACON2COLOR COLORCYAN
 #define DACON2COLOR COLORVIOLET
 
-//DEFAULT RATES
-#define DEFAULTINDICATORPOSITION 0//BOXSTART+round((float)BOXSIZE/2)
-
 //REFRESH SPEEDS
 #define STRIPREFRESHDELAY 50 //in milliseconds
-#define LEDMAXINCREMENT 5 //Max # of LEDs to jump per cycle
+#define LEDMAXINCREMENT 5 //Max # of LEDs to jump per refresh
 
 
 class _indicatorstrip: public _device 
 {
 
   public:
-     /*VARIABLES*/
-
-    //MAKE THE BOX CONFIGURABLE IN THE MENU
     Adafruit_NeoPixel *strip;
     float deviceIndicatorPosition[6] = {-2,-2,-2,-2,-2,-2}; //array to track indicator positions for the different ports
     int LED_PIN = 6;
@@ -62,6 +55,7 @@ class _indicatorstrip: public _device
 
       //draw out the current bounding box. Needs to be the last thing done before sending it to the strip
       boxEnd = boxStart + menu_ptr->boundingboxsize + 1;
+      //if the user set the bounding box to move
       if(menu_ptr->boundingboxmode > 0)
       {
         if(boundingBoxDirection == 1)
@@ -161,14 +155,9 @@ class _indicatorstrip: public _device
             return false; 
           }
         }
-        // Serial.print(deviceIndicatorPosition[i]);
-        // Serial.print("\n");
-        //if an indicator is inside the box, change the status to true
       }
       if(status == 1) return true; //if all active indicators are in bounds
       if(status == 3) return false; //will only happen if all indicators are inactive
-      // Serial.print("-\n");
-      // return(status);
     }
 
     _indicatorstrip(_menu *ptr)
@@ -192,19 +181,8 @@ class _indicatorstrip: public _device
       deviceIndicatorPosition[portnum] += (rate * LEDMAXINCREMENT);
       if(deviceIndicatorPosition[portnum] < -1) deviceIndicatorPosition[portnum] = -1;
       if(deviceIndicatorPosition[portnum] > 60) deviceIndicatorPosition[portnum] = 60;
-      // return;
     }
-    //this function is responsble for setting up where and how large the bounding box is. 
-    //this can be changed on the fly. 
-
-    // void setBoundingBox(int start, int size) 
-    // {
-    //   boxStart = start;
-    //   boxSize = start+size+1;
-    //   boxEnd = start+size+1;
-    //   return;
-    // }
-    
+   
   private:
     _menu *menu_ptr;
     char boundingBoxDirection = 1;

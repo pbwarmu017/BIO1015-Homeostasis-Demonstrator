@@ -258,6 +258,8 @@ Adafruit RGB LCD Sheild Library
     }
     if(LCDREFRESHFLAG)
     {
+      Serial.print(menu_ptr->objectCount);
+      Serial.print("\n");
     uint8_t button = (lcd_ptr->lcd_obj)->readButtons();
      //track the states of the button
       selectPrevState = selectState;

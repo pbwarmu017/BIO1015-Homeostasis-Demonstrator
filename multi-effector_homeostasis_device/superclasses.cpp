@@ -7,13 +7,13 @@
 #include <Wire.h>
 #include <Adafruit_RGBLCDShield.h>
 
-enum GAMESTATUS {
+enum GAMESTATUS : uint8_t {
   notstarted,
   started,
   lost
 };
 
-enum SYSTEMMODE {
+enum SYSTEMMODE : uint8_t {
   calibrate,
   running,
   config
@@ -22,11 +22,8 @@ enum SYSTEMMODE {
 extern enum GAMESTATUS gameStatus;
 extern enum SYSTEMMODE systemMode;
 
-#define VERSIONNUMBER F("2.1.2")
- #define MAXIMUMDEVICES 4 //defines the max number of devices the system will allow to connect. 
-
-#define HANDGRIPDEVNUM 0 //device number for handgrip
-#define CRANKDEVNUM 1
+#define VERSIONNUMBER F("2.1.5")
+#define MAXIMUMDEVICES 4 //defines the max number of devices the system will allow to connect. 
 
 //port number defines for readability 
 #define DCON1_PORTNUM 0
