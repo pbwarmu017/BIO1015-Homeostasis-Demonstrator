@@ -64,12 +64,9 @@
   #define BOUNDINGBOXSTATIONARY 0
   #define BOUNDINGBOXMOVING 1
 
-  #define DCON1FLAG 0
-  #define DCON2FLAG 1
-  #define ACON1FLAG 2
-  #define ACON2FLAG 3
-  #define DACON1FLAG 4
-  #define DACON2FLAG 5
+  #define WARNINGTYPE_NUMDEVS  0
+  #define WARNINGTYPE_GROUP 1
+
 
 //LCD MENU TEXT OPTIONS
   //this is some PROGMEM magic to move the strings to program memory and free up SRAM
@@ -340,34 +337,35 @@ class _menu: public _device{
       {//DCON1
         if(objectCount == MAXIMUMDEVICES) //only allow so many devices
         {
-          if(getSelectedMode(DCON1FLAG) == DCONSTATEOFF)
+          if(getSelectedMode(DCON1_PORTNUM) == DCONSTATEOFF)
           {
-            setActiveMode(DCON1FLAG, DCONSTATEOFF);
+            setActiveMode(DCON1_PORTNUM, DCONSTATEOFF);
+            deleteObject(HANDCRANK_TYPE, DCON1_PORTNUM);
             printMenu(lcd_ptr);
 
           }
           else
           {
-            setSelectedMode(DCON1FLAG, getActiveMode(DCON1FLAG)); //reset the menu selection
-            issueSizeWarning(lcd_ptr);
+            setSelectedMode(DCON1_PORTNUM, getActiveMode(DCON1_PORTNUM)); //reset the menu selection
+            issueWarning(lcd_ptr, WARNINGTYPE_NUMDEVS);
             printMenu(lcd_ptr);
           }
         }
         else //we still have rooom
         {
-          if(getActiveMode(DCON1FLAG) == DCONSTATEHANDCRANK)
+          if(getActiveMode(DCON1_PORTNUM) == DCONSTATEHANDCRANK)
           { //if there has been an encoder configured previously
             deleteObject(HANDCRANK_TYPE, DCON1_PORTNUM);
           }
-          if(getSelectedMode(DCON1FLAG) == DCONSTATEOFF)
+          if(getSelectedMode(DCON1_PORTNUM) == DCONSTATEOFF)
           {
-            setActiveMode(DCON1FLAG, DCONSTATEOFF);
+            setActiveMode(DCON1_PORTNUM, DCONSTATEOFF);
             printMenu(lcd_ptr);
           }
 
-          if(getSelectedMode(DCON1FLAG) == DCONSTATEHANDCRANK) 
+          if(getSelectedMode(DCON1_PORTNUM) == DCONSTATEHANDCRANK) 
           {
-            setActiveMode(DCON1FLAG, DCONSTATEHANDCRANK);
+            setActiveMode(DCON1_PORTNUM, DCONSTATEHANDCRANK);
             printMenu(lcd_ptr);
             createObject(HANDCRANK_TYPE, DCON1_PORTNUM);
           }
@@ -375,45 +373,100 @@ class _menu: public _device{
       }
       if(currentScreen == 1)
       { //ACON1
-        if(objectCount == MAXIMUMDEVICES) //only allow so many devices
+        if(objectCount == MAXIMUMDEVICES) //if we are at the max number of affectors
         {
-          if(getSelectedMode(ACON1FLAG) == ACONSTATEOFF)
+          if(getSelectedMode(ACON1_PORTNUM) == ACONSTATEOFF)
           {
-            setActiveMode(ACON1FLAG, ACONSTATEOFF);
+            setActiveMode(ACON1_PORTNUM, ACONSTATEOFF);
+            deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM);
             printMenu(lcd_ptr);
-
           }
           else
           {
-            setSelectedMode(ACON1FLAG, getActiveMode(ACON1FLAG)); //reset the menu selection
-            issueSizeWarning(lcd_ptr);
+            setSelectedMode(ACON1_PORTNUM, getActiveMode(ACON1_PORTNUM)); //reset the menu selection
+            issueWarning(lcd_ptr, WARNINGTYPE_NUMDEVS);
             printMenu(lcd_ptr);
           }
         }
         else //we still have rooom
         {
-          if(getActiveMode(ACON1FLAG) == ACONSTATEHANDGRIP)
-          { //if there has been an encoder configured previously
-            deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM);
-          }
-          if(getSelectedMode(ACON1FLAG) == ACONSTATEOFF)
+          if(getActiveMode(DACON1_PORTNUM) > 0) //if DACON1 is active
           {
-            setActiveMode(ACON1FLAG, ACONSTATEOFF);
-            printMenu(lcd_ptr);
+            if(getSelectedMode(ACON1_PORTNUM) == ACONSTATEOFF) //allow the selection of off without warning issuance
+            {
+              setActiveMode(ACON1_PORTNUM, ACONSTATEOFF);
+              deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+              printMenu(lcd_ptr);
+            }
+            else //if you're trying to turn it on.
+            {
+              setSelectedMode(ACON1_PORTNUM, ACONSTATEOFF); //reset the menu selection
+              issueWarning(lcd_ptr, WARNINGTYPE_GROUP ); //only one member of a group can be active at once
+              printMenu(lcd_ptr);
+            }
           }
-
-          if(getSelectedMode(ACON1FLAG) == ACONSTATEHANDGRIP) 
+          else //DACON1 isnt active
           {
-            setActiveMode(ACON1FLAG, ACONSTATEHANDGRIP);
-            printMenu(lcd_ptr);
-            createObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+            if(getActiveMode(ACON1_PORTNUM) == ACONSTATEHANDGRIP)
+            { //if there has been an encoder configured previously
+              deleteObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+            }
+            if(getSelectedMode(ACON1_PORTNUM) == ACONSTATEOFF)
+            {
+              setActiveMode(ACON1_PORTNUM, ACONSTATEOFF);
+              printMenu(lcd_ptr);
+            }
+            if(getSelectedMode(ACON1_PORTNUM) == ACONSTATEHANDGRIP) 
+            {
+              setActiveMode(ACON1_PORTNUM, ACONSTATEHANDGRIP);
+              printMenu(lcd_ptr);
+              createObject(HANDGRIP_TYPE, ACON1_PORTNUM);
+            }
           }
         }
       }
       if(currentScreen == 2)
       { //DACON1
-
-        //there is nothing to apply here, yet. 
+        if(objectCount == MAXIMUMDEVICES) //if we are at the max number of affectors
+        {
+          if(getSelectedMode(DACON1_PORTNUM) == DACONSTATEOFF) //allow the selection of off without warning issuance
+          {
+            setActiveMode(DACON1_PORTNUM, DACONSTATEOFF);
+            //deleteObject(DEVTYPE, DACON1_PORTNUM);
+            printMenu(lcd_ptr);
+          }
+          else //if you tried to turn it on
+          {
+            issueWarning(lcd_ptr, WARNINGTYPE_NUMDEVS);
+            setSelectedMode(DACON1_PORTNUM, DACONSTATEOFF);
+            printMenu(lcd_ptr);
+          }
+        }
+        else //if there is room. 
+        {
+          if(getActiveMode(ACON1_PORTNUM) > 0) //if ACON1 is active
+          {
+            if(getSelectedMode(DACON1_PORTNUM) == DACONSTATEOFF) //allow the selection of off without warning issuance
+            {
+              setActiveMode(DACON1_PORTNUM, DACONSTATEOFF);
+              //deleteObject(DEVTYPE, DACON1_PORTNUM);
+              printMenu(lcd_ptr);
+            }
+            else //if you're trying to turn it on.
+            {
+              setSelectedMode(DACON1_PORTNUM, DACONSTATEOFF); //reset the menu selection
+              issueWarning(lcd_ptr, WARNINGTYPE_GROUP ); //only one member of a group can be active at once
+              printMenu(lcd_ptr);
+            }
+          }
+          else // ACON1 is not active
+          {
+            // there is nothing to apply here, yet. Ill stick in a sort of template for your reference. 
+            // setActiveMode(DACON1_PORTNUM, DACONSTATE1);
+            // printMenu(lcd_ptr);
+            // createObject(OBJECTTYPE, DACON1_PORTNUM);
+          }
+        } 
       } 
       if(currentScreen == 3) 
       {//DCON2
@@ -434,19 +487,19 @@ class _menu: public _device{
         }
         else //we still have rooom
         {
-          if(getActiveMode(DCON2FLAG) == DCONSTATEHANDCRANK)
+          if(getActiveMode(DCON2_PORTNUM) == DCONSTATEHANDCRANK)
           { //if there has been an encoder configured previously
             deleteObject(HANDCRANK_TYPE, DCON2_PORTNUM);
           }
-          if(getSelectedMode(DCON2FLAG) == DCONSTATEOFF)
+          if(getSelectedMode(DCON2_PORTNUM) == DCONSTATEOFF)
           {
-            setActiveMode(DCON2FLAG, DCONSTATEOFF);
+            setActiveMode(DCON2_PORTNUM, DCONSTATEOFF);
             printMenu(lcd_ptr);
           }
 
-          if(getSelectedMode(DCON2FLAG) == DCONSTATEHANDCRANK) 
+          if(getSelectedMode(DCON2_PORTNUM) == DCONSTATEHANDCRANK) 
           {
-            setActiveMode(DCON2FLAG, DCONSTATEHANDCRANK);
+            setActiveMode(DCON2_PORTNUM, DCONSTATEHANDCRANK);
             printMenu(lcd_ptr);
             createObject(HANDCRANK_TYPE, DCON2_PORTNUM);
           }
@@ -454,45 +507,101 @@ class _menu: public _device{
       }
       if(currentScreen == 4) 
       {//ACON2
-        if(objectCount == MAXIMUMDEVICES) //only allow so many devices
+        if(objectCount == MAXIMUMDEVICES) //if we are at the max number of affectors
         {
-          if(getSelectedMode(ACON2FLAG) == ACONSTATEOFF)
+          if(getSelectedMode(ACON2_PORTNUM) == ACONSTATEOFF)
           {
-            setActiveMode(ACON2FLAG, ACONSTATEOFF);
+            setActiveMode(ACON2_PORTNUM, ACONSTATEOFF);
+            deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM);
             printMenu(lcd_ptr);
-
           }
           else
           {
-            setSelectedMode(ACON2FLAG, getActiveMode(ACON2FLAG)); //reset the menu selection
-            issueSizeWarning(lcd_ptr);
+            setSelectedMode(ACON2_PORTNUM, getActiveMode(ACON2_PORTNUM)); //reset the menu selection
+            issueWarning(lcd_ptr, WARNINGTYPE_NUMDEVS);
             printMenu(lcd_ptr);
           }
         }
         else //we still have rooom
         {
-          if(getActiveMode(ACON2FLAG) == ACONSTATEHANDGRIP)
-          { //if there has been an encoder configured previously
-            deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM);
-          }
-          if(getSelectedMode(ACON2FLAG) == ACONSTATEOFF)
+          if(getActiveMode(DACON2_PORTNUM) > 0) //if DACON2 is active
           {
-            setActiveMode(ACON2FLAG, ACONSTATEOFF);
-            printMenu(lcd_ptr);
+            if(getSelectedMode(ACON2_PORTNUM) == ACONSTATEOFF) //allow the selection of off without warning issuance
+            {
+              setActiveMode(ACON2_PORTNUM, ACONSTATEOFF);
+              deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM);
+              printMenu(lcd_ptr);
+            }
+            else //if you're trying to turn it on.
+            {
+              setSelectedMode(ACON2_PORTNUM, ACONSTATEOFF); //reset the menu selection
+              issueWarning(lcd_ptr, WARNINGTYPE_GROUP ); //only one member of a group can be active at once
+              printMenu(lcd_ptr);
+            }
           }
-
-          if(getSelectedMode(ACON2FLAG) == ACONSTATEHANDGRIP) 
+          else //DACON1 isnt active
           {
-            setActiveMode(ACON2FLAG, ACONSTATEHANDGRIP);
-            printMenu(lcd_ptr);
-            createObject(HANDGRIP_TYPE, ACON2_PORTNUM);
+            if(getActiveMode(ACON2_PORTNUM) == ACONSTATEHANDGRIP)
+            { //if there has been an encoder configured previously
+              deleteObject(HANDGRIP_TYPE, ACON2_PORTNUM);
+            }
+            if(getSelectedMode(ACON2_PORTNUM) == ACONSTATEOFF)
+            {
+              setActiveMode(ACON2_PORTNUM, ACONSTATEOFF);
+              printMenu(lcd_ptr);
+            }
+            if(getSelectedMode(ACON2_PORTNUM) == ACONSTATEHANDGRIP) 
+            {
+              setActiveMode(ACON2_PORTNUM, ACONSTATEHANDGRIP);
+              printMenu(lcd_ptr);
+              createObject(HANDGRIP_TYPE, ACON2_PORTNUM);
+            }
           }
         }
       }
       if(currentScreen == 5)
       {//DACON2
+        if(objectCount == MAXIMUMDEVICES) //if we are at the max number of affectors
+        {
+          if(getSelectedMode(DACON2_PORTNUM) == DACONSTATEOFF) //allow the selection of off without warning issuance
+          {
+            setActiveMode(DACON2_PORTNUM, DACONSTATEOFF);
+            //deleteObject(DEVTYPE, DACON2_PORTNUM);
+            printMenu(lcd_ptr);
+          }
+          else //if you tried to turn it on
+          {
+            issueWarning(lcd_ptr, WARNINGTYPE_NUMDEVS);
+            setSelectedMode(DACON2_PORTNUM, DACONSTATEOFF);
+            printMenu(lcd_ptr);
+          }
+        }
+        else //if there is room. 
+        {
+          if(getActiveMode(ACON2_PORTNUM) > 0) //if ACON1 is active
+          {
+            if(getSelectedMode(DACON2_PORTNUM) == DACONSTATEOFF) //allow the selection of off without warning issuance
+            {
+              setActiveMode(DACON2_PORTNUM, DACONSTATEOFF);
+              //deleteObject(DEVTYPE, DACON2_PORTNUM);
+              printMenu(lcd_ptr);
+            }
+            else //if you're trying to turn it on.
+            {
+              setSelectedMode(DACON2_PORTNUM, DACONSTATEOFF); //reset the menu selection
+              issueWarning(lcd_ptr, WARNINGTYPE_GROUP ); //only one member of a group can be active at once
+              printMenu(lcd_ptr);
+            }
+          }
+          else // ACON1 is not active
+          {
+            /*there is nothing to apply here, yet. Ill stick in a sort of template for your reference. 
+            setActiveMode(DACON2_PORTNUM, DACONSTATE1);
+            printMenu(lcd_ptr);
+            createObject(OBJECTTYPE, DACON2_PORTNUM);*/
+          }
+        } 
         
-        //nothing in here to do, yet
       }
     }
 
