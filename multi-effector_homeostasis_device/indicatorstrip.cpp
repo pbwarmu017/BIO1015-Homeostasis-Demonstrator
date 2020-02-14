@@ -161,15 +161,7 @@ class _indicatorstrip: public _device
             return false; 
           }
         }
-        // Serial.print(deviceIndicatorPosition[i]);
-        // Serial.print("\n");
-        //if an indicator is inside the box, change the status to true
       }
-      if(status == 1) return true; //if all active indicators are in bounds
-      if(status == 3) return false; //will only happen if all indicators are inactive
-      // Serial.print("-\n");
-      // return(status);
-    }
 
     _indicatorstrip(_menu *ptr)
     {
@@ -192,19 +184,8 @@ class _indicatorstrip: public _device
       deviceIndicatorPosition[portnum] += (rate * LEDMAXINCREMENT);
       if(deviceIndicatorPosition[portnum] < -1) deviceIndicatorPosition[portnum] = -1;
       if(deviceIndicatorPosition[portnum] > 60) deviceIndicatorPosition[portnum] = 60;
-      // return;
     }
-    //this function is responsble for setting up where and how large the bounding box is. 
-    //this can be changed on the fly. 
-
-    // void setBoundingBox(int start, int size) 
-    // {
-    //   boxStart = start;
-    //   boxSize = start+size+1;
-    //   boxEnd = start+size+1;
-    //   return;
-    // }
-    
+   
   private:
     _menu *menu_ptr;
     char boundingBoxDirection = 1;

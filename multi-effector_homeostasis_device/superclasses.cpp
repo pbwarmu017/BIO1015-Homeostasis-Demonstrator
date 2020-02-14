@@ -7,13 +7,13 @@
 #include <Wire.h>
 #include <Adafruit_RGBLCDShield.h>
 
-enum GAMESTATUS {
+enum GAMESTATUS : uint8_t {
   notstarted,
   started,
   lost
 };
 
-enum SYSTEMMODE {
+enum SYSTEMMODE : uint8_t {
   calibrate,
   running,
   config

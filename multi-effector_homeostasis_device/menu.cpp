@@ -11,55 +11,55 @@
   //note: there can only be 16 port states, as I am using only 4 bits to track it. 
   #define DCONSTATEOFF 0 //OFF
   #define DCONSTATEHANDCRANK 1 //HANDCRANK
-  #define DCONSTATE2 2
-  #define DCONSTATE3 3
-  #define DCONSTATE4 4
-  #define DCONSTATE5 5
-  #define DCONSTATE6 6
-  #define DCONSTATE7 7
-  #define DCONSTATE8 8
-  #define DCONSTATE9 9
-  #define DCONSTATE10 10
-  #define DCONSTATE11 11
-  #define DCONSTATE12 12
-  #define DCONSTATE13 13
-  #define DCONSTATE14 14
-  #define DCONSTATE1UNINIT 15//uninitialized
+  // #define DCONSTATE2 2
+  // #define DCONSTATE3 3
+  // #define DCONSTATE4 4
+  // #define DCONSTATE5 5
+  // #define DCONSTATE6 6
+  // #define DCONSTATE7 7
+  // #define DCONSTATE8 8
+  // #define DCONSTATE9 9
+  // #define DCONSTATE10 10
+  // #define DCONSTATE11 11
+  // #define DCONSTATE12 12
+  // #define DCONSTATE13 13
+  // #define DCONSTATE14 14
+  // #define DCONSTATE15 15
 
 
   #define ACONSTATEOFF 0 //OFF
   #define ACONSTATEHANDGRIP 1 //HANDGRIP
-  #define ACONSTATE2 2
-  #define ACONSTATE3 3
-  #define ACONSTATE4 4
-  #define ACONSTATE5 5
-  #define ACONSTATE6 6
-  #define ACONSTATE7 7
-  #define ACONSTATE8 8
-  #define ACONSTATE9 9
-  #define ACONSTATE10 10
-  #define ACONSTATE11 11
-  #define ACONSTATE12 12
-  #define ACONSTATE13 13
-  #define ACONSTATE14 14
-  #define ACONSTATEUNINIT 15 //uninitialized
+  // #define ACONSTATE2 2
+  // #define ACONSTATE3 3
+  // #define ACONSTATE4 4
+  // #define ACONSTATE5 5
+  // #define ACONSTATE6 6
+  // #define ACONSTATE7 7
+  // #define ACONSTATE8 8
+  // #define ACONSTATE9 9
+  // #define ACONSTATE10 10
+  // #define ACONSTATE11 11
+  // #define ACONSTATE12 12
+  // #define ACONSTATE13 13
+  // #define ACONSTATE14 14
+  // #define ACONSTATEU15 15
 
   #define DACONSTATEOFF 0 //OFF
   #define DACONSTATE1 1
-  #define DACONSTATE2 2
-  #define DACONSTATE3 3
-  #define DACONSTATE4 4
-  #define DACONSTATE5 5
-  #define DACONSTATE6 6
-  #define DACONSTATE7 7
-  #define DACONSTATE8 8
-  #define DACONSTATE9 9
-  #define DACONSTATE10 10
-  #define DACONSTATE11 11
-  #define DACONSTATE12 12
-  #define DACONSTATE13 13
-  #define DACONSTATE14 14
-  #define DACONSTATEUNINIT 15 //uninitialized 
+  // #define DACONSTATE2 2
+  // #define DACONSTATE3 3
+  // #define DACONSTATE4 4
+  // #define DACONSTATE5 5
+  // #define DACONSTATE6 6
+  // #define DACONSTATE7 7
+  // #define DACONSTATE8 8
+  // #define DACONSTATE9 9
+  // #define DACONSTATE10 10
+  // #define DACONSTATE11 11
+  // #define DACONSTATE12 12
+  // #define DACONSTATE13 13
+  // #define DACONSTATE14 14
+  // #define DACONSTATE15 15
 
   #define BOUNDINGBOXSTATIONARY 0
   #define BOUNDINGBOXMOVING 1
@@ -137,15 +137,12 @@ class _menu: public _device{
     //This means that you can have up to 16 different states per each port. 
     uint8_t dconselectedmode = 0;
     uint8_t dconactivemode = 0;
-    // uint8_t dconprevmode = 0b11111111;
 
     uint8_t aconselectedmode = 0;
     uint8_t aconactivemode = 0;
-    // uint8_t aconprevmode = 0b11111111;
 
     uint8_t daconselectedmode = 0;
     uint8_t daconactivemode = 0;
-    // uint8_t daconprevmode = 0b11111111;
 
     int8_t boundingboxmode = 0;
     uint8_t boundingboxsize = 10;
@@ -322,16 +319,12 @@ class _menu: public _device{
         }
       }
 
-      if(button & BUTTON_LEFT) 
+      if(button & BUTTON_RIGHT or button & BUTTON_LEFT) 
       {
-        parameterChange(0, lcd_ptr);
+        parameterChange(button, lcd_ptr);
         printMenu(lcd_ptr);
       }
-      if(button & BUTTON_RIGHT) 
-      {
-        parameterChange(1, lcd_ptr); 
-        printMenu(lcd_ptr);
-      }
+
       if(button & BUTTON_SELECT)
       {
         for(int i = 0; i < 6; i++)
