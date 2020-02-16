@@ -22,15 +22,12 @@ enum SYSTEMMODE : uint8_t {
 extern enum GAMESTATUS gameStatus;
 extern enum SYSTEMMODE systemMode;
 
-<<<<<<< HEAD
-#define VERSIONNUMBER F("2.1.5")
+#define VERSIONNUMBER F("2.1.6")
 #define MAXIMUMDEVICES 4 //defines the max number of devices the system will allow to connect. 
-=======
-#define MAXIMUMDEVICES 4 //defines the max number of devices the system will allow to connect. 
+
 
 #define HANDGRIPDEVNUM 0 //device number for handgrip
 #define CRANKDEVNUM 1
->>>>>>> parent of 22905aa... Comments, Code Readability, and UI Improvements
 
 //port number defines for readability 
 #define DCON1_PORTNUM 0
