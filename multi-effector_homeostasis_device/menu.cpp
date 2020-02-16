@@ -201,7 +201,7 @@ class _menu: public _device{
         break;
 
         case ACON2_PORTNUM:
-        aconselectedmode &= 0b11110000; //clear the first four bits
+        aconselectedmode &= 0b11110000; //clear the last four bits
         aconselectedmode |= (val); //set the first four bits to val
         break;
         case DACON1_PORTNUM:
@@ -210,7 +210,7 @@ class _menu: public _device{
         break;
 
         case DACON2_PORTNUM:
-        daconselectedmode &= 0b11110000; //clear the first four bits
+        daconselectedmode &= 0b11110000; //clear the last four bits
         daconselectedmode |= (val); //set the first four bits to val
         break;
       }
