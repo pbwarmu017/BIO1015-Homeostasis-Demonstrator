@@ -22,8 +22,12 @@ enum SYSTEMMODE : uint8_t {
 extern enum GAMESTATUS gameStatus;
 extern enum SYSTEMMODE systemMode;
 
-#define VERSIONNUMBER F("2.1.5")
+#define VERSIONNUMBER F("2.1.6")
 #define MAXIMUMDEVICES 4 //defines the max number of devices the system will allow to connect. 
+
+
+#define HANDGRIPDEVNUM 0 //device number for handgrip
+#define CRANKDEVNUM 1
 
 //port number defines for readability 
 #define DCON1_PORTNUM 0
@@ -48,7 +52,7 @@ extern enum SYSTEMMODE systemMode;
 #define DCON2_PIND1 9
 #define DCON2_PIND2 10
 #define DACON2_PIND1 11
-#define DACON2_PINA1 ACON2_PINA2
+#define DACON2_PINA1 ACON2_PINA2 //DACON channels share analog channels the ACON ports
 
  //device types for readability
 #define INDICATORSTRIP_TYPE 1
