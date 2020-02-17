@@ -866,15 +866,18 @@ class _menu: public _device{
       }
       if(currentScreen == 6)
       {//BOUJND BOX MODE
+        (lcd->lcd_obj)->setBacklight(WHITE);
         strcpy_P(buffer, (char *)pgm_read_word(&(boundingBoxModeScreensTable[boundingboxmode])));
         (lcd->lcd_obj)->print(buffer);
       }
       if(currentScreen == 7)
       { //BOUND BOX SIZE
+        (lcd->lcd_obj)->setBacklight(WHITE);
         (lcd->lcd_obj)->print(boundingboxsize);
       }
       if(currentScreen == 8)
       { //VERSION
+        (lcd->lcd_obj)->setBacklight(WHITE);
         (lcd->lcd_obj)->print(VERSIONNUMBER);
       }
     }
