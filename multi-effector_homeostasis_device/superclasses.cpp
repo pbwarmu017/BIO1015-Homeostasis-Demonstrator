@@ -22,7 +22,7 @@ enum SYSTEMMODE : uint8_t {
 extern enum GAMESTATUS gameStatus;
 extern enum SYSTEMMODE systemMode;
 
-#define VERSIONNUMBER F("2.1.6")
+#define VERSIONNUMBER F("2.1.7")
 #define MAXIMUMDEVICES 4 //defines the max number of devices the system will allow to connect. 
 
 
