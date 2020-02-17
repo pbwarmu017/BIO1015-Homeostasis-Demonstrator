@@ -201,7 +201,7 @@ class _menu: public _device{
         break;
 
         case ACON2_PORTNUM:
-        aconselectedmode &= 0b11110000; //clear the first four bits
+        aconselectedmode &= 0b11110000; //clear the last four bits
         aconselectedmode |= (val); //set the first four bits to val
         break;
         case DACON1_PORTNUM:
@@ -210,7 +210,7 @@ class _menu: public _device{
         break;
 
         case DACON2_PORTNUM:
-        daconselectedmode &= 0b11110000; //clear the first four bits
+        daconselectedmode &= 0b11110000; //clear the last four bits
         daconselectedmode |= (val); //set the first four bits to val
         break;
       }
@@ -866,15 +866,18 @@ class _menu: public _device{
       }
       if(currentScreen == 6)
       {//BOUJND BOX MODE
+        (lcd->lcd_obj)->setBacklight(WHITE);
         strcpy_P(buffer, (char *)pgm_read_word(&(boundingBoxModeScreensTable[boundingboxmode])));
         (lcd->lcd_obj)->print(buffer);
       }
       if(currentScreen == 7)
       { //BOUND BOX SIZE
+        (lcd->lcd_obj)->setBacklight(WHITE);
         (lcd->lcd_obj)->print(boundingboxsize);
       }
       if(currentScreen == 8)
       { //VERSION
+        (lcd->lcd_obj)->setBacklight(WHITE);
         (lcd->lcd_obj)->print(VERSIONNUMBER);
       }
     }
