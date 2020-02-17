@@ -293,8 +293,9 @@ Adafruit RGB LCD Sheild Library
           menu_ptr->navigateMenu(BUTTON_SELECT, lcd_ptr);
         }
       }
+      //currently not needed, but the capability is there to have two different menus
 
-      if(selectTimer == 10 && systemMode == running)
+/*      if(selectTimer == 10 && systemMode == running)
       {
         systemMode = config;
         (lcd_ptr->lcd_obj)->clear();
@@ -310,7 +311,7 @@ Adafruit RGB LCD Sheild Library
         (lcd_ptr->lcd_obj)->clear();
         selectTimer++;
         // (lcd_ptr->lcd_obj)->setBacklight(WHITE);
-      }
+      }*/
 
     if(button && !(button & BUTTON_SELECT) && systemMode == config && lastButton != button)
     {
